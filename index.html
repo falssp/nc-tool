@@ -13,6 +13,9 @@
       --f4:#2e7d32; --f4-bg:#e8f5e9;
       --f5:#e65100; --f5-bg:#fff8e1;
     }
+    html, body {
+      height: 100%;
+    }
     body {
       font-family:'Segoe UI',Arial,sans-serif;
       background:var(--bg);
@@ -20,100 +23,111 @@
       display:flex;
       flex-direction:column;
       align-items:center;
-      padding:32px 16px 48px;
+      justify-content:center;
+      padding:32px 24px;
     }
-    header { text-align:center; margin-bottom:36px; }
-    header h1 { font-size:1.6rem; font-weight:800; color:var(--escuro); letter-spacing:-.5px; }
+    header { text-align:center; margin-bottom:32px; }
+    header h1 { font-size:1.7rem; font-weight:800; color:var(--escuro); letter-spacing:-.5px; }
     header p { font-size:.85rem; color:var(--muted); margin-top:4px; }
 
-    /* Cards lado a lado */
     .cards {
       width:100%;
-      max-width:960px;
+      max-width:1100px;
       display:grid;
       grid-template-columns: repeat(3, 1fr);
-      gap:16px;
+      gap:20px;
+      align-items:stretch;
     }
 
     .card {
       background:#fff;
       border:1px solid var(--borda);
-      border-radius:14px;
+      border-radius:16px;
       overflow:hidden;
       display:flex;
       flex-direction:column;
-      transition:box-shadow .2s;
+      transition:box-shadow .2s, transform .2s;
     }
-    .card:hover { box-shadow:0 4px 20px rgba(31,54,199,.10); }
+    .card:hover {
+      box-shadow:0 8px 32px rgba(31,54,199,.12);
+      transform:translateY(-2px);
+    }
 
     .card-header {
-      padding:20px 18px 14px;
-      border-bottom:1px solid var(--borda);
+      padding:24px 22px 18px;
     }
     .card-icon {
-      width:40px; height:40px;
-      border-radius:10px;
+      width:44px; height:44px;
+      border-radius:12px;
       display:flex; align-items:center; justify-content:center;
-      font-size:1.2rem;
-      margin-bottom:12px;
+      font-size:1.3rem;
+      margin-bottom:14px;
     }
     .icon-f3{background:var(--f3-bg);}
     .icon-f4{background:var(--f4-bg);}
     .icon-f5{background:var(--f5-bg);}
 
-    .card-fase { font-size:.7rem; font-weight:700; letter-spacing:.8px; text-transform:uppercase; margin-bottom:3px; }
+    .card-fase { font-size:.68rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
     .fase-f3{color:var(--f3);}
     .fase-f4{color:var(--f4);}
     .fase-f5{color:var(--f5);}
 
-    .card-title { font-size:1rem; font-weight:800; color:var(--escuro); margin-bottom:3px; }
-    .card-desc { font-size:.78rem; color:#666; }
+    .card-title { font-size:1.1rem; font-weight:800; color:var(--escuro); margin-bottom:4px; }
+    .card-desc { font-size:.78rem; color:#888; line-height:1.4; }
 
     .card-body {
-      padding:16px 18px;
+      padding:0 22px 24px;
       flex:1;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .divider {
+      height:1px;
+      background:var(--borda);
+      margin-bottom:18px;
     }
 
     .modulos {
       list-style:none;
       display:flex;
       flex-direction:column;
-      gap:6px;
-      margin-bottom:18px;
+      gap:8px;
+      flex:1;
+      margin-bottom:22px;
     }
-    .modulos li { display:flex; align-items:center; gap:8px; font-size:.8rem; color:#444; }
-    .dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+    .modulos li { display:flex; align-items:center; gap:9px; font-size:.82rem; color:#444; }
+    .dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
     .dot-f3{background:var(--f3);}
     .dot-f4{background:var(--f4);}
     .dot-f5{background:var(--f5);}
 
-    /* Dois botões por card */
     .btn-group {
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:8px;
-      margin-top:auto;
+      gap:10px;
     }
     .btn-abrir {
       display:block;
-      padding:10px 6px;
-      border:none;
-      border-radius:9px;
-      font-size:.8rem;
+      padding:11px 8px;
+      border-radius:10px;
+      font-size:.82rem;
       font-weight:700;
       cursor:pointer;
       text-align:center;
       text-decoration:none;
-      transition:opacity .2s;
+      transition:opacity .18s, transform .18s;
+      border:none;
     }
+    .btn-abrir:hover { opacity:.85; transform:translateY(-1px); }
     .btn-corp { background:var(--azul); color:#fff; }
     .btn-pessoal { background:#fff; color:var(--azul); border:2px solid var(--azul); }
-    .btn-abrir:hover { opacity:.82; }
 
-    footer { margin-top:48px; font-size:.72rem; color:var(--muted); text-align:center; }
+    footer { margin-top:32px; font-size:.72rem; color:var(--muted); text-align:center; }
 
-    @media(max-width:700px){
+    @media(max-width:720px){
       .cards { grid-template-columns:1fr; }
+      body { justify-content:flex-start; padding-top:32px; }
     }
   </style>
 </head>
@@ -135,6 +149,7 @@
       <div class="card-desc">Validação de naming conventions</div>
     </div>
     <div class="card-body">
+      <div class="divider"></div>
       <ul class="modulos">
         <li><span class="dot dot-f3"></span>ADP Excel</li>
         <li><span class="dot dot-f3"></span>Dash / QA Painel</li>
@@ -160,6 +175,7 @@
       <div class="card-desc">Suite de ferramentas de apoio</div>
     </div>
     <div class="card-body">
+      <div class="divider"></div>
       <ul class="modulos">
         <li><span class="dot dot-f4"></span>Gerador de IDs</li>
         <li><span class="dot dot-f4"></span>Ad Name Sync</li>
@@ -190,6 +206,7 @@
       <div class="card-desc">Validação de naming Flashtalking</div>
     </div>
     <div class="card-body">
+      <div class="divider"></div>
       <ul class="modulos">
         <li><span class="dot dot-f5"></span>Validação ADP Excel</li>
         <li><span class="dot dot-f5"></span>Validação Manual</li>
