@@ -7,62 +7,132 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --azul:#1F36C7; --escuro:#1a237e; --mid:#283593; --muted:#9fa8da;
+      --azul:#1F36C7; --escuro:#1a237e; --muted:#9fa8da;
       --borda:#d6dbf2; --bg:#f0f2ff;
       --f3:#1565c0; --f3-bg:#e3f2fd;
       --f4:#2e7d32; --f4-bg:#e8f5e9;
       --f5:#e65100; --f5-bg:#fff8e1;
     }
-    body { font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:32px 16px 48px; }
-    header { text-align:center; margin-bottom:40px; }
+    body {
+      font-family:'Segoe UI',Arial,sans-serif;
+      background:var(--bg);
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:32px 16px 48px;
+    }
+    header { text-align:center; margin-bottom:36px; }
     header h1 { font-size:1.6rem; font-weight:800; color:var(--escuro); letter-spacing:-.5px; }
     header p { font-size:.85rem; color:var(--muted); margin-top:4px; }
-    .env-toggle { display:flex; gap:8px; margin-bottom:32px; background:#fff; border:1px solid var(--borda); border-radius:10px; padding:4px; }
-    .env-btn { flex:1; padding:8px 24px; border:none; border-radius:7px; font-size:.85rem; font-weight:600; cursor:pointer; transition:all .2s; color:var(--muted); background:transparent; }
-    .env-btn.active { background:var(--azul); color:#fff; }
-    .cards { width:100%; max-width:560px; display:flex; flex-direction:column; gap:12px; }
-    .card { background:#fff; border:1px solid var(--borda); border-radius:14px; overflow:hidden; transition:box-shadow .2s; }
+
+    /* Cards lado a lado */
+    .cards {
+      width:100%;
+      max-width:960px;
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:16px;
+    }
+
+    .card {
+      background:#fff;
+      border:1px solid var(--borda);
+      border-radius:14px;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      transition:box-shadow .2s;
+    }
     .card:hover { box-shadow:0 4px 20px rgba(31,54,199,.10); }
-    .card-header { display:flex; align-items:center; gap:14px; padding:18px 20px; cursor:pointer; user-select:none; }
-    .card-icon { width:42px; height:42px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; flex-shrink:0; }
-    .icon-f3{background:var(--f3-bg);} .icon-f4{background:var(--f4-bg);} .icon-f5{background:var(--f5-bg);}
-    .card-info { flex:1; }
-    .card-fase { font-size:.7rem; font-weight:700; letter-spacing:.8px; text-transform:uppercase; margin-bottom:2px; }
-    .fase-f3{color:var(--f3);} .fase-f4{color:var(--f4);} .fase-f5{color:var(--f5);}
-    .card-title { font-size:1rem; font-weight:700; color:var(--escuro); }
-    .card-desc { font-size:.78rem; color:#666; margin-top:2px; }
-    .chevron { font-size:1rem; color:var(--muted); transition:transform .25s; }
-    .card.open .chevron { transform:rotate(180deg); }
-    .card-body { display:none; padding:0 20px 20px; border-top:1px solid var(--borda); }
-    .card.open .card-body { display:block; }
-    .modulos { list-style:none; margin:14px 0 18px; display:flex; flex-direction:column; gap:6px; }
-    .modulos li { display:flex; align-items:center; gap:8px; font-size:.82rem; color:#444; }
+
+    .card-header {
+      padding:20px 18px 14px;
+      border-bottom:1px solid var(--borda);
+    }
+    .card-icon {
+      width:40px; height:40px;
+      border-radius:10px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:1.2rem;
+      margin-bottom:12px;
+    }
+    .icon-f3{background:var(--f3-bg);}
+    .icon-f4{background:var(--f4-bg);}
+    .icon-f5{background:var(--f5-bg);}
+
+    .card-fase { font-size:.7rem; font-weight:700; letter-spacing:.8px; text-transform:uppercase; margin-bottom:3px; }
+    .fase-f3{color:var(--f3);}
+    .fase-f4{color:var(--f4);}
+    .fase-f5{color:var(--f5);}
+
+    .card-title { font-size:1rem; font-weight:800; color:var(--escuro); margin-bottom:3px; }
+    .card-desc { font-size:.78rem; color:#666; }
+
+    .card-body {
+      padding:16px 18px;
+      flex:1;
+    }
+
+    .modulos {
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+      margin-bottom:18px;
+    }
+    .modulos li { display:flex; align-items:center; gap:8px; font-size:.8rem; color:#444; }
     .dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
-    .dot-f3{background:var(--f3);} .dot-f4{background:var(--f4);} .dot-f5{background:var(--f5);}
-    .btn-abrir { display:block; width:100%; padding:11px; border:none; border-radius:9px; background:var(--azul); color:#fff; font-size:.88rem; font-weight:700; cursor:pointer; transition:opacity .2s; text-align:center; text-decoration:none; }
-    .btn-abrir:hover { opacity:.88; }
+    .dot-f3{background:var(--f3);}
+    .dot-f4{background:var(--f4);}
+    .dot-f5{background:var(--f5);}
+
+    /* Dois botões por card */
+    .btn-group {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:auto;
+    }
+    .btn-abrir {
+      display:block;
+      padding:10px 6px;
+      border:none;
+      border-radius:9px;
+      font-size:.8rem;
+      font-weight:700;
+      cursor:pointer;
+      text-align:center;
+      text-decoration:none;
+      transition:opacity .2s;
+    }
+    .btn-corp { background:var(--azul); color:#fff; }
+    .btn-pessoal { background:#fff; color:var(--azul); border:2px solid var(--azul); }
+    .btn-abrir:hover { opacity:.82; }
+
     footer { margin-top:48px; font-size:.72rem; color:var(--muted); text-align:center; }
+
+    @media(max-width:700px){
+      .cards { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
+
 <header>
   <h1>NC Tool</h1>
-  <p>Unilever BR &times; Grasp &mdash; StormX</p>
+  <p>Unilever BR &times; Grasp</p>
 </header>
-<div class="env-toggle">
-  <button class="env-btn active" onclick="setEnv('corp')">Corp</button>
-  <button class="env-btn" onclick="setEnv('pessoal')">Pessoal</button>
-</div>
+
 <div class="cards">
-  <div class="card" id="card-f3">
-    <div class="card-header" onclick="toggle('f3')">
+
+  <!-- F3 -->
+  <div class="card">
+    <div class="card-header">
       <div class="card-icon icon-f3">&#128269;</div>
-      <div class="card-info">
-        <div class="card-fase fase-f3">F3</div>
-        <div class="card-title">Validator</div>
-        <div class="card-desc">Validação de naming conventions</div>
-      </div>
-      <span class="chevron">&#8964;</span>
+      <div class="card-fase fase-f3">F3</div>
+      <div class="card-title">Validator</div>
+      <div class="card-desc">Validação de naming conventions</div>
     </div>
     <div class="card-body">
       <ul class="modulos">
@@ -74,18 +144,20 @@
         <li><span class="dot dot-f3"></span>Verificador de Hash</li>
         <li><span class="dot dot-f3"></span>Histórico</li>
       </ul>
-      <a class="btn-abrir" id="btn-f3" href="#" target="_blank">Abrir Validator &rarr;</a>
+      <div class="btn-group">
+        <a class="btn-abrir btn-corp" href="https://script.google.com/macros/s/AKfycby9YQftWg586o1m1gPEaMyHMMYzyYUJ8MRWY0WRSv67kGAkeEX4TVPXeLbB4_I6Wv7neA/exec" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" href="https://script.google.com/macros/s/AKfycbw7QryYGzik1bbT0Mf4N5JcpuuNVoHAudTAbrT2jfzzXnz0wkuJfBFLIeMNViDO4SE2/exec" target="_blank">Pessoal &rarr;</a>
+      </div>
     </div>
   </div>
-  <div class="card" id="card-f4">
-    <div class="card-header" onclick="toggle('f4')">
+
+  <!-- F4 -->
+  <div class="card">
+    <div class="card-header">
       <div class="card-icon icon-f4">&#128295;</div>
-      <div class="card-info">
-        <div class="card-fase fase-f4">F4</div>
-        <div class="card-title">Acessórios</div>
-        <div class="card-desc">Suite de ferramentas de apoio</div>
-      </div>
-      <span class="chevron">&#8964;</span>
+      <div class="card-fase fase-f4">F4</div>
+      <div class="card-title">Acessórios</div>
+      <div class="card-desc">Suite de ferramentas de apoio</div>
     </div>
     <div class="card-body">
       <ul class="modulos">
@@ -102,18 +174,20 @@
         <li><span class="dot dot-f4"></span>Contador ADP</li>
         <li><span class="dot dot-f4"></span>Removedor de Caracteres</li>
       </ul>
-      <a class="btn-abrir" id="btn-f4" href="#" target="_blank">Abrir Acessórios &rarr;</a>
+      <div class="btn-group">
+        <a class="btn-abrir btn-corp" href="https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" href="https://script.google.com/macros/s/AKfycby6h6qvXqacFrf2TmcXYaflRQp7rvhklpnR27VWhIueh9pLxWvUCRYkFToJPxYezUN7cw/exec" target="_blank">Pessoal &rarr;</a>
+      </div>
     </div>
   </div>
-  <div class="card" id="card-f5">
-    <div class="card-header" onclick="toggle('f5')">
+
+  <!-- F5 -->
+  <div class="card">
+    <div class="card-header">
       <div class="card-icon icon-f5">&#128218;</div>
-      <div class="card-info">
-        <div class="card-fase fase-f5">F5</div>
-        <div class="card-title">FT Flashtalking</div>
-        <div class="card-desc">Validação de naming Flashtalking</div>
-      </div>
-      <span class="chevron">&#8964;</span>
+      <div class="card-fase fase-f5">F5</div>
+      <div class="card-title">FT Flashtalking</div>
+      <div class="card-desc">Validação de naming Flashtalking</div>
     </div>
     <div class="card-body">
       <ul class="modulos">
@@ -122,40 +196,16 @@
         <li><span class="dot dot-f5"></span>Exceções</li>
         <li><span class="dot dot-f5"></span>Histórico</li>
       </ul>
-      <a class="btn-abrir" id="btn-f5" href="#" target="_blank">Abrir FT Validator &rarr;</a>
+      <div class="btn-group">
+        <a class="btn-abrir btn-corp" href="https://script.google.com/macros/s/AKfycbwKsOut5TyYLf1pW_xm1He-zBvzZGYFM4KAEE5C6hssNZHsg9fL_QBXWjfF-zzIDxfXNQ/exec" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" href="https://script.google.com/macros/s/AKfycbym0772425DQEUrNQn9TZc6C-wdRuqU1_erQVSoWzV-MEBbyCN4DOfJkaSd90cdVZHjSA/exec" target="_blank">Pessoal &rarr;</a>
+      </div>
     </div>
   </div>
+
 </div>
-<footer>NC Tool &copy; 2026 &mdash; StormX</footer>
-<script>
-  var URLS = {
-    corp: {
-      f3:'https://script.google.com/macros/s/AKfycby9YQftWg586o1m1gPEaMyHMMYzyYUJ8MRWY0WRSv67kGAkeEX4TVPXeLbB4_I6Wv7neA/exec',
-      f4:'https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec',
-      f5:'https://script.google.com/macros/s/AKfycbwKsOut5TyYLf1pW_xm1He-zBvzZGYFM4KAEE5C6hssNZHsg9fL_QBXWjfF-zzIDxfXNQ/exec'
-    },
-    pessoal: {
-      f3:'https://script.google.com/macros/s/AKfycbw7QryYGzik1bbT0Mf4N5JcpuuNVoHAudTAbrT2jfzzXnz0wkuJfBFLIeMNViDO4SE2/exec',
-      f4:'https://script.google.com/macros/s/AKfycby6h6qvXqacFrf2TmcXYaflRQp7rvhklpnR27VWhIueh9pLxWvUCRYkFToJPxYezUN7cw/exec',
-      f5:'https://script.google.com/macros/s/AKfycbym0772425DQEUrNQn9TZc6C-wdRuqU1_erQVSoWzV-MEBbyCN4DOfJkaSd90cdVZHjSA/exec'
-    }
-  };
-  var env='corp';
-  function setEnv(e){
-    env=e;
-    document.querySelectorAll('.env-btn').forEach(function(b){ b.classList.toggle('active', b.textContent.toLowerCase()===e); });
-    updateLinks();
-  }
-  function updateLinks(){
-    ['f3','f4','f5'].forEach(function(f){ var b=document.getElementById('btn-'+f); if(b) b.href=URLS[env][f]; });
-  }
-  function toggle(id){
-    var card=document.getElementById('card-'+id);
-    var isOpen=card.classList.contains('open');
-    document.querySelectorAll('.card').forEach(function(c){ c.classList.remove('open'); });
-    if(!isOpen) card.classList.add('open');
-  }
-  updateLinks();
-</script>
+
+<footer>NC Tool &copy; 2026</footer>
+
 </body>
 </html>
