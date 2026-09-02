@@ -3319,7 +3319,7 @@ function ansShowSt(el,type,msg){el.className='ans-sbar '+type;el.innerHTML=msg;}
 
 /* ══ GERADOR DE IDs ══ */
 var GID_PROXY='https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec';
-var NC_TOKEN='9ba40c66efec04b4f348282400f98cdbeb8ece88a735ab67';
+var NC_TOKEN=(window.location.hostname==='falssp.github.io')?'9ba40c66efec04b4f348282400f98cdbeb8ece88a735ab67':'';
 function gidWarmUp(){fetch(GID_PROXY+'?action=ping&token='+NC_TOKEN).catch(function(){});}
 var F4_PROXY='https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec';
 var GID_PLATAFORMAS=[
