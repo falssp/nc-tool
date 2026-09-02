@@ -576,7 +576,7 @@ var S2P = {'Google':'google','Youtube':'youtube','Meta e Tiktok':'meta','Program
 var DICT_ID = '17vc4UfMz-o2Oz0unAnJlErhHd_2n34tvlFxFnPgTIok';
 
 // ── GAS API (GitHub Pages → GAS via fetch) ───────────────────
-var GAS_URL = 'https://script.google.com/macros/s/AKfycbzYrWTRPdpu7458mep_MTr5u4FmSR_EyzoavIij1TTQSqytGmk5U-UIk3SZBFDBtTgCbg/exec';
+var GAS_URL = 'https://script.google.com/macros/s/AKfycbwYgpa2Tq812x8vnI62IbUjITMCowfI3WAKufM4nta_xgZBO4nj12bW4-wz_qZbWCfQlw/exec';
 
 function _gas(action, params) {
   var url = GAS_URL + '?action=' + encodeURIComponent(action);
@@ -1905,6 +1905,13 @@ function verifBuscarLog(){
     document.getElementById('verif-log-input').value=JSON.stringify(rows,null,2);
     _toast('Log carregado — clique em Verificar hash.','ok');
   }).catch(function(e){showProg(false);_toast('Erro ao buscar: '+e.message,'err');});
+}
+
+function initJira() {
+  _gas('jiraGetStatus').then(function(status){
+    jiraConfig = status || { configurado: false, email: '' };
+    _atualizarStatusJira();
+  }).catch(function(){});
 }
 
 function onBlurTicket(inputEl, tipo) {
