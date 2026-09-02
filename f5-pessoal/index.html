@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NC Tool | Unilever BR x Grasp [F5 — FT Flashtalking Validator]</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   NC Tool | Unilever BR x Grasp [FT — Flashtalking Validator]
+   index.html — versão online (Web App / Google Apps Script)
+   Planilha BACKUP   : 1YZ3tFDlt3yP5xtNVpSMhyS-cxG3QHBlN5nr_z-yJi2s
+   Script: NC Tool | Unilever BR x Grasp — Script F5 (bound à planilha original)
+   ⚠️  Substituir BACKEND_URL pela URL gerada em Implantar > Web App
+   ⚠️  A planilha original NÃO sabe da existência do backup.
+       Toda lógica de backup é gerenciada exclusivamente pelo Code.gs.
+   ═══════════════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{
+  --ul:#1F36C7;--ul-l:#E8ECFB;--ul-m:#4A5FD4;
+  --ok:#0D7A4E;--ok-b:#E6F4EE;
+  --err:#C0392B;--err-b:#FDECEA;
+  --warn:#B45309;--warn-b:#FEF3C7;
+  --g50:#F8F9FA;--g100:#F1F3F5;--g200:#E9ECEF;--g300:#DEE2E6;
+  --g500:#868E96;--g700:#495057;--g900:#212529;
+  --sw:220px;--fn:'DM Sans',system-ui,sans-serif;--mo:'DM Mono',monospace
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--fn);background:var(--g50);color:var(--g900);min-height:100vh;display:flex}
+
+/* ── SIDEBAR ── */
+#sb{width:var(--sw);min-width:var(--sw);background:#0F1B6E;color:#fff;display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{padding:20px 18px 14px;border-bottom:1px solid rgba(255,255,255,.1)}
+.logo .badge{display:inline-flex;align-items:center;background:rgba(255,255,255,.12);border-radius:6px;padding:3px 9px;font-size:10px;font-weight:600;letter-spacing:.04em;color:#A5B4FC;margin-bottom:8px}
+.logo h1{font-size:14px;font-weight:600;line-height:1.3;color:#fff}
+.sb-s{padding:14px 10px 6px}
+.sb-s label{font-size:9px;font-weight:700;letter-spacing:.1em;color:rgba(255,255,255,.3);text-transform:uppercase;display:block;padding:0 8px;margin-bottom:5px}
+.mb{display:flex;align-items:center;gap:9px;width:100%;background:none;border:none;cursor:pointer;padding:8px 10px;border-radius:7px;color:rgba(255,255,255,.55);font-family:var(--fn);font-size:12.5px;font-weight:400;transition:all .15s;text-align:left}
+.mb:hover{background:rgba(255,255,255,.07);color:#fff}
+.mb.active{background:rgba(255,255,255,.13);color:#fff;font-weight:500}
+.mb .ico{width:26px;height:26px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;background:rgba(255,255,255,.08)}
+.mb.active .ico{background:var(--ul)}
+.sb-info{margin-top:auto;padding:14px 18px;border-top:1px solid rgba(255,255,255,.08)}
+.sb-info p{font-size:10px;color:rgba(255,255,255,.3);line-height:1.6}
+.sb-status{display:flex;align-items:center;gap:6px;margin-bottom:6px;font-size:10px;color:rgba(255,255,255,.4)}
+.sb-status .dot{width:6px;height:6px;border-radius:50%;background:#9e9e9e;flex-shrink:0}
+.sb-status.ok .dot{background:#4caf50}
+.sb-status.err .dot{background:#ef5350}
+.sb-status.loading .dot{background:#ff9800;animation:blink .8s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* ── MAIN ── */
+#main{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden}
+#tb{background:#fff;border-bottom:1px solid var(--g200);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;flex-shrink:0}
+#tb h2{font-size:13.5px;font-weight:600}
+.tbr{display:flex;align-items:center;gap:8px}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border-radius:7px;font-family:var(--fn);font-size:12.5px;font-weight:500;cursor:pointer;border:none;transition:all .15s}
+.btn-p{background:var(--ul);color:#fff}.btn-p:hover{background:var(--ul-m)}
+.btn-g{background:none;border:1px solid var(--g300);color:var(--g700)}.btn-g:hover{background:var(--g100)}
+.btn:disabled{opacity:.35;cursor:not-allowed;pointer-events:none}
+
+/* ── PAGES ── */
+.page{display:none;flex:1;padding:20px 24px;overflow-y:auto}
+.page.active{display:block;flex:1}
+
+/* ── TOOL CARD ── */
+.tool-card{background:#fff;border:1px solid var(--g200);border-radius:11px;overflow:hidden;margin-bottom:16px}
+.tool-hdr{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--g200)}
+.tool-ico{width:32px;height:32px;border-radius:8px;background:var(--ul-l);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.tool-meta{flex:1}
+.tool-title{font-size:13.5px;font-weight:600;color:var(--g900);margin-bottom:1px}
+.tool-desc{font-size:11px;color:var(--g500)}
+.tool-body{padding:0 18px 18px}
+.tool-actions{display:flex;align-items:center;gap:8px;margin-left:auto}
+
+/* ── INFO BOX ── */
+.ib{background:var(--ul-l);border:1px solid #C5CEEE;border-radius:7px;padding:9px 13px;font-size:12px;color:var(--ul);margin-bottom:14px;line-height:1.55}
+.ib strong{font-weight:600}
+.ib.warn{background:var(--warn-b);border-color:#e0c070;color:var(--warn)}
+.ib.ok{background:var(--ok-b);border-color:#a5d6a7;color:var(--ok)}
+.ib.err{background:var(--err-b);border-color:#f5c6c2;color:var(--err)}
+code{background:rgba(0,0,0,.06);padding:1px 5px;border-radius:3px;font-family:var(--mo);font-size:11px}
+
+/* ── TIPO TABS ── */
+.tipo-tabs{display:flex;gap:6px;margin-top:16px;margin-bottom:16px}
+.tipo-tab{flex:1;padding:10px 8px;border-radius:9px;font-size:12px;font-weight:500;border:1.5px solid var(--g300);background:#fff;cursor:pointer;font-family:var(--fn);transition:all .15s;text-align:center;color:var(--g700)}
+.tipo-tab:hover{border-color:var(--ul);color:var(--ul)}
+.tipo-tab.active{background:var(--ul);color:#fff;border-color:var(--ul)}
+.tipo-tab .tipo-ico{font-size:18px;display:block;margin-bottom:3px}
+
+/* ── UPLOAD ZONE ── */
+.uz{border:2px dashed var(--g300);border-radius:11px;padding:22px 16px;text-align:center;cursor:pointer;transition:all .2s;background:var(--g50);margin-bottom:14px}
+.uz:hover,.uz.drag{border-color:var(--ul);background:var(--ul-l)}
+.uz .icon{font-size:24px;margin-bottom:6px}
+.uz h3{font-size:12.5px;font-weight:600;margin-bottom:3px}
+.uz p{font-size:11px;color:var(--g500)}
+.uz input[type=file]{display:none}
+.uz.loaded{border-color:var(--ok);background:var(--ok-b)}
+.uz.loaded h3{color:var(--ok)}
+.uz.loaded p{color:#1a6040}
+
+/* ── FORM GRID ── */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field.span2{grid-column:span 2}
+.field label{font-size:10px;font-weight:700;color:var(--g700);letter-spacing:.05em;text-transform:uppercase}
+.field label .req{color:var(--err);margin-left:2px}
+.field input,.field select{padding:8px 11px;border:1px solid var(--g300);border-radius:7px;font-family:var(--fn);font-size:12.5px;color:var(--g900);background:#fff;outline:none;transition:border-color .15s}
+.field input:focus,.field select:focus{border-color:var(--ul)}
+.field .hint{font-size:10.5px;color:var(--g500);font-style:italic}
+
+/* ── SPEC REF ── */
+.spec-ref{background:var(--ul-l);border:1px solid #C5CEEE;border-radius:7px;padding:9px 13px;font-size:11.5px;color:var(--ul);margin-bottom:14px;line-height:1.55}
+.spec-ref strong{display:block;font-size:11px;font-weight:700;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em}
+.spec-ref ul{padding-left:14px;line-height:1.9}
+
+/* ── RESULTADO ── */
+.check-list{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.check-item{display:flex;align-items:flex-start;gap:9px;padding:9px 13px;border-radius:7px;font-size:12px;border:1px solid transparent}
+.check-item.ok{background:var(--ok-b);border-color:#a5d6a7;color:var(--ok)}
+.check-item.err{background:var(--err-b);border-color:#f5c6c2;color:var(--err)}
+.check-item.warn{background:var(--warn-b);border-color:#e0c070;color:var(--warn)}
+.check-item.skip{background:var(--g100);border-color:var(--g200);color:var(--g500)}
+.check-icon{font-size:14px;flex-shrink:0;margin-top:1px}
+.check-text strong{display:block;font-size:11.5px;font-weight:600;margin-bottom:1px}
+.check-text span{font-size:11.5px}
+.result-hdr{display:flex;align-items:center;gap:9px;padding:11px 14px;border-radius:9px;font-weight:600;font-size:13px;margin-top:16px}
+.result-hdr.aprovado{background:var(--ok-b);color:var(--ok);border:1px solid #a5d6a7}
+.result-hdr.reprovado{background:var(--err-b);color:var(--err);border:1px solid #f5c6c2}
+.result-hdr.aviso{background:var(--warn-b);color:var(--warn);border:1px solid #e0c070}
+.check-sec-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--g500);padding:10px 2px 4px;border-top:1px solid var(--g200);margin-top:4px}
+.check-sec-lbl:first-child{border-top:none;margin-top:0;padding-top:6px}
+
+/* ── HISTÓRICO PANEL ── */
+.hist-item{background:#fff;border:1px solid var(--g200);border-radius:9px;padding:11px 14px;margin-bottom:8px;transition:border-color .15s;cursor:default}
+.hist-item:hover{border-color:var(--ul)}
+.hist-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.hist-tipo{font-weight:700;color:#0F1B6E;font-size:10px;text-transform:uppercase;letter-spacing:.04em;display:flex;align-items:center;gap:5px}
+.hist-data{color:var(--g500);font-size:10.5px}
+.hist-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11.5px}
+.hist-badge{display:inline-flex;align-items:center;padding:2px 9px;border-radius:4px;font-size:10.5px;font-weight:600}
+.hist-badge.ok{background:var(--ok-b);color:var(--ok)}
+.hist-badge.err{background:var(--err-b);color:var(--err)}
+.hist-badge.warn{background:var(--warn-b);color:var(--warn)}
+.hist-score{font-weight:700;font-size:12px}
+.hist-det{font-size:10.5px;color:var(--g500);margin-top:4px;font-family:var(--mo);word-break:break-all}
+.hist-empty{text-align:center;color:var(--g500);font-size:12.5px;padding:40px 16px}
+/* Overlay para fechar clicando fora */
+
+.bullet-overlay{position:fixed;inset:0;background:rgba(10,15,50,.55);backdrop-filter:blur(2px);z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px}
+.bullet-box{background:#fff;border-radius:14px;max-width:440px;width:100%;overflow:hidden;box-shadow:0 16px 60px rgba(0,0,0,.25);padding:28px 24px;text-align:center}
+.bullet-icon{font-size:36px;margin-bottom:12px}
+.bullet-title{font-size:15px;font-weight:700;color:var(--g900);margin-bottom:8px}
+.bullet-desc{font-size:12.5px;color:var(--g700);margin-bottom:20px;line-height:1.5}
+.bullet-desc strong{color:var(--ul)}
+.bullet-btns{display:flex;gap:10px;justify-content:center}
+
+/* ── MODAL EXCEÇÃO ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(10,15,50,.55);backdrop-filter:blur(2px);z-index:2000;align-items:center;justify-content:center;padding:20px}
+.modal-bg.open{display:flex}
+.modal-box{background:#fff;border-radius:14px;max-width:440px;width:100%;overflow:hidden;box-shadow:0 16px 60px rgba(0,0,0,.25)}
+.modal-hdr{background:#0F1B6E;color:#fff;padding:14px 18px;font-weight:600;font-size:13px}
+.modal-body{padding:18px 20px}
+.modal-body label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--g700);margin-bottom:5px}
+.modal-body textarea{width:100%;min-height:80px;border:1px solid var(--g300);border-radius:7px;padding:9px 11px;font-size:12.5px;resize:vertical;font-family:var(--fn);outline:none}
+.modal-body textarea:focus{border-color:var(--ul)}
+.modal-foot{padding:12px 20px;border-top:1px solid var(--g200);display:flex;gap:8px;justify-content:flex-end}
+
+/* ── SEÇÃO ── */
+.ft-sec{display:none}.ft-sec.active{display:block}
+
+/* ── PERFIL BAR ── */
+#perfil-bar{display:none;align-items:center;gap:8px;background:var(--ul-l);border:1px solid #C5CEEE;border-radius:7px;padding:8px 13px;margin-bottom:14px;font-size:12px;color:var(--ul)}
+#perfil-bar.show{display:flex}
+
+/* ── RESPONSIVE ── */
+@media(max-width:700px){
+  #sb{width:180px;min-width:180px}
+  .form-grid{grid-template-columns:1fr}
+  .field.span2{grid-column:span 1}
+  .tipo-tabs{flex-direction:column}
+  .page{padding:10px}
+}
+.field-opt label::after{content:' opcional';font-size:9px;font-weight:400;color:var(--g500);text-transform:none;letter-spacing:0;margin-left:4px}
+.field-opt .hint{color:var(--g500)}
+.help-tip{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border-radius:50%;background:var(--g200);color:var(--g700);font-size:9px;font-weight:700;cursor:pointer;margin-left:4px;position:relative;vertical-align:middle;flex-shrink:0}
+.help-tip:hover .tip-box{display:block}
+.tip-box{display:none;position:absolute;left:20px;top:-4px;background:var(--g900);color:#fff;font-size:11px;font-weight:400;border-radius:7px;padding:9px 12px;width:220px;z-index:100;line-height:1.6;text-transform:none;letter-spacing:0}
+.tip-box::before{content:'';position:absolute;left:-5px;top:10px;border:5px solid transparent;border-right-color:var(--g900);border-left:none}
+.tip-box a{color:#A5B4FC;text-decoration:none}
+.tip-box a:hover{text-decoration:underline}
+.auto-tag{display:inline-block;background:var(--ok-b);color:var(--ok);font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;margin-left:4px;vertical-align:middle;text-transform:uppercase;letter-spacing:.04em}
+.field input[readonly],.field select[disabled]{background:var(--g100);color:var(--g700);cursor:not-allowed;border-color:var(--g200)}
+.field input[readonly]:focus,.field select[disabled]:focus{border-color:var(--g200);box-shadow:none}
+.bullet-overlay{display:none;position:fixed;inset:0;background:rgba(10,15,50,.55);backdrop-filter:blur(2px);z-index:3000;align-items:center;justify-content:center;padding:20px}
+.bullet-overlay.open{display:flex}
+.bullet-box{background:#fff;border-radius:14px;max-width:420px;width:100%;overflow:hidden;box-shadow:0 16px 60px rgba(0,0,0,.25);text-align:center;padding:32px 28px}
+.bullet-icon{font-size:40px;margin-bottom:14px}
+.bullet-title{font-size:15px;font-weight:700;color:var(--g900);margin-bottom:8px}
+.bullet-desc{font-size:12.5px;color:var(--g700);margin-bottom:6px}
+.bullet-sub{font-size:12px;color:var(--g500);margin-bottom:24px}
+.bullet-btns{display:flex;gap:10px;justify-content:center}
+.bullet-btn-ok{padding:10px 28px;border:none;border-radius:8px;background:var(--ul);color:#fff;font-family:var(--fn);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s}
+.bullet-btn-ok:hover{background:var(--ul-m)}
+.bullet-btn-cancel{padding:10px 28px;border:1.5px solid var(--g300);border-radius:8px;background:#fff;color:var(--g700);font-family:var(--fn);font-size:13px;font-weight:500;cursor:pointer;transition:all .15s}
+.bullet-btn-cancel:hover{border-color:var(--err);color:var(--err)}
+::-webkit-scrollbar{width:5px;height:5px}::-webkit-scrollbar-thumb{background:var(--g300);border-radius:3px}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+
+<aside id="sb">
+  <div class="logo">
+    <div class="badge">F5 - Validator · Backup</div>
+    <h1>NC Tool<br>Unilever BR</h1>
+  </div>
+  <div class="sb-s">
+    <label>Tipo de Criativo</label>
+    <button class="mb active" id="nav-audio" onclick="goTo('audio','Audio',this)">
+      <span class="ico">🎵</span> Audio
+    </button>
+    <button class="mb" id="nav-display" onclick="goTo('display','Display',this)">
+      <span class="ico">🖥️</span> Display
+    </button>
+    <button class="mb" id="nav-video" onclick="goTo('video','Video',this)">
+      <span class="ico">🎬</span> Video
+    </button>
+    <button class="mb" id="nav-hist" onclick="goTo('hist','Histórico',this)">
+      <span class="ico">📋</span> Histórico
+    </button>
+  </div>
+  <div class="sb-info">
+    <div class="sb-status" id="sb-status">
+      <span class="dot"></span>
+      <span id="sb-status-txt">Conectando…</span>
+    </div>
+    <p>Validador de specs Flashtalking.<br>Unilever BR × Grasp × StormX.</p>
+    <div style="margin-top:8px;font-size:10px;color:rgba(255,255,255,.25);cursor:pointer" id="log-status" onclick="abrirHist()">Log: pronto</div>
+  </div>
+</aside>
+
+<div id="main">
+  <div id="tb">
+    <h2 id="tb-title">Audio</h2>
+    <div class="tbr" id="tb-actions"></div>
+  </div>
+
+  <!-- ══ IN VIDEO ══ -->
+  <div class="page" id="page-video">
+    <div id="perfil-bar">👤 <span id="perfil-nome">—</span> · <strong id="perfil-tipo">—</strong></div>
+
+    <div class="tool-card">
+      <div class="tool-hdr">
+        <div class="tool-ico">🎬</div>
+        <div class="tool-meta">
+          <div class="tool-title">Video</div>
+          <div class="tool-desc">Valida specs de criativos de vídeo para Flashtalking</div>
+        </div>
+        <div class="tool-actions">
+          <button class="btn btn-g" onclick="clearVideo()">Limpar</button>
+          <button class="btn btn-p" onclick="validarVideo()">🔍 Validar</button>
+        </div>
+      </div>
+      <div class="tool-body">
+        <div class="spec-ref">
+          <strong>📋 Specs In Video</strong>
+          <ul>
+            <li>Formatos: MOV, MP4, MPEG, MPG, AVI, WMV · Tamanho máx: <b>15 MB</b></li>
+            <li>Duração máx: <b>900s</b> · Bitrate Display HTML: 900–2400 kbps · VAST: 15–30 Mbps</li>
+            <li>Aspect Ratio: 16:9 ou 4:3 · Codec: H264, MPEG4, WMV</li>
+          </ul>
+        </div>
+
+        <div class="uz" id="dz-video" onclick="document.getElementById('fi-video').click()"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="onDrop(event,'video')">
+          <div class="icon">🎬</div>
+          <h3 id="dz-video-h3">Arraste o arquivo aqui</h3>
+          <p id="dz-video-p">ou clique · MOV, MP4, MPEG, MPG, AVI, WMV</p>
+          <input type="file" id="fi-video" accept="*/*" onchange="applyFile(this.files[0],'video')">
+        </div>
+
+<div class="ib" style="margin-top:14px">📎 Faça o upload do arquivo para preencher os campos automaticamente.</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Formato <span class="auto-tag">auto</span></label>
+            <select id="v-formato" disabled><option value="">Preenchido automaticamente via upload</option>
+              <option value="">Selecione…</option>
+              <option>MOV</option><option>MP4</option><option>MPEG</option>
+              <option>MPG</option><option>AVI</option><option>WMV</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Tamanho (MB) <span class="auto-tag">auto</span></label>
+            <input type="number" id="v-tamanho" placeholder="Preenchido automaticamente via upload" step="0.01" min="0" readonly>
+          </div>
+          <div class="field">
+            <label>Duração (s) <span class="auto-tag">auto</span></label>
+            <input type="number" id="v-duracao" placeholder="Preenchido automaticamente via upload" min="0" readonly>
+          </div>
+          <div class="field">
+            <label>Aspect Ratio <span class="auto-tag">auto</span></label>
+            <select id="v-ratio" disabled><option value="">Calculado automaticamente</option>
+              <option value="">Não informado</option>
+              <option>16:9</option><option>4:3</option><option>Outro</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Subtipo</label>
+            <select id="v-subtipo" onchange="toggleBitrateV()">
+              <option value="display">Display HTML in banner video</option>
+              <option value="vast">Video Creative for VAST</option>
+            </select>
+          </div>
+          <div class="field field-opt" id="fld-bkps">
+            <label>Bitrate
+              <span class="help-tip">?<span class="tip-box">Abra o arquivo no <b>MediaInfo</b> (gratuito) → aba Vídeo → campo <b>Bit rate</b>.<br><a href="https://mediaarea.net/en/MediaInfo" target="_blank">↗ Baixar MediaInfo</a></span></span>
+            </label>
+            <input type="number" id="v-bitrate-kbps" placeholder="ex: 1500 kbps" min="0">
+            <span class="hint">Válido: 900–2400 kbps · deixe vazio para pular</span>
+          </div>
+          <div class="field field-opt" id="fld-bmbps" style="display:none">
+            <label>Bitrate
+              <span class="help-tip">?<span class="tip-box">Abra o arquivo no <b>MediaInfo</b> → aba Vídeo → campo <b>Bit rate</b>.<br><a href="https://mediaarea.net/en/MediaInfo" target="_blank">↗ Baixar MediaInfo</a></span></span>
+            </label>
+            <input type="number" id="v-bitrate-mbps" placeholder="ex: 20 Mbps" step="0.1" min="0">
+            <span class="hint">Válido: 15–30 Mbps · deixe vazio para pular</span>
+          </div>
+          <div class="field field-opt">
+            <label>Codec
+              <span class="help-tip">?<span class="tip-box">Abra o arquivo no <b>MediaInfo</b> → aba Vídeo → campo <b>Format</b>.<br><a href="https://mediaarea.net/en/MediaInfo" target="_blank">↗ Baixar MediaInfo</a></span></span>
+            </label>
+            <select id="v-codec">
+              <option value="">Não informado — pular</option>
+              <option>H264</option><option>MPEG4</option><option>WMV</option><option>Outro</option>
+            </select>
+          </div>
+          <div class="field span2">
+            <label>Observações (log)</label>
+            <input type="text" id="v-obs" placeholder="Campanha, contexto, etc.">
+          </div>
+        </div>
+        <div id="res-video"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ IN DISPLAY ══ -->
+  <div class="page" id="page-display">
+    <div class="tool-card">
+      <div class="tool-hdr">
+        <div class="tool-ico">🖥️</div>
+        <div class="tool-meta">
+          <div class="tool-title">Display</div>
+          <div class="tool-desc">Valida specs de criativos de display HTML para Flashtalking</div>
+        </div>
+        <div class="tool-actions">
+          <button class="btn btn-g" onclick="clearDisplay()">Limpar</button>
+          <button class="btn btn-p" onclick="validarDisplay()">🔍 Validar</button>
+        </div>
+      </div>
+      <div class="tool-body">
+        <div class="spec-ref">
+          <strong>📋 Specs In Display</strong>
+          <ul>
+            <li>manifest.js obrigatório: file name, width, height, ClickTagCount, variáveis dinâmicas (≤50)</li>
+            <li>Tamanho máx total: <b>500 MB</b> · Standard Ad: <b>300 KB</b></li>
+          </ul>
+        </div>
+
+        <div class="uz" id="dz-display" onclick="document.getElementById('fi-display').click()"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="onDrop(event,'display')">
+          <div class="icon">🖥️</div>
+          <h3 id="dz-display-h3">Arraste o arquivo aqui</h3>
+          <p id="dz-display-p">ou clique · ZIP / HTML</p>
+          <input type="file" id="fi-display" accept="*/*" onchange="applyFile(this.files[0],'display')">
+        </div>
+
+<div class="ib" style="margin-top:14px">📎 Faça o upload do arquivo para preencher os campos automaticamente.</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Nome do arquivo <span class="auto-tag">auto</span></label>
+            <input type="text" id="d-nome" placeholder="Preenchido automaticamente via upload" readonly>
+          </div>
+          <div class="field">
+            <label>Tamanho total (MB) <span class="auto-tag">auto</span></label>
+            <input type="number" id="d-tamanho" placeholder="Preenchido automaticamente via upload" step="0.01" min="0" readonly>
+          </div>
+          <div class="field">
+            <label>Largura (px) <span class="auto-tag">auto</span></label>
+            <input type="number" id="d-width" placeholder="Calculado automaticamente" min="0" readonly>
+          </div>
+          <div class="field">
+            <label>Altura (px) <span class="auto-tag">auto</span></label>
+            <input type="number" id="d-height" placeholder="Calculado automaticamente" min="0" readonly>
+          </div>
+          <div class="field">
+            <label>Tipo de Ad</label>
+            <select id="d-tipo">
+              <option value="standard">Standard Ad (300 KB)</option>
+              <option value="rich">Rich Media / outros</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>manifest.js <span class="auto-tag">auto se ZIP</span>
+              <span class="help-tip">?<span class="tip-box">Se o pacote for um <b>ZIP</b>, o manifest.js é lido automaticamente. Se for imagem/HTML solto, confirme se o manifest está incluso no pacote que será enviado ao Flashtalking.</span></span>
+            </label>
+            <select id="d-manifest">
+              <option value="sim">Sim — incluso</option>
+              <option value="nao">Não</option>
+              <option value="nao-sei">Não tenho certeza</option>
+            </select>
+          </div>
+          <div class="field field-opt">
+            <label>ClickTagCount
+              <span class="help-tip">?<span class="tip-box">Número de cliques rastreáveis no criativo. Encontrado no <b>manifest.js</b> ou informado pelo desenvolvedor do banner.<br>Deixe vazio para pular.</span></span>
+            </label>
+            <input type="number" id="d-clicktag" placeholder="ex: 1" min="0" step="1">
+            <span class="hint">Deixe vazio para pular</span>
+          </div>
+          <div class="field field-opt">
+            <label>Variáveis dinâmicas
+              <span class="help-tip">?<span class="tip-box">Qtde de variáveis instant ad / dinâmicas declaradas no manifest.js. Máximo permitido: <b>50</b>.<br>Deixe vazio para pular.</span></span>
+            </label>
+            <input type="number" id="d-variaveis" placeholder="ex: 5" min="0" step="1">
+            <span class="hint">Limite: 50 · deixe vazio para pular</span>
+          </div>
+          <div class="field span2">
+            <label>Observações (log)</label>
+            <input type="text" id="d-obs" placeholder="Campanha, contexto, etc.">
+          </div>
+        </div>
+        <div id="res-display"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ IN AUDIO ══ -->
+  <div class="page active" id="page-audio">
+    <div class="tool-card">
+      <div class="tool-hdr">
+        <div class="tool-ico">🎵</div>
+        <div class="tool-meta">
+          <div class="tool-title">Audio</div>
+          <div class="tool-desc">Valida specs de criativos de áudio para Flashtalking</div>
+        </div>
+        <div class="tool-actions">
+          <button class="btn btn-g" onclick="clearAudio()">Limpar</button>
+          <button class="btn btn-p" onclick="validarAudio()">🔍 Validar</button>
+        </div>
+      </div>
+      <div class="tool-body">
+        <div class="spec-ref">
+          <strong>📋 Specs In Audio</strong>
+          <ul>
+            <li>Formatos: MP3, OGG, M4A, AAC · Duração mínima: 1s · Tamanho máx: <b>100 MB</b></li>
+            <li>Bitrate: ≥192 Kbps · Sample Rate: ≥44.1 kHz · Loudness: -16 LUFS (±1.5) · TPL ≤ -2.0 dB</li>
+            <li>VAST Support: VAST 2.0, VAST 4.1</li>
+          </ul>
+        </div>
+
+        <div class="uz" id="dz-audio" onclick="document.getElementById('fi-audio').click()"
+          ondragover="event.preventDefault();this.classList.add('drag')"
+          ondragleave="this.classList.remove('drag')"
+          ondrop="onDrop(event,'audio')">
+          <div class="icon">🎵</div>
+          <h3 id="dz-audio-h3">Arraste o arquivo aqui</h3>
+          <p id="dz-audio-p">ou clique · MP3, OGG, M4A, AAC</p>
+          <input type="file" id="fi-audio" accept="*/*" onchange="applyFile(this.files[0],'audio')">
+        </div>
+
+<div class="ib" style="margin-top:14px">📎 Faça o upload do arquivo para preencher os campos automaticamente.</div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Formato <span class="auto-tag">auto</span></label>
+            <select id="a-formato" disabled><option value="">Preenchido automaticamente via upload</option>
+              <option value="">Selecione…</option>
+              <option>MP3</option><option>OGG</option><option>M4A</option><option>AAC</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Tamanho (MB) <span class="auto-tag">auto</span></label>
+            <input type="number" id="a-tamanho" placeholder="Preenchido automaticamente via upload" step="0.01" min="0" readonly>
+          </div>
+          <div class="field">
+            <label>Duração (s) <span class="auto-tag">auto</span></label>
+            <input type="number" id="a-duracao" placeholder="Preenchido automaticamente via upload" min="0" readonly>
+          </div>
+          <div class="field field-opt">
+            <label>Bitrate (Kbps)
+              <span class="help-tip">?<span class="tip-box">Abra o arquivo no <b>MediaInfo</b> → aba Áudio → campo <b>Bit rate</b>.<br>Mínimo exigido: <b>192 Kbps</b>.<br><a href="https://mediaarea.net/en/MediaInfo" target="_blank">↗ Baixar MediaInfo</a></span></span>
+            </label>
+            <input type="number" id="a-bitrate" placeholder="ex: 256" min="0">
+            <span class="hint">Mínimo: 192 Kbps · deixe vazio para pular</span>
+          </div>
+          <div class="field field-opt">
+            <label>Sample Rate (kHz)
+              <span class="help-tip">?<span class="tip-box">Abra o arquivo no <b>MediaInfo</b> → aba Áudio → campo <b>Sampling rate</b>.<br>Mínimo exigido: <b>44.1 kHz</b>.<br><a href="https://mediaarea.net/en/MediaInfo" target="_blank">↗ Baixar MediaInfo</a></span></span>
+            </label>
+            <input type="number" id="a-samplerate" placeholder="ex: 44.1" step="0.1" min="0">
+            <span class="hint">Mínimo: 44.1 kHz · deixe vazio para pular</span>
+          </div>
+          <div class="field field-opt">
+            <label>Loudness (LUFS)
+              <span class="help-tip">?<span class="tip-box">Use <b>Adobe Audition</b> (Match Loudness) ou <b>iZotope RX</b> para medir.<br>Alvo: <b>-16 LUFS ±1.5</b>.<br>Alternativa gratuita: <b>ffmpeg -af loudnorm</b>.</span></span>
+            </label>
+            <input type="number" id="a-lufs" placeholder="ex: -16" step="0.1">
+            <span class="hint">Alvo: -16 ±1.5 LUFS · deixe vazio para pular</span>
+          </div>
+          <div class="field field-opt">
+            <label>TPL — True Peak (dB)
+              <span class="help-tip">?<span class="tip-box">Use <b>Adobe Audition</b> (Amplitude Statistics) ou <b>iZotope RX</b>.<br>Máximo permitido: <b>-2.0 dB</b>.<br>Alternativa gratuita: <b>ffmpeg -af astat</b>.</span></span>
+            </label>
+            <input type="number" id="a-tpl" placeholder="ex: -2.5" step="0.1">
+            <span class="hint">Máximo: -2.0 dB · deixe vazio para pular</span>
+          </div>
+          <div class="field field-opt">
+            <label>VAST Version
+              <span class="help-tip">?<span class="tip-box">Versão do VAST tag definida no documento de especificação técnica da campanha ou informada pelo AdServer.</span></span>
+            </label>
+            <select id="a-vast">
+              <option value="">Não informado — pular</option>
+              <option>VAST 2.0</option><option>VAST 4.1</option><option>Outro</option>
+            </select>
+          </div>
+          <div class="field span2">
+            <label>Observações (log)</label>
+            <input type="text" id="a-obs" placeholder="Campanha, contexto, etc.">
+          </div>
+        </div>
+        <div id="res-audio"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── HISTÓRICO ── -->
+  <div class="page" id="panel-hist">
+    <div class="tool-card">
+      <div class="tool-hdr">
+        <div class="tool-ico">📋</div>
+        <div class="tool-meta">
+          <div class="tool-title">Histórico</div>
+          <div class="tool-desc">Últimas validações registradas no log</div>
+        </div>
+      </div>
+      <div class="tool-body">
+        <div id="hist-content">
+          <div class="es"><div style="font-size:32px">📋</div><p>Nenhuma validação registrada ainda.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- /main -->
+
+
+<!-- ── MODAL EXCEÇÃO (padrão F3) ── -->
+<div id="exc-modal-bg" style="display:none;position:fixed;inset:0;background:rgba(10,15,50,.55);backdrop-filter:blur(2px);z-index:2000;align-items:center;justify-content:center;padding:20px" onclick="if(event.target===this)fecharModalExc()">
+  <div style="background:#fff;border-radius:12px;width:520px;max-width:95vw;max-height:90vh;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.2)">
+    <div style="background:#0F1B6E;padding:14px 20px;border-radius:12px 12px 0 0;display:flex;align-items:center;gap:8px">
+      <span style="font-size:13px;font-weight:600;color:#fff">⚠️ Solicitar Exceção</span>
+    </div>
+    <div style="padding:20px">
+      <!-- Ad Name readonly -->
+      <div style="margin-bottom:12px">
+        <label style="font-size:10px;font-weight:700;color:var(--g700);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">Arquivo / Criativo</label>
+        <div id="exc-adname-display" style="font-family:var(--mo);font-size:11px;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:8px 10px;word-break:break-all;color:var(--g900)">—</div>
+      </div>
+      <!-- Tipo + Plataforma -->
+      <div style="display:flex;gap:10px;margin-bottom:12px">
+        <div style="flex:1">
+          <label style="font-size:10px;font-weight:700;color:var(--g700);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">Tipo</label>
+          <div id="exc-tipo-display" style="font-size:12px;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:8px 10px">—</div>
+        </div>
+        <div style="flex:1">
+          <label style="font-size:10px;font-weight:700;color:var(--g700);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">Plataforma</label>
+          <div style="font-size:12px;background:var(--g50);border:1px solid var(--g200);border-radius:6px;padding:8px 10px">Flashtalking</div>
+        </div>
+      </div>
+      <!-- Motivo -->
+      <div style="margin-bottom:12px">
+        <label style="font-size:10px;font-weight:700;color:var(--g700);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">Motivo <span style="color:var(--err)">*</span></label>
+        <select id="exc-motivo" style="width:100%;padding:8px 10px;border:1px solid var(--g300);border-radius:6px;font-family:var(--fn);font-size:12.5px;background:#fff">
+          <option value="">— Selecione —</option>
+          <option>Acordo com gerência</option>
+          <option>Criativo não será utilizado</option>
+          <option>Exceção de cliente aprovada</option>
+          <option>Limitação técnica da plataforma</option>
+          <option>Nomenclatura legada (manter)</option>
+          <option>Padrão de time externo</option>
+        </select>
+      </div>
+      <!-- Email do cliente -->
+      <div style="margin-bottom:8px">
+        <label style="font-size:10px;font-weight:700;color:var(--g700);text-transform:uppercase;letter-spacing:.04em;display:block;margin-bottom:4px">Origem (E-mail do cliente)</label>
+        <p style="font-size:10px;color:var(--g500);margin-bottom:6px">Cole o cabeçalho do e-mail — data, hora e remetente serão preenchidos automaticamente.</p>
+        <textarea id="exc-raw-email" rows="2" placeholder="Ex: João Silva (Agência)&#10;4 de mai. de 2026, 16:05" oninput="parseEmailHeaderExc()" style="width:100%;padding:8px 10px;border:1px solid var(--g300);border-radius:6px;font-family:var(--fn);font-size:12px;resize:none;outline:none"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:10px">
+        <div style="flex:1">
+          <label style="font-size:10px;color:var(--g500);display:block;margin-bottom:3px">Data</label>
+          <input type="date" id="exc-data-email" style="width:100%;padding:7px 10px;border:1px solid var(--g300);border-radius:6px;font-size:12px;outline:none">
+        </div>
+        <div style="flex:1">
+          <label style="font-size:10px;color:var(--g500);display:block;margin-bottom:3px">Hora</label>
+          <input type="time" id="exc-hora-email" style="width:100%;padding:7px 10px;border:1px solid var(--g300);border-radius:6px;font-size:12px;outline:none">
+        </div>
+        <div style="flex:2">
+          <label style="font-size:10px;color:var(--g500);display:block;margin-bottom:3px">Remetente</label>
+          <input type="text" id="exc-remetente" placeholder="nome@empresa.com" style="width:100%;padding:7px 10px;border:1px solid var(--g300);border-radius:6px;font-size:12px;outline:none">
+        </div>
+      </div>
+      <div style="margin-bottom:16px">
+        <label style="font-size:10px;color:var(--g500);display:block;margin-bottom:3px">Assunto</label>
+        <input type="text" id="exc-assunto" placeholder="Assunto do e-mail" style="width:100%;padding:7px 10px;border:1px solid var(--g300);border-radius:6px;font-size:12px;outline:none">
+      </div>
+      <!-- Erro inline -->
+      <div id="exc-modal-err" style="display:none;background:var(--err-b);border:1px solid #f5c6c2;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:var(--err);font-weight:500"></div>
+      <!-- Botões -->
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button class="btn btn-g" onclick="fecharModalExc()">Cancelar</button>
+        <button class="btn btn-p" onclick="enviarExcecaoF3()">Enviar Solicitação</button>
+      </div>
+    </div>
+  </div>
+</div>
+<input type="hidden" id="exc-tipo">
+<input type="hidden" id="exc-dados">
+
+<!-- ── BULLET ABA ERRADA ── -->
+<div class="bullet-overlay" id="bullet-aba-errada">
+  <div class="bullet-box">
+    <div class="bullet-icon">⚠️</div>
+    <div class="bullet-title" id="bullet-title">Arquivo na aba errada</div>
+    <div class="bullet-desc" id="bullet-desc">Este arquivo parece ser de outra aba.</div>
+    <div class="bullet-sub" id="bullet-sub">Deseja mover para a aba correta e validar automaticamente?</div>
+    <div class="bullet-btns">
+      <button class="bullet-btn-ok" id="bullet-btn-ok">Sim, mover e validar</button>
+      <button class="bullet-btn-cancel" onclick="fecharBulletAba()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════════════════════════════
+   CONFIG — substituir BACKEND_URL após implantar como Web App
+   ═══════════════════════════════════════════════════════════════════ */
+const BACKEND_URL = 'https://script.google.com/macros/s/AKfycbym0772425DQEUrNQn9TZc6C-wdRuqU1_erQVSoWzV-MEBbyCN4DOfJkaSd90cdVZHjSA/exec';
+const LOG_SHEET   = 'LOG_FLASHTALKING';
+
+/* ─── ESTADO ─── */
+var userPerfil   = null;
+var excecoesList = [];
+
+/* ─── INIT ─── */
+window.addEventListener('load', function(){ init(); });
+
+function init(){
+  setSbStatus('loading','Conectando…');
+  loadUserPerfil().then(function(){
+    return loadExcecoes();
+  }).then(function(){
+    setSbStatus('ok','Online · Log ativo');
+  }).catch(function(){
+    setSbStatus('err','Offline — validação local');
+  });
+}
+
+/* ─── NAVEGAÇÃO ─── */
+function goTo(id, title, btn){
+  /* Limpar aba anterior antes de trocar */
+  var _clearMap = {
+    'video':   clearVideo,
+    'display': clearDisplay,
+    'audio':   clearAudio
+  };
+  ['video','display','audio'].forEach(function(t){
+    var pg = document.getElementById('page-'+t);
+    if(pg && pg.classList.contains('active') && t !== id){
+      if(_clearMap[t]) _clearMap[t]();
+    }
+  });
+
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  document.querySelectorAll('.mb').forEach(function(b){ b.classList.remove('active'); });
+
+  var pg = document.getElementById(id === 'hist' ? 'panel-hist' : 'page-'+id);
+  if(pg) pg.classList.add('active');
+  if(id === 'hist') loadHistMain();
+
+  if(btn) btn.classList.add('active');
+  document.getElementById('tb-title').textContent = title;
+  var tba = document.getElementById('tb-actions');
+  if(tba) tba.innerHTML = '';
+}
+
+/* ─── STATUS SIDEBAR ─── */
+function setSbStatus(cls, txt){
+  var el = document.getElementById('sb-status');
+  el.className = 'sb-status '+cls;
+  document.getElementById('sb-status-txt').textContent = txt;
+}
+
+/* ─── DRAG & DROP ─── */
+function onDrop(e, tipo){
+  e.preventDefault();
+  document.getElementById('dz-'+tipo).classList.remove('drag');
+  var f = e.dataTransfer.files[0];
+  if(f) applyFile(f, tipo);
+}
+
+/* ─── DETECÇÃO DE TIPO ERRADO ─── */
+var TIPOS_EXT = {
+  video:   ['MOV','MP4','MPEG','MPG','AVI','WMV','MKV','FLV','WEBM','M4V'],
+  audio:   ['MP3','OGG','M4A','AAC','WAV','FLAC','WMA','AIFF'],
+  display: ['ZIP','HTML','HTM','JPG','JPEG','PNG','GIF','WEBP','SVG']
+};
+var TIPO_LABEL = {video:'Video',audio:'Audio',display:'Display'};
+
+function _detectarAbaErrada(ext, tipoAtual){
+  var outros = ['video','audio','display'].filter(function(t){ return t !== tipoAtual; });
+  for(var i=0;i<outros.length;i++){
+    if(TIPOS_EXT[outros[i]].includes(ext)) return outros[i];
+  }
+  return null;
+}
+
+/* ─── LEITURA DE ARQUIVO ─── */
+function applyFile(file, tipo){
+  if(!file) return;
+  var sizeMB = (file.size/(1024*1024)).toFixed(2);
+  var ext    = file.name.split('.').pop().toUpperCase();
+  var dz     = document.getElementById('dz-'+tipo);
+  dz.classList.add('loaded');
+  document.getElementById('dz-'+tipo+'-h3').textContent = file.name;
+  document.getElementById('dz-'+tipo+'-p').textContent  = sizeMB+' MB · lendo metadados…';
+
+  /* Bullet de confirmação se arquivo parece ser de outra aba */
+  var abaErrada = _detectarAbaErrada(ext, tipo);
+  if(abaErrada){
+    _abrirBulletAbaErrada(file, sizeMB, ext, tipo, abaErrada);
+    resetDz(tipo,
+      'Arraste o arquivo aqui',
+      tipo==='video'?'ou clique · Video':tipo==='audio'?'ou clique · Audio':'ou clique · Display');
+    return;
+  }
+
+  if(tipo==='video')         applyVideo(file, sizeMB, ext);
+  else if(tipo==='display')  applyDisplay(file, sizeMB, ext);
+  else if(tipo==='audio')    applyAudio(file, sizeMB, ext);
+}
+
+function _abrirBulletAbaErrada(file, sizeMB, ext, tipoOrigem, tipoDestino){
+  var old = document.getElementById('bullet-dyn');
+  if(old) old.remove();
+  var html =
+    '<div class="bullet-overlay" id="bullet-dyn">' +
+      '<div class="bullet-box">' +
+        '<div class="bullet-icon">⚠️</div>' +
+        '<div class="bullet-title">Arquivo na aba errada</div>' +
+        '<div class="bullet-desc">' +
+          'Este arquivo parece ser de <strong>' + TIPO_LABEL[tipoDestino] + '</strong>' +
+          ', mas você está na aba <strong style="color:var(--err)">' + TIPO_LABEL[tipoOrigem] + '</strong>.' +
+          '<br><br>Deseja mover para a aba correta e validar automaticamente?' +
+        '</div>' +
+        '<div class="bullet-btns">' +
+          '<button class="btn btn-p" id="bullet-dyn-sim">Sim, mover e validar</button>' +
+          '<button class="btn btn-g" id="bullet-dyn-nao">Cancelar</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  document.body.insertAdjacentHTML('beforeend', html);
+  document.getElementById('bullet-dyn').classList.add('open');
+
+  document.getElementById('bullet-dyn-sim').addEventListener('click', function(){
+    document.getElementById('bullet-dyn').remove();
+    var clearMap = {video:clearVideo, display:clearDisplay, audio:clearAudio};
+    if(clearMap[tipoOrigem]) clearMap[tipoOrigem]();
+    var navBtn = document.getElementById('nav-' + tipoDestino);
+    goTo(tipoDestino, TIPO_LABEL[tipoDestino], navBtn);
+    var dz2 = document.getElementById('dz-' + tipoDestino);
+    if(dz2){
+      dz2.classList.add('loaded');
+      document.getElementById('dz-' + tipoDestino + '-h3').textContent = file.name;
+      document.getElementById('dz-' + tipoDestino + '-p').textContent  = sizeMB + ' MB · lendo metadados…';
+    }
+    if(tipoDestino==='video')         applyVideo(file, sizeMB, ext);
+    else if(tipoDestino==='display')  applyDisplay(file, sizeMB, ext);
+    else if(tipoDestino==='audio')    applyAudio(file, sizeMB, ext);
+    setTimeout(function(){
+      var btnVal = document.querySelector('#page-' + tipoDestino + ' button.btn-p');
+      if(btnVal) btnVal.click();
+    }, 800);
+  });
+
+  document.getElementById('bullet-dyn-nao').addEventListener('click', function(){
+    document.getElementById('bullet-dyn').remove();
+  });
+}
+
+function fecharBulletAba(){
+  document.getElementById('bullet-aba-errada').classList.remove('open');
+  window._pendingFile = null;
+}
+
+function _moverEValidar(){
+  fecharBulletAba();
+  var pf = window._pendingFile;
+  if(!pf) return;
+  /* Navegar para a aba correta */
+  var btnMap = {video:'nav-video', audio:'nav-audio', display:'nav-display'};
+  var titleMap = {video:'Video', audio:'Audio', display:'Display'};
+  var btn = document.getElementById(btnMap[pf.tipoDestino]);
+  goTo(pf.tipoDestino, titleMap[pf.tipoDestino], btn);
+  /* Aplicar arquivo na aba correta */
+  setTimeout(function(){
+    applyFile(pf.file, pf.tipoDestino);
+    /* Auto-validar após metadados carregarem */
+    setTimeout(function(){
+      if(pf.tipoDestino==='video')        validarVideo();
+      else if(pf.tipoDestino==='display') validarDisplay();
+      else if(pf.tipoDestino==='audio')   validarAudio();
+    }, 800);
+  }, 100);
+}
+
+/* ─── AUTO-FILL: VÍDEO ─── */
+// Lê: formato, tamanho, duração (via <video>), largura, altura, aspect ratio
+function applyVideo(file, sizeMB, ext){
+  var fv=['MOV','MP4','MPEG','MPG','AVI','WMV'];
+  document.getElementById('v-tamanho').value = sizeMB;
+  /* Mostrar formato real — mesmo que não aceito, para o erro aparecer */
+  var selFmt = document.getElementById('v-formato');
+  if(fv.includes(ext)){
+    selFmt.value = ext;
+  } else {
+    /* Formato não listado — adicionar opção temporária para mostrar o erro */
+    var optTmp = document.createElement('option');
+    optTmp.value = ext; optTmp.textContent = ext;
+    optTmp.setAttribute('data-tmp','1');
+    selFmt.appendChild(optTmp);
+    selFmt.value = ext;
+  }
+
+  var url = URL.createObjectURL(file);
+  var vid = document.createElement('video');
+  vid.preload = 'metadata';
+  vid.onloadedmetadata = function(){
+    URL.revokeObjectURL(url);
+    // Duração
+    if(vid.duration && isFinite(vid.duration)){
+      document.getElementById('v-duracao').value = Math.round(vid.duration);
+    }
+    // Dimensões → aspect ratio automático
+    var w = vid.videoWidth, h = vid.videoHeight;
+    if(w && h){
+      var ratio = calcRatio(w, h);
+      if(ratio) document.getElementById('v-ratio').value = ratio;
+    }
+    // Atualiza label da dropzone
+    var dur = vid.duration && isFinite(vid.duration) ? Math.round(vid.duration)+'s' : '';
+    var dim = w && h ? w+'×'+h : '';
+    document.getElementById('dz-video-p').textContent =
+      [sizeMB+' MB', dur, dim].filter(Boolean).join(' · ');
+    showAutoFillBadge('video', ['Formato','Tamanho','Duração','Dimensões','Aspect Ratio'].filter(function(f,i){
+      return [!!document.getElementById('v-formato').value, true, !!vid.duration, !!(w&&h), !!ratio][i];
+    }));
+  };
+  vid.onerror = function(){
+    URL.revokeObjectURL(url);
+    document.getElementById('dz-video-p').textContent = sizeMB+' MB · não foi possível ler metadados';
+  };
+  vid.src = url;
+}
+
+/* ─── AUTO-FILL: DISPLAY ─── */
+// Lê: nome, tamanho, dimensões (imagem real ou regex no nome), manifest.js (ZIP)
+var FMTS_DISPLAY_OK = ['ZIP','HTML','HTM','JPG','JPEG','PNG','GIF','WEBP','SVG'];
+
+function applyDisplay(file, sizeMB, ext){
+  document.getElementById('d-tamanho').value = sizeMB;
+  document.getElementById('d-nome').value    = file.name;
+  /* Guardar extensão para validação posterior */
+  document.getElementById('d-nome').setAttribute('data-ext', ext);
+
+  var filled = ['Nome','Tamanho'];
+
+  // Imagem → lê dimensões reais
+  var imgExts = ['JPG','JPEG','PNG','GIF','WEBP','SVG'];
+  if(imgExts.includes(ext)){
+    var url = URL.createObjectURL(file);
+    var img = new Image();
+    img.onload = function(){
+      URL.revokeObjectURL(url);
+      document.getElementById('d-width').value  = img.naturalWidth;
+      document.getElementById('d-height').value = img.naturalHeight;
+      filled.push('Largura','Altura');
+      document.getElementById('dz-display-p').textContent =
+        sizeMB+' MB · '+img.naturalWidth+'×'+img.naturalHeight+'px';
+      showAutoFillBadge('display', filled);
+    };
+    img.onerror = function(){
+      URL.revokeObjectURL(url);
+      tryDimsFromName(file.name, filled);
+    };
+    img.src = url;
+    return;
+  }
+
+  // ZIP → tenta ler manifest.js
+  if(ext==='ZIP' && window.JSZip){
+    JSZip.loadAsync(file).then(function(zip){
+      var mf = zip.file(/manifest\.js$/i)[0];
+      if(mf){
+        return mf.async('string').then(function(txt){
+          parseManifest(txt, filled);
+          filled.push('manifest.js');
+          showAutoFillBadge('display', filled);
+        });
+      } else {
+        document.getElementById('d-manifest').value='nao';
+        tryDimsFromName(file.name, filled);
+      }
+    }).catch(function(){ tryDimsFromName(file.name, filled); });
+    return;
+  }
+
+  // Fallback: extrai dimensões do nome do arquivo
+  tryDimsFromName(file.name, filled);
+}
+
+function tryDimsFromName(name, filled){
+  var m = name.match(/[_\-\s](\d{2,4})[xX×](\d{2,4})/);
+  if(m){
+    document.getElementById('d-width').value  = m[1];
+    document.getElementById('d-height').value = m[2];
+    filled.push('Largura (nome)','Altura (nome)');
+    document.getElementById('dz-display-p').textContent =
+      document.getElementById('d-tamanho').value+' MB · '+m[1]+'×'+m[2]+'px (do nome)';
+  } else {
+    document.getElementById('dz-display-p').textContent =
+      document.getElementById('d-tamanho').value+' MB';
+  }
+  showAutoFillBadge('display', filled);
+}
+
+function parseManifest(txt, filled){
+  var w = txt.match(/width\s*[:=]\s*['""]?(\d+)/i);
+  var h = txt.match(/height\s*[:=]\s*['""]?(\d+)/i);
+  var ct= txt.match(/ClickTagCount\s*[:=]\s*['""]?(\d+)/i);
+  if(w){ document.getElementById('d-width').value=w[1]; filled.push('Largura'); }
+  if(h){ document.getElementById('d-height').value=h[1]; filled.push('Altura'); }
+  if(ct){ document.getElementById('d-clicktag').value=ct[1]; filled.push('ClickTagCount'); }
+  document.getElementById('d-manifest').value='sim';
+  document.getElementById('dz-display-p').textContent =
+    document.getElementById('d-tamanho').value+' MB · manifest.js lido ✓';
+}
+
+/* ─── AUTO-FILL: ÁUDIO ─── */
+// Lê: formato, tamanho, duração (via <audio>)
+function applyAudio(file, sizeMB, ext){
+  var fa=['MP3','OGG','M4A','AAC'];
+  document.getElementById('a-tamanho').value = sizeMB;
+  var selFmtA = document.getElementById('a-formato');
+  if(fa.includes(ext)){
+    selFmtA.value = ext;
+  } else {
+    var optTmpA = document.createElement('option');
+    optTmpA.value = ext; optTmpA.textContent = ext;
+    optTmpA.setAttribute('data-tmp','1');
+    selFmtA.appendChild(optTmpA);
+    selFmtA.value = ext;
+  }
+
+  var url = URL.createObjectURL(file);
+  var aud = document.createElement('audio');
+  aud.preload = 'metadata';
+  aud.onloadedmetadata = function(){
+    URL.revokeObjectURL(url);
+    if(aud.duration && isFinite(aud.duration)){
+      document.getElementById('a-duracao').value = Math.round(aud.duration);
+    }
+    var dur = aud.duration && isFinite(aud.duration) ? Math.round(aud.duration)+'s' : '';
+    document.getElementById('dz-audio-p').textContent =
+      [sizeMB+' MB', dur].filter(Boolean).join(' · ');
+    showAutoFillBadge('audio', ['Formato','Tamanho','Duração'].filter(function(f,i){
+      return [!!document.getElementById('a-formato').value, true, !!aud.duration][i];
+    }));
+  };
+  aud.onerror = function(){
+    URL.revokeObjectURL(url);
+    document.getElementById('dz-audio-p').textContent = sizeMB+' MB · não foi possível ler duração';
+  };
+  aud.src = url;
+}
+
+/* ─── HELPERS ─── */
+function calcRatio(w, h){
+  var r = w/h;
+  if(Math.abs(r - 16/9) < 0.05) return '16:9';
+  if(Math.abs(r - 4/3)  < 0.05) return '4:3';
+  return '';
+}
+
+function showAutoFillBadge(tipo, fields){
+  var dz = document.getElementById('dz-'+tipo);
+  var old = dz.querySelector('.autofill-badge');
+  if(old) old.remove();
+  if(!fields.length) return;
+  var b = document.createElement('div');
+  b.className = 'autofill-badge';
+  b.style.cssText = 'margin-top:8px;font-size:10px;color:var(--ok);font-weight:600;letter-spacing:.02em';
+  b.textContent = '✅ Auto-preenchido: '+fields.join(', ');
+  dz.appendChild(b);
+}
+
+/* ─── TOGGLE BITRATE VIDEO ─── */
+function toggleBitrateV(){
+  var v = document.getElementById('v-subtipo').value;
+  document.getElementById('fld-bkps').style.display  = v==='display'?'':'none';
+  document.getElementById('fld-bmbps').style.display = v==='vast'?'':'none';
+}
+
+/* ─── RENDER RESULTADO ─── */
+function renderRes(containerId, checks, tipo, dados){
+  var erros  = checks.filter(function(c){return c.s==='err';}).length;
+  var avisos = checks.filter(function(c){return c.s==='warn';}).length;
+  var cls,icon,txt;
+  if(erros>0){cls='reprovado';icon='❌';txt='Reprovado — '+erros+' erro'+(erros>1?'s':'')+' encontrado'+(erros>1?'s':'');}
+  else if(avisos>0){cls='aviso';icon='⚠️';txt='Aprovado com '+(avisos>1?avisos+' avisos':'aviso');}
+  else{cls='aprovado';icon='✅';txt='Aprovado — todos os critérios atendidos';}
+  var icons={ok:'✅',err:'❌',warn:'⚠️',skip:'—'};
+
+  /* ── Separar e ordenar ──
+     Obrigatórios: ok primeiro, err por último
+     Opcionais: com valor (warn) antes de vazios (skip), ambos em ordem alfabética */
+  var obrigOk  = checks.filter(function(ch){return ch.s==='ok';});
+  var obrigErr = checks.filter(function(ch){return ch.s==='err';});
+  var opcWarn  = checks.filter(function(ch){return ch.s==='warn';}).sort(function(a,b){return a.l.localeCompare(b.l);});
+  var opcSkip  = checks.filter(function(ch){return ch.s==='skip';}).sort(function(a,b){return a.l.localeCompare(b.l);});
+
+  function mkItem(ch){
+    return '<div class="check-item '+ch.s+'"><span class="check-icon">'+icons[ch.s]+'</span><div class="check-text"><strong>'+ch.l+'</strong><span>'+ch.m+'</span></div></div>';
+  }
+
+  var obrigItems = obrigOk.concat(obrigErr);
+  var opcItems   = opcWarn.concat(opcSkip);
+
+  var items='';
+  if(obrigItems.length){
+    items+='<div class="check-sec-lbl">Obrigatórios</div>'+obrigItems.map(mkItem).join('');
+  }
+  if(opcItems.length){
+    /* Bullets de navegação antes da seção opcionais */
+    var bullets=opcItems.map(function(ch){
+      var color=ch.s==='warn'?'var(--warn)':ch.s==='skip'?'var(--g300)':'var(--g500)';
+      return '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:'+color+';margin:0 2px;vertical-align:middle;cursor:default" title="'+ch.l+'"></span>';
+    }).join('');
+    items+='<div class="check-sec-lbl">Opcionais <span style="margin-left:6px;vertical-align:middle">'+bullets+'</span></div>'+opcItems.map(mkItem).join('');
+  }
+
+  /* Botão exceção via addEventListener */
+  var excBtnId='exc-btn-'+containerId;
+  var excBtn='';
+  if(erros>0){
+    excBtn='<div style="margin-top:12px"><button id="'+excBtnId+'" class="btn btn-g" style="width:100%;justify-content:center;color:var(--warn);border-color:var(--warn)">⚠️ Solicitar Exceção</button></div>';
+  }
+
+  /* Info cópia ANTES do resultado */
+  var infoBox = _buildInfoCopia(tipo, dados);
+  var infoHtml = infoBox ? infoBox : '';
+
+  document.getElementById(containerId).innerHTML=
+    infoHtml+
+    '<div class="result-hdr '+cls+'">'+icon+' '+txt+'</div>'+
+    '<div class="check-list">'+items+'</div>'+excBtn;
+
+  if(erros>0){
+    var excBtnEl=document.getElementById(excBtnId);
+    if(excBtnEl){
+      (function(t,d){ excBtnEl.addEventListener('click',function(){ abrirModalExcF3(t,encodeURIComponent(JSON.stringify(d))); }); })(tipo,dados);
+    }
+  }
+
+  saveLog(tipo, checks, dados);
+
+
+}
+
+/* ─── VALIDAÇÃO: VIDEO ─── */
+function validarVideo(){
+  var f=document.getElementById('v-formato').value;
+  var t=parseFloat(document.getElementById('v-tamanho').value);
+  var d=parseFloat(document.getElementById('v-duracao').value);
+  var st=document.getElementById('v-subtipo').value;
+  var bk=parseFloat(document.getElementById('v-bitrate-kbps').value);
+  var bm=parseFloat(document.getElementById('v-bitrate-mbps').value);
+  var r=document.getElementById('v-ratio').value;
+  var c=document.getElementById('v-codec').value;
+  var obs=document.getElementById('v-obs').value;
+  var OK=['MOV','MP4','MPEG','MPG','AVI','WMV'];
+  var ch=[];
+  if(!f) ch.push({s:'err',l:'Formato',m:'Selecione o formato.'});
+  else ch.push(OK.includes(f)?{s:'ok',l:'Formato',m:f+' — aceito ✓'}:{s:'err',l:'Formato',m:f+' — não aceito (MOV, MP4, MPEG, MPG, AVI, WMV)'});
+  if(isNaN(t)) ch.push({s:'err',l:'Tamanho',m:'Informe o tamanho em MB.'});
+  else ch.push(t<=15?{s:'ok',l:'Tamanho',m:t+' MB ≤ 15 MB ✓'}:{s:'err',l:'Tamanho',m:t+' MB — excede 15 MB'});
+  if(isNaN(d)) ch.push({s:'err',l:'Duração',m:'Informe a duração.'});
+  else ch.push(d<=900?{s:'ok',l:'Duração',m:d+'s ≤ 900s ✓'}:{s:'err',l:'Duração',m:d+'s — excede 900s'});
+  if(st==='display'){
+    if(!isNaN(bk)&&bk>0) ch.push(bk>=900&&bk<=2400?{s:'ok',l:'Bitrate Display',m:bk+' kbps ✓'}:{s:'err',l:'Bitrate Display',m:bk+' kbps — fora de 900–2400 kbps'});
+    else ch.push({s:'skip',l:'Bitrate Display',m:'Não informado'});
+  } else {
+    if(!isNaN(bm)&&bm>0) ch.push(bm>=15&&bm<=30?{s:'ok',l:'Bitrate VAST',m:bm+' Mbps ✓'}:{s:'err',l:'Bitrate VAST',m:bm+' Mbps — fora de 15–30 Mbps'});
+    else ch.push({s:'skip',l:'Bitrate VAST',m:'Não informado'});
+  }
+  if(!r) ch.push({s:'skip',l:'Aspect Ratio',m:'Não informado'});
+  else ch.push(['16:9','4:3'].includes(r)?{s:'ok',l:'Aspect Ratio',m:r+' ✓'}:{s:'err',l:'Aspect Ratio',m:r+' — use 16:9 ou 4:3'});
+  if(!c) ch.push({s:'skip',l:'Codec',m:'Não informado'});
+  else ch.push(['H264','MPEG4','WMV'].includes(c)?{s:'ok',l:'Codec',m:c+' ✓'}:{s:'err',l:'Codec',m:c+' — use H264, MPEG4 ou WMV'});
+  renderRes('res-video',ch,'video',{f,t,d,st,bk,bm,r,c,obs});
+}
+
+/* ─── VALIDAÇÃO: DISPLAY ─── */
+function validarDisplay(){
+  var n=document.getElementById('d-nome').value.trim();
+  var t=parseFloat(document.getElementById('d-tamanho').value);
+  var w=parseInt(document.getElementById('d-width').value);
+  var h=parseInt(document.getElementById('d-height').value);
+  var ct=parseInt(document.getElementById('d-clicktag').value);
+  var v=parseInt(document.getElementById('d-variaveis').value);
+  var tp=document.getElementById('d-tipo').value;
+  var mn=document.getElementById('d-manifest').value;
+  var obs=document.getElementById('d-obs').value;
+  var ch=[];
+  if(!n) ch.push({s:'err',l:'Nome HTML',m:'Informe o nome do arquivo.'});
+  else if(!n.match(/\.(html|htm)$/i)) ch.push({s:'warn',l:'Nome HTML',m:'"'+n+'" — verifique extensão .html'});
+  else ch.push({s:'ok',l:'Nome HTML',m:'"'+n+'" ✓'});
+  if(isNaN(t)) ch.push({s:'err',l:'Tamanho do pacote',m:'Informe o tamanho.'});
+  else ch.push(t<=500?{s:'ok',l:'Tamanho do pacote',m:t+' MB ≤ 500 MB ✓'}:{s:'err',l:'Tamanho do pacote',m:t+' MB — excede 500 MB'});
+  if(tp==='standard'&&!isNaN(t)){var kb=t*1024;ch.push(kb<=300?{s:'ok',l:'Standard Ad',m:kb.toFixed(1)+' KB ≤ 300 KB ✓'}:{s:'err',l:'Standard Ad',m:kb.toFixed(1)+' KB — excede 300 KB'});}
+  if(isNaN(w)||w<=0) ch.push({s:'err',l:'Largura',m:'Informe a largura em px.'});
+  else ch.push({s:'ok',l:'Largura',m:w+'px ✓'});
+  if(isNaN(h)||h<=0) ch.push({s:'err',l:'Altura',m:'Informe a altura em px.'});
+  else ch.push({s:'ok',l:'Altura',m:h+'px ✓'});
+  if(isNaN(ct)||ct<0) ch.push({s:'err',l:'ClickTagCount',m:'Valor inválido.'});
+  else ch.push({s:'ok',l:'ClickTagCount',m:ct+' ✓'});
+  if(!isNaN(v)&&v>0) ch.push(v<=50?{s:'ok',l:'Variáveis dinâmicas',m:v+' ≤ 50 ✓'}:{s:'err',l:'Variáveis dinâmicas',m:v+' — excede 50'});
+  else ch.push({s:'skip',l:'Variáveis dinâmicas',m:'Não informado'});
+  if(mn==='nao') ch.push({s:'err',l:'manifest.js',m:'Ausente — obrigatório'});
+  else if(mn==='nao-sei') ch.push({s:'warn',l:'manifest.js',m:'Confirme a presença do manifest.js'});
+  else ch.push({s:'ok',l:'manifest.js',m:'Incluso ✓'});
+  renderRes('res-display',ch,'display',{n,t,w,h,ct,v,tp,mn,obs});
+}
+
+/* ─── VALIDAÇÃO: AUDIO ─── */
+function validarAudio(){
+  var f=document.getElementById('a-formato').value;
+  var t=parseFloat(document.getElementById('a-tamanho').value);
+  var d=parseFloat(document.getElementById('a-duracao').value);
+  var b=parseFloat(document.getElementById('a-bitrate').value);
+  var sr=parseFloat(document.getElementById('a-samplerate').value);
+  var lf=parseFloat(document.getElementById('a-lufs').value);
+  var tp=parseFloat(document.getElementById('a-tpl').value);
+  var vs=document.getElementById('a-vast').value;
+  var obs=document.getElementById('a-obs').value;
+  var OK=['MP3','OGG','M4A','AAC'];
+  var ch=[];
+  if(!f) ch.push({s:'err',l:'Formato',m:'Selecione o formato.'});
+  else ch.push(OK.includes(f)?{s:'ok',l:'Formato',m:f+' ✓'}:{s:'err',l:'Formato',m:f+' — use MP3, OGG, M4A ou AAC'});
+  if(isNaN(t)) ch.push({s:'err',l:'Tamanho',m:'Informe o tamanho.'});
+  else ch.push(t<=100?{s:'ok',l:'Tamanho',m:t+' MB ≤ 100 MB ✓'}:{s:'err',l:'Tamanho',m:t+' MB — excede 100 MB'});
+  if(isNaN(d)) ch.push({s:'err',l:'Duração',m:'Informe a duração.'});
+  else ch.push(d>=1?{s:'ok',l:'Duração',m:d+'s ≥ 1s ✓'}:{s:'err',l:'Duração',m:d+'s — mínimo 1 segundo'});
+  if(!isNaN(b)&&b>0) ch.push(b>=192?{s:'ok',l:'Bitrate',m:b+' Kbps ≥ 192 Kbps ✓'}:{s:'err',l:'Bitrate',m:b+' Kbps — mínimo 192 Kbps'});
+  else ch.push({s:'skip',l:'Bitrate',m:'Não informado — deixe vazio para pular'});
+  if(!isNaN(sr)&&sr>0) ch.push(sr>=44.1?{s:'ok',l:'Sample Rate',m:sr+' kHz ✓'}:{s:'err',l:'Sample Rate',m:sr+' kHz — mínimo 44.1 kHz'});
+  else ch.push({s:'skip',l:'Sample Rate',m:'Não informado'});
+  if(!isNaN(lf)) ch.push(lf>=-17.5&&lf<=-14.5?{s:'ok',l:'Loudness',m:lf+' LUFS — dentro de -16 ±1.5 ✓'}:{s:'err',l:'Loudness',m:lf+' LUFS — fora de -17.5 a -14.5'});
+  else ch.push({s:'skip',l:'Loudness',m:'Não informado'});
+  if(!isNaN(tp)) ch.push(tp<=-2.0?{s:'ok',l:'TPL',m:tp+' dB ≤ -2.0 dB ✓'}:{s:'err',l:'TPL',m:tp+' dB — acima de -2.0 dB'});
+  else ch.push({s:'skip',l:'TPL',m:'Não informado'});
+  if(vs) ch.push(['VAST 2.0','VAST 4.1'].includes(vs)?{s:'ok',l:'VAST',m:vs+' ✓'}:{s:'warn',l:'VAST',m:vs+' — verifique; suportados: VAST 2.0, 4.1'});
+  else ch.push({s:'skip',l:'VAST',m:'Não informado'});
+  renderRes('res-audio',ch,'audio',{f,t,d,b,sr,lf,tp,vs,obs});
+}
+
+/* ─── LIMPAR ─── */
+function clearVideo(){
+  ['v-formato','v-subtipo','v-ratio','v-codec'].forEach(function(id){document.getElementById(id).value='';});
+  ['v-tamanho','v-duracao','v-bitrate-kbps','v-bitrate-mbps','v-obs'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('res-video').innerHTML='';
+  resetDz('video','Arraste o arquivo aqui','ou clique · MOV, MP4, MPEG, MPG, AVI, WMV');
+  var fi=document.getElementById('fi-video'); if(fi) fi.value='';
+}
+function clearDisplay(){
+  ['d-nome','d-width','d-height','d-clicktag','d-variaveis','d-tamanho','d-obs'].forEach(function(id){document.getElementById(id).value='';});
+  ['d-tipo','d-manifest'].forEach(function(id){document.getElementById(id).selectedIndex=0;});
+  document.getElementById('res-display').innerHTML='';
+  resetDz('display','Arraste o arquivo aqui','ou clique · ZIP / HTML');
+  var fi=document.getElementById('fi-display'); if(fi) fi.value='';
+}
+function clearAudio(){
+  ['a-formato','a-vast'].forEach(function(id){document.getElementById(id).value='';});
+  ['a-tamanho','a-duracao','a-bitrate','a-samplerate','a-lufs','a-tpl','a-obs'].forEach(function(id){document.getElementById(id).value='';});
+  document.getElementById('res-audio').innerHTML='';
+  resetDz('audio','Arraste o arquivo aqui','ou clique · MP3, OGG, M4A, AAC');
+  var fi=document.getElementById('fi-audio'); if(fi) fi.value='';
+}
+function resetDz(tipo,h3,p){
+  var dz=document.getElementById('dz-'+tipo);
+  dz.classList.remove('loaded');
+  document.getElementById('dz-'+tipo+'-h3').textContent=h3;
+  document.getElementById('dz-'+tipo+'-p').textContent=p;
+  var badge=dz.querySelector('.autofill-badge'); if(badge) badge.remove();
+}
+
+/* ─── HISTÓRICO ─── */
+function abrirHist(){ goTo('hist','Histórico',document.getElementById('nav-hist')); }
+function fecharHist(){
+  var _fph = document.getElementById('panel-hist');
+  if(_fph) _fph.style.display = 'none';
+  var nb=document.getElementById('nav-hist');
+  if(nb) nb.classList.remove('active');
+}
+
+/* ─── INFORMAÇÕES PARA CÓPIA ─── */
+function _buildInfoCopia(tipo, dados){
+  /* Dado simples para copiar para outra planilha */
+  var texto = '';
+  if(tipo === 'video' && dados.d)   texto = dados.d + 's';
+  if(tipo === 'audio' && dados.d)   texto = dados.d + 's';
+  if(tipo === 'display' && dados.w && dados.h) texto = dados.w + 'x' + dados.h;
+  if(!texto) return '';
+  return '<div style="margin-bottom:10px;background:var(--ul-l);border:1px solid #C5CEEE;border-radius:7px;padding:10px 14px;display:flex;align-items:center;gap:10px">' +
+    '<div style="flex:1">' +
+      '<div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ul);margin-bottom:4px">📋 Informações para cópia</div>' +
+      '<div id="info-copia-txt" style="font-size:16px;font-weight:700;color:var(--g900);font-family:var(--mo)">' + texto + '</div>' +
+    '</div>' +
+    '<button onclick="_copiarInfo(this)" style="flex-shrink:0;padding:5px 13px;border-radius:6px;border:1px solid #C5CEEE;background:#fff;font-family:var(--fn);font-size:12px;cursor:pointer;color:var(--ul);font-weight:500">Copiar</button>' +
+  '</div>';
+}
+
+function _copiarInfo(btn){
+  var txt = document.getElementById('info-copia-txt');
+  if(!txt) return;
+  navigator.clipboard.writeText(txt.textContent).then(function(){
+    btn.textContent = 'Copiado ✓';
+    btn.style.background = 'var(--ok-b)';
+    btn.style.color = 'var(--ok)';
+    btn.style.borderColor = 'var(--ok)';
+    setTimeout(function(){ btn.textContent='Copiar'; btn.style.background='#fff'; btn.style.color='var(--ul)'; btn.style.borderColor='#C5CEEE'; }, 2000);
+  });
+}
+
+
+function loadHistMain(){
+  var body = document.getElementById('hist-content');
+  if(!body) return;
+  body.innerHTML = '<div class="es"><div style="font-size:32px">⏳</div><p>Carregando…</p></div>';
+  loadHist(function(logs){ renderHistMain(logs); });
+}
+
+function renderHistMain(logs){
+  var body = document.getElementById('hist-content');
+  if(!body) return;
+  if(!logs || !logs.length){
+    body.innerHTML = '<div class="es"><div style="font-size:32px">📋</div><p>Nenhuma validação registrada ainda.</p></div>';
+    return;
+  }
+  var TIPO_ICO={'VIDEO':'🎬','DISPLAY':'🖥️','AUDIO':'🎵'};
+  var STATUS_CLS={'APROVADO':'ok','REPROVADO':'err','AVISO':'warn'};
+  var STATUS_LBL={'APROVADO':'Aprovado','REPROVADO':'Reprovado','AVISO':'Com Aviso'};
+  var html='<div style="display:flex;flex-direction:column;gap:8px">';
+  logs.slice().reverse().forEach(function(l){
+    var d={};try{d=JSON.parse(l.dados||'{}');}catch(e){}
+    var ico=TIPO_ICO[(l.tipo||'').toUpperCase()]||'📄';
+    var ts=l.timestamp?new Date(l.timestamp).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+    var cls=STATUS_CLS[l.status]||''; var lbl=STATUS_LBL[l.status]||l.status||'—';
+    var det=[];
+    if(d.f)det.push(d.f); if(d.t)det.push(d.t+' MB');
+    if(d.d)det.push(d.d+'s'); if(d.w&&d.h)det.push(d.w+'x'+d.h);
+    html+='<div class="hist-item">'+
+      '<div class="hist-top"><span class="hist-tipo">'+ico+' '+(l.tipo||'—')+'</span><span class="hist-data">'+ts+'</span></div>'+
+      '<div class="hist-row"><span class="hist-badge '+cls+'">'+lbl+'</span></div>'+
+      (det.length?'<div class="hist-det">'+det.join(' · ')+'</div>':'')+
+    '</div>';
+  });
+  html+='</div>';
+  body.innerHTML=html;
+}
+
+/* ─── BACKEND: SAVE LOG ─── */
+function saveLog(tipo, checks, dados){
+  if(BACKEND_URL==='YOUR_APPS_SCRIPT_WEB_APP_URL') return;
+  var erros=checks.filter(function(c){return c.s==='err';}).length;
+  var avisos=checks.filter(function(c){return c.s==='warn';}).length;
+  var status=erros>0?'REPROVADO':avisos>0?'AVISO':'APROVADO';
+  fetch(BACKEND_URL,{method:'POST',body:JSON.stringify({
+    action:'saveLog',sheet:LOG_SHEET,
+    payload:{timestamp:new Date().toISOString(),tipo,status,erros,avisos,
+             usuario:userPerfil?userPerfil.nome:'desconhecido',dados:JSON.stringify(dados)}
+  })}).catch(function(){});
+}
+
+/* ─── BACKEND: LOAD HISTORICO ─── */
+function loadHist(cb){
+  var body=document.getElementById('hist-content');
+  if(body) body.innerHTML='<div class="ph-empty"><div class="ph-icon">⏳</div><p>Carregando…</p></div>';
+  if(BACKEND_URL==='YOUR_APPS_SCRIPT_WEB_APP_URL'){renderHist([]);if(cb)cb([]);return;}
+  fetch(BACKEND_URL+'?action=loadHist&sheet='+LOG_SHEET)
+    .then(function(r){return r.json();})
+    .then(function(d){var logs=d.logs||[];renderHist(logs);if(cb)cb(logs);})
+    .catch(function(){renderHist([]);if(cb)cb([]);});
+}
+
+function renderHist(logs){
+  var body=document.getElementById('hist-content');
+  if(!body) return;
+  if(!logs||!logs.length){
+    body.innerHTML='<div class="ph-empty"><div class="ph-icon">📋</div><p>Nenhuma validação registrada ainda.</p></div>';
+    return;
+  }
+  var TIPO_ICO={'VIDEO':'🎬','DISPLAY':'🖥️','AUDIO':'🎵'};
+  var STATUS_CLS={'APROVADO':'ok','REPROVADO':'err','AVISO':'warn'};
+  var STATUS_LABEL={'APROVADO':'Aprovado','REPROVADO':'Reprovado','AVISO':'Com Aviso'};
+  var html=logs.slice().reverse().map(function(l){
+    var d={};
+    try{ d=JSON.parse(l.dados||'{}'); }catch(e){}
+    var ico=TIPO_ICO[(l.tipo||'').toUpperCase()]||'📄';
+    var ts=l.timestamp?new Date(l.timestamp).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+    var cls=STATUS_CLS[l.status]||'';
+    var lbl=STATUS_LABEL[l.status]||l.status||'—';
+    var det=[];
+    if(d.f||d.formato) det.push(d.f||d.formato);
+    if(d.t) det.push(d.t+' MB');
+    if(d.n) det.push(d.n);
+    if(d.d) det.push(d.d+'s');
+    if(l.erros>0) det.push(l.erros+' erro'+(l.erros>1?'s':''));
+    if(l.avisos>0) det.push(l.avisos+' aviso'+(l.avisos>1?'s':''));
+    if(d.obs) det.push(d.obs);
+    return '<div class="hist-item">'+
+      '<div class="hist-top">'+
+        '<span class="hist-tipo">'+ico+' '+(l.tipo||'—')+'</span>'+
+        '<span class="hist-data">'+ts+'</span>'+
+      '</div>'+
+      '<div class="hist-row">'+
+        '<span class="hist-badge '+cls+'">'+lbl+'</span>'+
+        (l.usuario&&l.usuario!=='desconhecido'?'<span style="font-size:10.5px;color:var(--g500)">'+l.usuario+'</span>':'')+
+      '</div>'+
+      (det.length?'<div class="hist-det">'+det.join(' · ')+'</div>':'')+
+      (l.id?'<div style="font-size:9.5px;color:var(--g300);margin-top:4px;font-family:var(--mo)">'+l.id+'</div>':'')+
+    '</div>';
+  }).join('');
+  body.innerHTML=html;
+}
+
+/* ─── BACKEND: LOAD USER PERFIL ─── */
+function loadUserPerfil(){
+  if(BACKEND_URL==='YOUR_APPS_SCRIPT_WEB_APP_URL') return Promise.resolve();
+  return fetch(BACKEND_URL+'?action=loadUserPerfil')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d&&d.nome){
+        userPerfil=d;
+        document.getElementById('perfil-nome').textContent=d.nome;
+        document.getElementById('perfil-tipo').textContent=d.perfil||'Operador';
+        document.getElementById('perfil-bar').classList.add('show');
+      }
+    });
+}
+
+/* ─── BACKEND: LOAD EXCECOES ─── */
+function loadExcecoes(){
+  if(BACKEND_URL==='YOUR_APPS_SCRIPT_WEB_APP_URL') return Promise.resolve();
+  return fetch(BACKEND_URL+'?action=loadExcecoes')
+    .then(function(r){return r.json();})
+    .then(function(d){excecoesList=d.excecoes||[];});
+}
+
+function isExcecaoAprovada(tipo){
+  return excecoesList.some(function(e){return e.tipo===tipo&&e.status==='aprovada';});
+}
+
+/* ─── PAINEL HISTÓRICO ─── */
+function abrirHist(){ goTo('hist','Histórico',document.getElementById('nav-hist')); }
+function fecharHist(){ document.getElementById('panel-hist').classList.remove('open'); }
+
+/* ─── MODAL EXCEÇÃO — padrão F3 ─── */
+function abrirModalExcF3(tipo, dadosEnc){
+  var dados={};
+  try{ dados=JSON.parse(decodeURIComponent(dadosEnc)); }catch(e){}
+  document.getElementById('exc-tipo').value=tipo;
+  document.getElementById('exc-dados').value=dadosEnc;
+  // Preencher campos readonly
+  var arq=dados.arquivo||dados.f||dados.n||dados.nome||'—';
+  document.getElementById('exc-adname-display').textContent=arq;
+  document.getElementById('exc-tipo-display').textContent=(tipo||'—').toUpperCase();
+  // Limpar campos
+  ['exc-motivo','exc-raw-email','exc-data-email','exc-hora-email','exc-remetente','exc-assunto'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('exc-modal-err').style.display='none';
+  document.getElementById('exc-modal-bg').style.display='flex';
+}
+function fecharModalExc(){
+  document.getElementById('exc-modal-bg').style.display='none';
+}
+function parseEmailHeaderExc(){
+  var raw=(document.getElementById('exc-raw-email').value||'').trim();
+  if(!raw) return;
+  var meses={jan:1,fev:2,feb:2,mar:3,abr:4,apr:4,mai:5,may:5,jun:6,jul:7,ago:8,aug:8,set:9,sep:9,out:10,oct:10,nov:11,dez:12,dec:12};
+  var date=null,hour='',min='';
+
+  // Gmail compacto: "15:35 (há N horas/minutos)" — data = hoje
+  var mCompacto=raw.match(/(\d{1,2}):(\d{2})\s*\(h/i);
+  if(mCompacto){var now=new Date();date=new Date(now.getFullYear(),now.getMonth(),now.getDate());hour=mCompacto[1].padStart(2,'0');min=mCompacto[2];}
+
+  // PT-BR: "4 de mai. de 2026, 16:05" ou "seg., 4 de mai., 16:05"
+  if(!date){var mPT=raw.match(/(?:\w+\.\s*,?\s*)?(\d{1,2})\s+de\s+(\w+)\.?(?:\s+de\s+(\d{4}))?,?\s+(\d{1,2}):(\d{2})/i);
+    if(mPT){var d=parseInt(mPT[1]),m=meses[mPT[2].toLowerCase().slice(0,3)],y=mPT[3]?parseInt(mPT[3]):new Date().getFullYear();hour=mPT[4].padStart(2,'0');min=mPT[5];if(m)date=new Date(y,m-1,d);}}
+
+  // DD/MM/YYYY HH:MM
+  if(!date){var mBR=raw.match(/(\d{2})\/(\d{2})\/(\d{4})(?:[,\s]+(\d{1,2}):(\d{2}))?/);
+    if(mBR){date=new Date(parseInt(mBR[3]),parseInt(mBR[2])-1,parseInt(mBR[1]));if(mBR[4]){hour=mBR[4].padStart(2,'0');min=mBR[5];}}}
+
+  // EN: "May 4, 2026, 4:05 PM"
+  if(!date){var mEN=raw.match(/(\w+)\s+(\d{1,2}),\s+(\d{4}),?\s+(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+    if(mEN){var m2=meses[mEN[1].toLowerCase().slice(0,3)];if(m2){date=new Date(parseInt(mEN[3]),m2-1,parseInt(mEN[2]));var h2=parseInt(mEN[4]);if(mEN[6]&&mEN[6].toUpperCase()==='PM'&&h2<12)h2+=12;if(mEN[6]&&mEN[6].toUpperCase()==='AM'&&h2===12)h2=0;hour=String(h2).padStart(2,'0');min=mEN[5];}}}
+
+  // Hora isolada sem data: "15:35" — data = hoje
+  if(!date){var mHora=raw.match(/(\d{1,2}):(\d{2})/);
+    if(mHora){var now2=new Date();date=new Date(now2.getFullYear(),now2.getMonth(),now2.getDate());hour=mHora[1].padStart(2,'0');min=mHora[2];}}
+
+  if(date&&!isNaN(date)){var df=document.getElementById('exc-data-email');if(df)df.value=date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');}
+  if(hour&&min){var hf=document.getElementById('exc-hora-email');if(hf)hf.value=hour+':'+min;}
+  var mEmail=raw.match(/[\w._%+\-]+@[\w.\-]+\.[a-zA-Z]{2,}/);
+  if(mEmail){var rf=document.getElementById('exc-remetente');if(rf&&!rf.value)rf.value=mEmail[0];}
+
+  /* Assunto — linha mais longa que não seja data/hora/e-mail */
+  var linhas=raw.split('\n').map(function(l){return l.trim();}).filter(Boolean);
+  var assuntoEl=document.getElementById('exc-assunto');
+  if(assuntoEl&&!assuntoEl.value){
+    var naoEAssunto=/(\d{1,2}[:\/]\d{2})|(@)|(há \d)|(de \d{4})|(AM|PM)/i;
+    var candidatas=linhas.filter(function(l){return !naoEAssunto.test(l)&&l.length>4;});
+    if(candidatas.length){
+      var maior=candidatas.reduce(function(a,b){return b.length>a.length?b:a;});
+      assuntoEl.value=maior;
+    }
+  }
+}
+function enviarExcecaoF3(){
+  var motivo=(document.getElementById('exc-motivo').value||'').trim();
+  var dataEmail=document.getElementById('exc-data-email').value;
+  var remetente=(document.getElementById('exc-remetente').value||'').trim();
+  var errEl=document.getElementById('exc-modal-err');
+  errEl.style.display='none';
+  if(!motivo){errEl.textContent='Selecione um motivo.';errEl.style.display='block';return;}
+  if(!dataEmail){errEl.textContent='Preencha a data do e-mail.';errEl.style.display='block';return;}
+  if(!remetente){errEl.textContent='Preencha o remetente.';errEl.style.display='block';return;}
+  var tipo=document.getElementById('exc-tipo').value;
+  var dados=document.getElementById('exc-dados').value;
+  var horaEmail=document.getElementById('exc-hora-email').value||'';
+  var dataFull=dataEmail+(horaEmail?' '+horaEmail:'');
+  var assunto=(document.getElementById('exc-assunto').value||'').trim();
+  if(BACKEND_URL!=='YOUR_APPS_SCRIPT_WEB_APP_URL'){
+    fetch(BACKEND_URL,{method:'POST',body:JSON.stringify({action:'saveExcecao',
+      payload:{timestamp:new Date().toISOString(),tipo:tipo,motivo:motivo,
+               dataEmail:dataFull,remetente:remetente,assuntoEmail:assunto,
+               justificativa:motivo+' · '+remetente+' · '+dataFull,
+               status:'pendente',
+               usuario:userPerfil?userPerfil.nome:'desconhecido',dados:dados}
+    })}).catch(function(){});
+  }
+  fecharModalExc();
+  // Confirmação visual inline
+  var bg=document.createElement('div');
+  bg.style.cssText='position:fixed;inset:0;background:rgba(10,15,50,.55);backdrop-filter:blur(2px);z-index:2000;display:flex;align-items:center;justify-content:center;padding:20px';
+  bg.innerHTML='<div style="background:#fff;border-radius:12px;padding:32px 24px;text-align:center;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.2)">'+
+    '<div style="font-size:40px;margin-bottom:14px">✅</div>'+
+    '<h3 style="font-size:15px;font-weight:600;color:var(--ok);margin-bottom:8px">Solicitação enviada!</h3>'+
+    '<p style="font-size:12.5px;color:var(--g700);margin-bottom:6px">Status: <strong>Em Análise</strong></p>'+
+    '<p style="font-size:12px;color:var(--g500);margin-bottom:20px">O administrador será notificado e poderá aprovar ou rejeitar.</p>'+
+    '<button onclick="this.parentNode.parentNode.remove()" style="padding:9px 24px;border:none;border-radius:7px;background:var(--ul);color:#fff;font-family:var(--fn);font-size:13px;font-weight:500;cursor:pointer">OK</button>'+
+  '</div>';
+  document.body.appendChild(bg);
+}
+
+/* ─── PARSE EMAIL HEADER (legado) ─── */
+function parseEmailHeader(h){var m=h?h.match(/<([^>]+)>/):null;return m?m[1]:(h||'');}
+</script>
+</body>
+</html>
