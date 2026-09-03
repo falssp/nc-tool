@@ -17,138 +17,69 @@
     html, body { height:100%; }
     body {
       font-family:'Segoe UI',Arial,sans-serif;
-      background:var(--bg);
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
+      background:var(--bg); min-height:100vh;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
       padding:32px 24px;
     }
     header { text-align:center; margin-bottom:32px; }
     header h1 { font-size:1.7rem; font-weight:800; color:var(--escuro); letter-spacing:-.5px; }
     header p { font-size:.85rem; color:var(--muted); margin-top:4px; }
-
-    .env-toggle {
-      display:flex; gap:8px; margin-bottom:28px;
-      background:#fff; border:1px solid var(--borda);
-      border-radius:10px; padding:4px;
-    }
-    .env-btn {
-      flex:1; padding:8px 28px; border:none; border-radius:7px;
-      font-size:.85rem; font-weight:600; cursor:pointer;
-      transition:all .2s; color:var(--muted); background:transparent;
-    }
+    .env-toggle { display:flex; gap:8px; margin-bottom:28px; background:#fff; border:1px solid var(--borda); border-radius:10px; padding:4px; }
+    .env-btn { flex:1; padding:8px 28px; border:none; border-radius:7px; font-size:.85rem; font-weight:600; cursor:pointer; transition:all .2s; color:var(--muted); background:transparent; }
     .env-btn.active { background:var(--azul); color:#fff; }
-
-    .cards {
-      width:100%; max-width:1100px;
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:20px;
-      align-items:stretch;
-    }
-
-    .card {
-      background:#fff; border:1px solid var(--borda);
-      border-radius:16px; overflow:hidden;
-      display:flex; flex-direction:column;
-      transition:box-shadow .2s, transform .2s;
-    }
+    .cards { width:100%; max-width:1100px; display:grid; grid-template-columns:repeat(3,1fr); gap:20px; align-items:stretch; }
+    .card { background:#fff; border:1px solid var(--borda); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; transition:box-shadow .2s, transform .2s; }
     .card:hover { box-shadow:0 8px 32px rgba(31,54,199,.12); transform:translateY(-2px); }
-
     .card-header { padding:22px 22px 16px; }
     .card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
-
-    .card-icon {
-      width:44px; height:44px; border-radius:12px;
-      display:flex; align-items:center; justify-content:center; font-size:1.3rem;
-    }
-    .icon-f3{background:var(--f3-bg);}
-    .icon-f4{background:var(--f4-bg);}
-    .icon-f5{background:var(--f5-bg);}
-
-    .status-badge {
-      display:flex; align-items:center; gap:5px;
-      font-size:.72rem; font-weight:600; padding:4px 10px;
-      border-radius:20px; background:#f5f5f5; color:var(--inativo);
-    }
-    .status-dot {
-      width:7px; height:7px; border-radius:50%; background:var(--inativo);
-      animation:pulse 2s infinite;
-    }
+    .card-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
+    .icon-f3{background:var(--f3-bg);} .icon-f4{background:var(--f4-bg);} .icon-f5{background:var(--f5-bg);}
+    .status-badge { display:flex; align-items:center; gap:5px; font-size:.72rem; font-weight:600; padding:4px 10px; border-radius:20px; background:#f5f5f5; color:var(--inativo); }
+    .status-dot { width:7px; height:7px; border-radius:50%; background:var(--inativo); animation:pulse 2s infinite; }
     .status-badge.ok { background:#e8f5e9; color:var(--ok); }
     .status-badge.ok .status-dot { background:var(--ok); }
     .status-badge.aviso { background:#fff8e1; color:var(--aviso); }
     .status-badge.aviso .status-dot { background:var(--aviso); }
     .status-badge.erro { background:#ffebee; color:var(--erro); }
     .status-badge.erro .status-dot { background:var(--erro); animation:none; }
-    @keyframes pulse {
-      0%,100%{opacity:1;} 50%{opacity:.4;}
-    }
-
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.4;} }
     .card-fase { font-size:.68rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
     .fase-f3{color:var(--f3);} .fase-f4{color:var(--f4);} .fase-f5{color:var(--f5);}
     .card-title { font-size:1.05rem; font-weight:800; color:var(--escuro); margin-bottom:3px; }
     .card-desc { font-size:.78rem; color:#888; }
-
-    .card-stats {
-      margin:0 22px 14px;
-      padding:12px 14px;
-      background:#fafafa;
-      border:1px solid var(--borda);
-      border-radius:10px;
-      font-size:.76rem;
-      color:#555;
-      display:flex;
-      flex-direction:column;
-      gap:5px;
-      min-height:72px;
-    }
+    .card-stats { margin:0 22px 14px; padding:12px 14px; background:#fafafa; border:1px solid var(--borda); border-radius:10px; font-size:.76rem; color:#555; display:flex; flex-direction:column; gap:5px; min-height:72px; }
     .stat-row { display:flex; justify-content:space-between; align-items:center; }
     .stat-label { color:#888; }
     .stat-val { font-weight:600; color:var(--escuro); }
     .stat-loading { color:var(--muted); font-style:italic; font-size:.74rem; }
-
     .card-body { padding:0 22px 22px; flex:1; display:flex; flex-direction:column; }
     .divider { height:1px; background:var(--borda); margin-bottom:16px; }
-
-    .modulos { list-style:none; display:flex; flex-direction:column; gap:7px; flex:1; margin-bottom:20px; }
+    .modulos { list-style:none; display:flex; flex-direction:column; gap:7px; flex:1; margin-bottom:14px; }
     .modulos li { display:flex; align-items:center; gap:9px; font-size:.8rem; color:#444; }
     .dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
     .dot-f3{background:var(--f3);} .dot-f4{background:var(--f4);} .dot-f5{background:var(--f5);}
-
+    .btn-refresh { width:100%; padding:7px; border:1px solid var(--borda); border-radius:8px; background:#fff; color:var(--muted); font-size:.76rem; font-weight:600; cursor:pointer; margin-bottom:10px; transition:all .2s; }
+    .btn-refresh:hover { border-color:var(--azul); color:var(--azul); }
+    .btn-refresh:disabled { opacity:.5; cursor:wait; }
     .btn-group { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
-    .btn-abrir {
-      display:block; padding:11px 8px; border-radius:10px;
-      font-size:.82rem; font-weight:700; cursor:pointer;
-      text-align:center; text-decoration:none;
-      transition:opacity .18s, transform .18s; border:none;
-    }
+    .btn-abrir { display:block; padding:11px 8px; border-radius:10px; font-size:.82rem; font-weight:700; cursor:pointer; text-align:center; text-decoration:none; transition:opacity .18s, transform .18s; border:none; }
     .btn-abrir:hover { opacity:.85; transform:translateY(-1px); }
     .btn-corp { background:var(--azul); color:#fff; }
     .btn-pessoal { background:#fff; color:var(--azul); border:2px solid var(--azul); }
-
     footer { margin-top:32px; font-size:.72rem; color:var(--muted); text-align:center; }
-
-    @media(max-width:720px){
-      .cards { grid-template-columns:1fr; }
-      body { justify-content:flex-start; padding-top:32px; }
-    }
+    @media(max-width:720px){ .cards { grid-template-columns:1fr; } body { justify-content:flex-start; padding-top:32px; } }
   </style>
 </head>
 <body>
-
 <header>
   <h1>NC Tool</h1>
   <p>Unilever BR &times; Grasp</p>
 </header>
-
 <div class="env-toggle">
   <button class="env-btn active" onclick="setEnv('corp')">Corp</button>
   <button class="env-btn" onclick="setEnv('pessoal')">Pessoal</button>
 </div>
-
 <div class="cards">
 
   <!-- F3 -->
@@ -160,11 +91,9 @@
       </div>
       <div class="card-fase fase-f3">F3</div>
       <div class="card-title">Validator</div>
-      <div class="card-desc">Validação de naming conventions</div>
+      <div class="card-desc">Validacao de naming conventions</div>
     </div>
-    <div class="card-stats" id="stats-f3">
-      <span class="stat-loading">Carregando dados...</span>
-    </div>
+    <div class="card-stats" id="stats-f3"><span class="stat-loading">Carregando...</span></div>
     <div class="card-body">
       <div class="divider"></div>
       <ul class="modulos">
@@ -174,11 +103,12 @@
         <li><span class="dot dot-f3"></span>Modo Ticket</li>
         <li><span class="dot dot-f3"></span>Ticket Pai</li>
         <li><span class="dot dot-f3"></span>Verificador de Hash</li>
-        <li><span class="dot dot-f3"></span>Histórico</li>
+        <li><span class="dot dot-f3"></span>Historico</li>
       </ul>
+      <button class="btn-refresh" id="refresh-f3" onclick="fetchStats('f3')">&#8635; Atualizar</button>
       <div class="btn-group">
-        <a class="btn-abrir btn-corp" id="btn-f3-corp" href="https://script.google.com/macros/s/AKfycbzKKuKhr111DFtk5jAhx3ofQzZL78sQvliDKtxDj_FlBZmbPaLuufd6-oHxq7Tsr9sp_w/exec" target="_blank">Corp &rarr;</a>
-        <a class="btn-abrir btn-pessoal" id="btn-f3-pes" href="https://script.google.com/macros/s/AKfycby6uFxVBlvGx2bC93m1NK9ixTG8Oa61CA2qeKCEc8FR9JnGJCv5m1AlOgoq4kmzbpS3/exec" target="_blank">Pessoal &rarr;</a>
+        <a class="btn-abrir btn-corp" href="https://script.google.com/macros/s/AKfycbzKKuKhr111DFtk5jAhx3ofQzZL78sQvliDKtxDj_FlBZmbPaLuufd6-oHxq7Tsr9sp_w/exec" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" href="https://script.google.com/macros/s/AKfycby6uFxVBlvGx2bC93m1NK9ixTG8Oa61CA2qeKCEc8FR9JnGJCv5m1AlOgoq4kmzbpS3/exec" target="_blank">Pessoal &rarr;</a>
       </div>
     </div>
   </div>
@@ -191,12 +121,10 @@
         <div class="status-badge" id="status-f4"><span class="status-dot"></span><span>Verificando...</span></div>
       </div>
       <div class="card-fase fase-f4">F4</div>
-      <div class="card-title">Acessórios</div>
+      <div class="card-title">Acessorios</div>
       <div class="card-desc">Suite de ferramentas de apoio</div>
     </div>
-    <div class="card-stats" id="stats-f4">
-      <span class="stat-loading">Carregando dados...</span>
-    </div>
+    <div class="card-stats" id="stats-f4"><span class="stat-loading">Carregando...</span></div>
     <div class="card-body">
       <div class="divider"></div>
       <ul class="modulos">
@@ -205,17 +133,18 @@
         <li><span class="dot dot-f4"></span>Campaign Local</li>
         <li><span class="dot dot-f4"></span>Merge RM &rarr; ADP</li>
         <li><span class="dot dot-f4"></span>Mapeador RM &rarr; ADP</li>
-        <li><span class="dot dot-f4"></span>Dicionário de Influs</li>
+        <li><span class="dot dot-f4"></span>Dicionario de Influs</li>
         <li><span class="dot dot-f4"></span>Extrator de Influencer</li>
         <li><span class="dot dot-f4"></span>Influencer Name Tool</li>
-        <li><span class="dot dot-f4"></span>Extrator de Fórmulas</li>
+        <li><span class="dot dot-f4"></span>Extrator de Formulas</li>
         <li><span class="dot dot-f4"></span>Comparador</li>
         <li><span class="dot dot-f4"></span>Contador ADP</li>
         <li><span class="dot dot-f4"></span>Removedor de Caracteres</li>
       </ul>
+      <button class="btn-refresh" id="refresh-f4" onclick="fetchStats('f4')">&#8635; Atualizar</button>
       <div class="btn-group">
-        <a class="btn-abrir btn-corp" id="btn-f4-corp" href="https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec" target="_blank">Corp &rarr;</a>
-        <a class="btn-abrir btn-pessoal" id="btn-f4-pes" href="https://script.google.com/macros/s/AKfycby6h6qvXqacFrf2TmcXYaflRQp7rvhklpnR27VWhIueh9pLxWvUCRYkFToJPxYezUN7cw/exec" target="_blank">Pessoal &rarr;</a>
+        <a class="btn-abrir btn-corp" href="https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" href="https://script.google.com/macros/s/AKfycby6h6qvXqacFrf2TmcXYaflRQp7rvhklpnR27VWhIueh9pLxWvUCRYkFToJPxYezUN7cw/exec" target="_blank">Pessoal &rarr;</a>
       </div>
     </div>
   </div>
@@ -229,44 +158,29 @@
       </div>
       <div class="card-fase fase-f5">F5</div>
       <div class="card-title">FT Flashtalking</div>
-      <div class="card-desc">Validação de naming Flashtalking</div>
+      <div class="card-desc">Validacao de naming Flashtalking</div>
     </div>
-    <div class="card-stats" id="stats-f5">
-      <span class="stat-loading">Carregando dados...</span>
-    </div>
+    <div class="card-stats" id="stats-f5"><span class="stat-loading">Carregando...</span></div>
     <div class="card-body">
       <div class="divider"></div>
       <ul class="modulos">
-        <li><span class="dot dot-f5"></span>Validação ADP Excel</li>
-        <li><span class="dot dot-f5"></span>Validação Manual</li>
-        <li><span class="dot dot-f5"></span>Exceções</li>
-        <li><span class="dot dot-f5"></span>Histórico</li>
+        <li><span class="dot dot-f5"></span>Validacao ADP Excel</li>
+        <li><span class="dot dot-f5"></span>Validacao Manual</li>
+        <li><span class="dot dot-f5"></span>Excecoes</li>
+        <li><span class="dot dot-f5"></span>Historico</li>
       </ul>
+      <button class="btn-refresh" id="refresh-f5" onclick="fetchStats('f5')">&#8635; Atualizar</button>
       <div class="btn-group">
-        <a class="btn-abrir btn-corp" id="btn-f5-corp" href="https://script.google.com/macros/s/AKfycbwKsOut5TyYLf1pW_xm1He-zBvzZGYFM4KAEE5C6hssNZHsg9fL_QBXWjfF-zzIDxfXNQ/exec" target="_blank">Corp &rarr;</a>
-        <a class="btn-abrir btn-pessoal" id="btn-f5-pes" href="https://script.google.com/macros/s/AKfycbym0772425DQEUrNQn9TZc6C-wdRuqU1_erQVSoWzV-MEBbyCN4DOfJkaSd90cdVZHjSA/exec" target="_blank">Pessoal &rarr;</a>
+        <a class="btn-abrir btn-corp" href="https://script.google.com/macros/s/AKfycbwKsOut5TyYLf1pW_xm1He-zBvzZGYFM4KAEE5C6hssNZHsg9fL_QBXWjfF-zzIDxfXNQ/exec" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" href="https://script.google.com/macros/s/AKfycbym0772425DQEUrNQn9TZc6C-wdRuqU1_erQVSoWzV-MEBbyCN4DOfJkaSd90cdVZHjSA/exec" target="_blank">Pessoal &rarr;</a>
       </div>
     </div>
   </div>
 
 </div>
-
 <footer>NC Tool &copy; 2026</footer>
-
 <script>
-var URLS = {
-  corp: {
-    f3: 'https://script.google.com/macros/s/AKfycbzKKuKhr111DFtk5jAhx3ofQzZL78sQvliDKtxDj_FlBZmbPaLuufd6-oHxq7Tsr9sp_w/exec',
-    f4: 'https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec',
-    f5: 'https://script.google.com/macros/s/AKfycbwKsOut5TyYLf1pW_xm1He-zBvzZGYFM4KAEE5C6hssNZHsg9fL_QBXWjfF-zzIDxfXNQ/exec'
-  },
-  pessoal: {
-    f3: 'https://script.google.com/macros/s/AKfycby6uFxVBlvGx2bC93m1NK9ixTG8Oa61CA2qeKCEc8FR9JnGJCv5m1AlOgoq4kmzbpS3/exec',
-    f4: 'https://script.google.com/macros/s/AKfycby6h6qvXqacFrf2TmcXYaflRQp7rvhklpnR27VWhIueh9pLxWvUCRYkFToJPxYezUN7cw/exec',
-    f5: 'https://script.google.com/macros/s/AKfycbym0772425DQEUrNQn9TZc6C-wdRuqU1_erQVSoWzV-MEBbyCN4DOfJkaSd90cdVZHjSA/exec'
-  }
-};
-
+var PROXY = 'https://nc-proxy.falssp.workers.dev/';
 var env = 'corp';
 
 function setEnv(e) {
@@ -285,64 +199,57 @@ function setStatus(fase, state, label) {
 
 function setStats(fase, data) {
   var el = document.getElementById('stats-' + fase);
-  if (!data) {
-    el.innerHTML = '<span class="stat-loading">Dados indisponíveis</span>';
+  if (!data || data.error) {
+    var msg = data && data.error ? data.error : 'Dados indisponiveis';
+    el.innerHTML = '<span class="stat-loading">' + msg + '</span>';
     return;
   }
-
   var rows = '';
-
   if (data.ultimaValidacao) {
-    rows += '<div class="stat-row"><span class="stat-label">Última validação</span><span class="stat-val">' + data.ultimaValidacao.data + ' ' + data.ultimaValidacao.hora + '</span></div>';
-    rows += '<div class="stat-row"><span class="stat-label">Total no mês</span><span class="stat-val">' + (data.totalMes || 0) + ' validações</span></div>';
+    var uv = data.ultimaValidacao;
+    rows += '<div class="stat-row"><span class="stat-label">Ultima validacao</span><span class="stat-val">' + (uv.data || '--') + ' ' + (uv.hora || '') + '</span></div>';
+    rows += '<div class="stat-row"><span class="stat-label">Total no mes</span><span class="stat-val">' + (data.totalMes || 0) + ' validacoes</span></div>';
   }
   if (data.ultimaOperacao) {
-    rows += '<div class="stat-row"><span class="stat-label">Última operação</span><span class="stat-val">' + data.ultimaOperacao.data + ' · ' + (data.ultimaOperacao.modulo || '') + '</span></div>';
-    rows += '<div class="stat-row"><span class="stat-label">Total no mês</span><span class="stat-val">' + (data.totalMes || 0) + ' operações</span></div>';
+    var uo = data.ultimaOperacao;
+    rows += '<div class="stat-row"><span class="stat-label">Ultima operacao</span><span class="stat-val">' + (uo.data || '--') + ' · ' + (uo.modulo || '') + '</span></div>';
+    rows += '<div class="stat-row"><span class="stat-label">Total no mes</span><span class="stat-val">' + (data.totalMes || 0) + ' operacoes</span></div>';
   }
   if (data.saude) {
     var s = data.saude;
     var cor = s.status === 'ok' ? '#2e7d32' : s.status === 'aviso' ? '#e65100' : '#c62828';
-    rows += '<div class="stat-row"><span class="stat-label">Dicionário</span><span class="stat-val" style="color:' + cor + '">' + (s.totalSlugs || 0) + ' slugs · ' + (s.diasSemMerge || 0) + 'd</span></div>';
+    rows += '<div class="stat-row"><span class="stat-label">Dicionario</span><span class="stat-val" style="color:' + cor + '">' + (s.totalSlugs || 0) + ' slugs · ' + (s.diasSemMerge || 0) + 'd</span></div>';
   }
-
   el.innerHTML = rows || '<span class="stat-loading">Sem dados ainda</span>';
 }
 
-var PROXY = 'https://nc-proxy.falssp.workers.dev/';
-
 function fetchStats(fase) {
-  var envKey = env === 'pessoal' ? 'pes' : env;
-  var url = PROXY + '?fase=' + fase + '&env=' + envKey + '&action=stats';
+  var url = PROXY + '?fase=' + fase + '&env=' + (env === 'pessoal' ? 'pes' : env) + '&action=stats';
   setStatus(fase, '', 'Verificando...');
+  var btn = document.getElementById('refresh-' + fase);
+  if (btn) { btn.disabled = true; btn.textContent = '↻'; }
 
   fetch(url)
-    .then(function(r) {
-      if (!r.ok) throw new Error('http ' + r.status);
-      return r.json();
-    })
+    .then(function(r) { if (!r.ok) throw new Error('http ' + r.status); return r.json(); })
     .then(function(d) {
       if (d.error) throw new Error(d.error);
       setStatus(fase, 'ok', 'Online');
       setStats(fase, d);
     })
-    .catch(function() {
+    .catch(function(e) {
       setStatus(fase, 'erro', 'Offline');
       setStats(fase, null);
+    })
+    .finally(function() {
+      if (btn) { btn.disabled = false; btn.textContent = '↻ Atualizar'; }
     });
 }
 
 function loadAll() {
-  ['f3','f4','f5'].forEach(function(f) {
-    fetchStats(f);
-  });
+  ['f3','f4','f5'].forEach(function(f) { fetchStats(f); });
 }
 
-// Inicia
 loadAll();
-// Refresh a cada 5 minutos
-setInterval(loadAll, 5 * 60 * 1000);
 </script>
-
 </body>
 </html>
