@@ -312,7 +312,8 @@ function setStats(fase, data) {
 var PROXY = 'https://nc-proxy.falssp.workers.dev/';
 
 function fetchStats(fase) {
-  var url = PROXY + '?fase=' + fase + '&env=' + env + '&action=stats';
+  var envKey = env === 'pessoal' ? 'pes' : env;
+  var url = PROXY + '?fase=' + fase + '&env=' + envKey + '&action=stats';
   setStatus(fase, '', 'Verificando...');
 
   fetch(url)
