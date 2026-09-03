@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preenchimento do RM_STORMX e do ADP — StormX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#494C67;
+    --navy-deep:#3B3D54;
+    --navy-soft:#5B5E78;
+    --cyan:#14D7FF;
+    --amber:#FFAB40;
+    --red:#D9534F;
+    --ink:#2B2D3D;
+    --muted:#83869A;
+    --line:#E4E6EE;
+    --paper:#FFFFFF;
+    --paper-tint:#F7F8FB;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;background:#1B1C27;}
+  body{
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    overflow:hidden;
+  }
+  .viewer{
+    position:fixed; inset:0;
+    display:flex; flex-direction:column;
+  }
+  .progress{
+    height:3px; background:rgba(255,255,255,0.08); position:relative; z-index:20; flex:0 0 auto;
+  }
+  .progress-fill{
+    height:100%; width:7.14%; background:linear-gradient(90deg,var(--cyan),var(--amber));
+    transition:width .5s cubic-bezier(.65,0,.35,1);
+  }
+  .deck{
+    flex:1 1 auto; position:relative; overflow:hidden;
+  }
+  .slide{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:5.5vh 7vw;
+    opacity:0; pointer-events:none;
+    transform:translateX(28px) scale(.99);
+    transition:opacity .55s cubic-bezier(.16,1,.3,1), transform .55s cubic-bezier(.16,1,.3,1);
+  }
+  .slide.prevslide{ transform:translateX(-28px) scale(.99); }
+  .slide.active{
+    opacity:1; pointer-events:auto; transform:translateX(0) scale(1); z-index:5;
+  }
+  .slide.dark{ background:radial-gradient(120% 140% at 15% 10%, var(--navy-soft) 0%, var(--navy) 45%, var(--navy-deep) 100%); color:#fff; }
+  .slide.light{ background:var(--paper); color:var(--ink); }
+
+  /* ambient floating shapes on dark slides */
+  .amb{position:absolute; border-radius:50%; filter:blur(2px); opacity:.12; background:var(--cyan); pointer-events:none;}
+  .slide.dark .amb1{ width:340px; height:340px; top:-90px; right:8%; animation:float1 14s ease-in-out infinite; }
+  .slide.dark .amb2{ width:180px; height:180px; bottom:-40px; left:6%; background:var(--amber); animation:float2 11s ease-in-out infinite; }
+  @keyframes float1{ 0%,100%{transform:translateY(0px)} 50%{transform:translateY(26px)} }
+  @keyframes float2{ 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-20px)} }
+
+  /* brand mark: rounded bars glyph */
+  .mark{ display:inline-flex; flex-direction:column; gap:3px; width:26px; }
+  .mark span{ display:block; height:4px; border-radius:3px; background:currentColor; }
+  .mark span:nth-child(1){width:100%;}
+  .mark span:nth-child(2){width:70%;}
+  .mark span:nth-child(3){width:45%;}
+  .light .mark{ color:var(--navy); }
+  .dark .mark{ color:#fff; }
+
+  .wordmark{ position:absolute; top:4.5vh; right:6vw; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:.5px; z-index:6; }
+  .wordmark span{ color:var(--cyan); }
+  .dark .wordmark{ color:#fff; }
+  .light .wordmark{ color:var(--navy); opacity:.55; }
+
+  .pill{
+    display:inline-flex; align-items:center; gap:.55rem;
+    background:var(--navy-soft); color:#fff;
+    padding:.5rem 1.1rem .5rem 1.5rem; border-radius:999px;
+    font-size:.78rem; font-weight:700; letter-spacing:.2px;
+    position:relative; width:max-content;
+  }
+  .light .pill{ background:var(--navy); }
+  .pill::before{
+    content:''; position:absolute; left:-7px; top:50%; transform:translateY(-50%);
+    width:16px; height:16px; border-radius:50%; background:var(--cyan);
+    box-shadow:0 0 0 3px rgba(20,215,255,.15);
+  }
+
+  .eyebrow-row{ display:flex; align-items:center; gap:.8rem; margin-bottom:.9rem; }
+  h1.headline{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(1.9rem, 3.4vw, 3.1rem); line-height:1.08; margin:0 0 .5rem 0;
+    color:var(--cyan);
+  }
+  .dark h1.headline{ font-size:clamp(2.1rem,4vw,3.6rem); }
+  .subtitle{ font-size:clamp(.95rem,1.25vw,1.25rem); color:var(--muted); max-width:52ch; line-height:1.5; }
+  .dark .subtitle{ color:#D7DBE8; }
+
+  .section-title{ display:flex; align-items:center; gap:.7rem; margin-bottom:1.7vh; }
+  .section-title h1{ margin:0; }
+
+  .content-cols{ display:flex; gap:3.5vw; margin-top:1vh; }
+  .col{ flex:1; }
+  .col + .col{ border-left:1px solid var(--line); padding-left:3.5vw; }
+
+  .item-label{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.02rem; color:var(--navy); margin:0 0 .35rem 0; }
+  .item-label.cyan{ color:#0C93A6; }
+  .item-label.red{ color:var(--red); }
+  .item-text{ font-size:.95rem; color:var(--ink); opacity:.85; line-height:1.5; margin:0 0 1.3rem 0; }
+
+  ul.plain{ list-style:none; margin:0; padding:0; }
+  ul.plain li{ position:relative; padding-left:1.1rem; margin-bottom:.65rem; font-size:.98rem; line-height:1.45; color:var(--ink); }
+  ul.plain li::before{ content:'–'; position:absolute; left:0; color:#0C93A6; font-weight:700; }
+  .dark ul.plain li{ color:#E4E7F2; }
+  .dark ul.plain li::before{ color:var(--cyan); }
+
+  .reveal{ opacity:0; transform:translateY(16px); }
+  .slide.active .reveal{
+    animation:riseIn .65s cubic-bezier(.16,1,.3,1) both;
+    animation-delay:calc(var(--i,0) * 90ms + 150ms);
+  }
+  @keyframes riseIn{ from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);} }
+
+  /* footer */
+  .footer{ position:absolute; bottom:2.2vh; left:7vw; right:7vw; display:flex; justify-content:space-between; font-size:.72rem; color:var(--muted); z-index:6; }
+  .dark .footer{ color:#8286A0; }
+  .footer b{ color:var(--navy); font-weight:700; }
+  .dark .footer b{ color:#fff; }
+
+  /* controls */
+  .controls{
+    flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:1.4rem;
+    padding:1.1rem 0; background:#14151E;
+  }
+  .navbtn{
+    width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.04); color:#fff; font-size:1.1rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:background .2s, transform .15s;
+  }
+  .navbtn:hover{ background:rgba(20,215,255,.16); border-color:var(--cyan); }
+  .navbtn:active{ transform:scale(.92); }
+  .dots{ display:flex; gap:.4rem; }
+  .dot{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.22); cursor:pointer; transition:background .2s, transform .2s; }
+  .dot:hover{ background:rgba(255,255,255,.5); }
+  .dot.active{ background:var(--cyan); transform:scale(1.35); }
+  .counter{ font-family:'Space Grotesk',sans-serif; color:#8286A0; font-size:.78rem; letter-spacing:.5px; min-width:64px; text-align:center; }
+  .fsbtn{ width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.04); color:#fff; cursor:pointer; font-size:.95rem; display:flex; align-items:center; justify-content:center;}
+  .fsbtn:hover{ background:rgba(255,171,64,.18); border-color:var(--amber); }
+
+  /* diagram: flow steps */
+  .flow{ display:flex; align-items:stretch; gap:1.1vw; margin-top:2.2vh; }
+  .flow-step{ flex:1; background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:1.6rem 1.1rem 1.3rem; position:relative; text-align:center; color:var(--ink); }
+  .flow-step.mid{ background:var(--navy); color:#fff; border-color:var(--navy); }
+  .flow-num{ width:38px; height:38px; border-radius:50%; border:2px solid #0C93A6; color:#0C93A6; background:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'Space Grotesk',sans-serif; margin:-2.9rem auto .8rem; position:relative; z-index:2; }
+  .flow-step.mid .flow-num{ background:#fff; }
+  .flow-title{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1rem; margin-bottom:.5rem; }
+  .flow-desc{ font-size:.82rem; color:var(--muted); line-height:1.4; }
+  .flow-step.mid .flow-desc{ color:#CADCFC; }
+  .flow-arrow{ align-self:center; color:#0C93A6; font-size:1.3rem; }
+
+  /* vehicle grid */
+  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:1vw 1.2vw; margin-top:2vh; }
+  .vcard{ background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:1.1rem 1.2rem; }
+  .vcard .dot-tag{ width:9px; height:9px; border-radius:50%; background:#0C93A6; display:inline-block; margin-right:.5rem; }
+  .vcard-title{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.98rem; }
+  .vcard-desc{ font-size:.8rem; color:var(--muted); margin-top:.35rem; }
+
+  /* swatches */
+  .swatch-row{ display:flex; align-items:stretch; gap:.9rem; margin-top:2.4vh; }
+  .swatch{ flex:0 0 180px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'Space Grotesk',sans-serif; }
+  .swatch-desc{ flex:1; background:var(--paper-tint); border-radius:10px; display:flex; align-items:center; padding:0 1.4rem; font-size:.92rem; color:var(--ink); }
+
+  .num-circle{ width:34px; height:34px; border-radius:50%; border:2px solid #0C93A6; color:#0C93A6; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'Space Grotesk',sans-serif; font-size:.95rem; flex:0 0 auto;}
+
+  .step-row{ display:flex; align-items:flex-start; gap:1rem; margin-bottom:1.1rem; }
+  .step-row .txt b{ font-family:'Space Grotesk',sans-serif; display:block; margin-bottom:.15rem; }
+  .step-row .txt span{ font-size:.9rem; color:var(--muted); }
+
+  .badge-num{ width:30px; height:30px; border-radius:8px; background:#0C93A6; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'Space Grotesk',sans-serif; font-size:.85rem; flex:0 0 auto; }
+
+  .recap-item{ display:flex; align-items:center; gap:1rem; margin-bottom:1.05rem; font-size:1.08rem; }
+  .recap-dot{ width:10px; height:10px; border-radius:50%; background:var(--amber); flex:0 0 auto; }
+
+  .quote-bar{ margin-top:2.4vh; padding:1rem 1.4rem; background:var(--navy); color:#fff; border-radius:10px; font-style:italic; font-size:.95rem; }
+
+  table.datatable{ border-collapse:collapse; width:100%; font-size:.85rem; }
+  table.datatable th, table.datatable td{ border:1px solid var(--line); padding:.45rem .5rem; text-align:center; }
+  table.datatable th{ background:#EFF1F6; color:var(--navy); font-family:'Space Grotesk',sans-serif; font-weight:700; }
+  table.datatable tr:nth-child(even) td{ background:var(--paper-tint); }
+  .callout-warn{ background:#FDF3E7; border:1px solid var(--amber); border-radius:8px; padding:.9rem 1.2rem; }
+  .callout-warn b{ color:#8A5A17; font-family:'Space Grotesk',sans-serif; display:block; margin-bottom:.3rem; }
+
+  kbd{ background:rgba(255,255,255,.1); border-radius:4px; padding:1px 6px; font-family:inherit; }
+  .hint{ position:absolute; top:4.5vh; left:7vw; font-size:.7rem; color:rgba(255,255,255,.35); }
+  .light .hint{ color:rgba(43,45,61,.35); }
+
+  @media (max-width:820px){
+    .content-cols{ flex-direction:column; }
+    .col + .col{ border-left:none; padding-left:0; border-top:1px solid var(--line); padding-top:1.2rem; margin-top:1.2rem; }
+    .grid3{ grid-template-columns:1fr 1fr; }
+    .flow{ flex-direction:column; }
+    .flow-arrow{ transform:rotate(90deg); }
+  }
+
+  /* ── Capa: fluxo com círculos numerados ── */
+  .cover-flow {
+    position: absolute;
+    bottom: 9vh; right: 7vw;
+    display: flex; align-items: center; gap: 0;
+  }
+  .cnode {
+    display: flex; flex-direction: column; align-items: center; gap: .65rem;
+  }
+  .cnode-circle {
+    width: 52px; height: 52px; border-radius: 50%;
+    border: 2px solid rgba(255,255,255,.3);
+    background: rgba(255,255,255,.06);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.1rem;
+    color: rgba(255,255,255,.55);
+  }
+  .cnode-circle.active {
+    width: 64px; height: 64px; font-size: 1.35rem;
+    background: var(--amber); border-color: var(--amber); color: #fff;
+    box-shadow: 0 0 0 7px rgba(255,171,64,.18);
+  }
+  .cnode-label {
+    font-family: 'Inter', sans-serif; font-size: .78rem; font-weight: 500;
+    color: rgba(255,255,255,.45); white-space: nowrap;
+  }
+  .cnode.cnode-active .cnode-label { color: rgba(255,255,255,.9); font-weight: 600; }
+  .cnode-line {
+    width: clamp(36px, 4vw, 60px);
+    border-top: 2px dashed rgba(255,255,255,.22);
+    margin-bottom: calc(.65rem + 26px);
+    flex-shrink: 0;
+  }
+  .cnode-line.tall { margin-bottom: calc(.65rem + 26px); }
+
+  /* ── Slide de Regras de Taxonomia ── */
+  .tax-ref-slide { display:flex!important; flex-direction:column!important; justify-content:flex-start!important; padding:0!important; }
+  .tax-ref-layout { display:flex; flex-direction:column; height:100%; width:100%; overflow:hidden; }
+  .tax-ref-header { flex:0 0 auto; padding:4.5vh 7vw 0.8rem; border-bottom:1px solid #E4E6EE; background:#fff; }
+  .tax-ref-controls { display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; }
+  .tax-ref-search {
+    display:flex; align-items:center; gap:8px;
+    background:#F7F8FB; border:1px solid #E4E6EE; border-radius:8px;
+    padding:7px 12px; flex:1; min-width:180px; max-width:340px;
+  }
+  .tax-ref-search input { border:none; outline:none; background:none; font-family:'Inter',sans-serif; font-size:13px; color:#2B2D3D; width:100%; }
+  .tax-ref-search input::placeholder { color:#83869A; }
+  .tax-chips { display:flex; gap:6px; flex-wrap:wrap; }
+  .tax-chip {
+    font-family:'Inter',sans-serif; font-size:12px; font-weight:500;
+    padding:5px 12px; border-radius:99px; border:1px solid #E4E6EE;
+    background:#fff; color:#83869A; cursor:pointer; transition:all .15s;
+    white-space:nowrap;
+  }
+  .tax-chip:hover { border-color:#494C67; color:#494C67; }
+  .tax-chip.active { background:#2B2D3D; color:#fff; border-color:#2B2D3D; }
+  .tax-ref-body { flex:1 1 auto; overflow-y:auto; padding:.8rem 7vw 2rem; }
+  .tax-ref-empty { display:none; text-align:center; padding:40px; color:#83869A; font-size:13px; }
+  .tax-ref-empty.show { display:block; }
+  .trule { background:#fff; border:1px solid #E4E6EE; border-radius:10px; margin-bottom:10px; overflow:hidden; }
+  .trule[data-hidden="true"] { display:none; }
+  .trule-head { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; cursor:pointer; gap:10px; }
+  .trule-head-left { display:flex; align-items:center; gap:10px; min-width:0; }
+  .tdot { width:7px; height:7px; border-radius:50%; background:#14D7FF; flex-shrink:0; }
+  .trule-title { font-family:'Space Grotesk',sans-serif; font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#2B2D3D; }
+  .trule-cat { font-family:'IBM Plex Mono',monospace; font-size:10px; color:#83869A; white-space:nowrap; }
+  .tstatus { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; padding:3px 9px; border-radius:99px; flex-shrink:0; }
+  .tstatus.approved { background:#E4F0EC; color:#1F6F5C; }
+  .tstatus.pending { background:#F5E9DA; color:#A8631E; }
+  .tchev { transition:transform .2s; flex-shrink:0; opacity:.4; }
+  .trule.open .tchev { transform:rotate(180deg); }
+  .trule-body { max-height:0; overflow:hidden; transition:max-height .25s ease; }
+  .trule.open .trule-body { max-height:2000px; }
+  .trule-inner { padding:0 16px 16px; border-top:1px solid #E4E6EE; }
+  .tslabel { font-family:'IBM Plex Mono',monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:#83869A; margin:14px 0 6px; }
+  .tstext { font-size:13px; line-height:1.6; color:#2B2D3D; margin:0; }
+  .tstring { font-family:'IBM Plex Mono',monospace; font-size:11.5px; line-height:2; background:#F6F7F4; border:1px solid #E4E6EE; border-radius:7px; padding:10px 13px; word-break:break-all; margin:4px 0 8px; }
+  .tstring .seg-new { background:#E4F0EC; color:#1F6F5C; padding:1px 4px; border-radius:3px; font-weight:500; }
+  .tstring .seg-remove { background:#F5E9DA; color:#A8631E; padding:1px 4px; border-radius:3px; font-weight:500; }
+  .tcallout { border-left:3px solid #FFAB40; background:#FFF5E6; border-radius:0 7px 7px 0; padding:10px 13px; }
+  .tcallout li { font-size:12.5px; line-height:1.6; color:#7A4B1A; padding:3px 0 3px 14px; position:relative; list-style:none; }
+  .tcallout li::before { content:"!"; position:absolute; left:0; top:3px; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:11px; color:#FFAB40; }
+  .tdef-row { display:flex; gap:10px; padding:8px 12px; align-items:baseline; background:#fff; border-bottom:1px solid #E4E6EE; }
+  .tdef-row:last-child { border-bottom:none; }
+  .tdef-code { font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500; color:#1F6F5C; background:#E4F0EC; padding:2px 7px; border-radius:4px; flex-shrink:0; min-width:36px; text-align:center; }
+  .tdef-desc { font-size:12.5px; color:#2B2D3D; line-height:1.5; }
+  .tdefs { border:1px solid #E4E6EE; border-radius:7px; overflow:hidden; }
+  .tlist { margin:0; padding:0; list-style:none; }
+  .tlist li { font-size:12.5px; line-height:1.6; padding:4px 0 4px 16px; position:relative; color:#2B2D3D; }
+  .tlist li::before { content:"–"; position:absolute; left:0; color:#83869A; }
+  .tsimple { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-family:'IBM Plex Mono',monospace; font-size:12px; background:#F6F7F4; border:1px solid #E4E6EE; border-radius:7px; padding:10px 13px; }
+  .tsimple .old { color:#83869A; text-decoration:line-through; }
+  .tsimple .new { background:#E4F0EC; color:#1F6F5C; padding:1px 6px; border-radius:3px; font-weight:500; }
+  .tmapping { display:flex; flex-direction:column; gap:6px; background:#F6F7F4; border:1px solid #E4E6EE; border-radius:7px; padding:10px 13px; }
+  .tmapping-row { display:flex; align-items:center; gap:8px; flex-wrap:wrap; font-family:'IBM Plex Mono',monospace; font-size:11.5px; border-bottom:1px solid #E4E6EE; padding:5px 0; }
+  .tmapping-row:last-child { border-bottom:none; }
+  .tmapping-row .cond { color:#83869A; }
+  .tmapping-row .result { background:#E4F0EC; color:#1F6F5C; padding:1px 6px; border-radius:3px; font-weight:500; }
+  .tdiff-toggle { display:inline-flex; background:#F6F7F4; border-radius:99px; padding:3px; margin:6px 0 10px; border:1px solid #E4E6EE; }
+  .tdiff-toggle button { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; padding:5px 12px; border-radius:99px; border:none; background:none; color:#83869A; cursor:pointer; transition:all .15s; }
+  .tdiff-toggle button.active { background:#fff; color:#2B2D3D; box-shadow:0 1px 2px rgba(0,0,0,.08); }
+  .ttax-view { display:none; }
+  .ttax-view.active { display:block; }
+  .tptabs { display:flex; gap:5px; flex-wrap:wrap; margin:8px 0 10px; }
+  .tptab { font-family:'Inter',sans-serif; font-size:11px; font-weight:600; padding:4px 10px; border-radius:5px; border:1px solid #E4E6EE; background:#fff; color:#83869A; cursor:pointer; transition:all .15s; }
+  .tptab:hover { border-color:#494C67; color:#494C67; }
+  .tptab.active { background:#2B2D3D; color:#fff; border-color:#2B2D3D; }
+  .tpp { display:none; }
+  .tpp.active { display:block; }
+  .tpsel { font-family:'Inter',sans-serif; font-size:12px; font-weight:600; color:#2B2D3D; background:#fff; border:1px solid #E4E6EE; border-radius:7px; padding:7px 28px 7px 10px; margin-bottom:10px; cursor:pointer; appearance:none; -webkit-appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2383869A' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 8px center; width:100%; max-width:280px; }
+  .tgp { display:none; }
+  .tgp.active { display:block; }
+  .tsublabel { font-family:'IBM Plex Mono',monospace; font-size:10px; color:#83869A; margin:10px 0 4px; }
+  .tlimits-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .tlimits-table th { text-align:left; padding:7px 9px; font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.05em; text-transform:uppercase; color:#83869A; border-bottom:1px solid #E4E6EE; }
+  .tlimits-table td { padding:7px 9px; border-bottom:1px solid #E4E6EE; color:#2B2D3D; vertical-align:top; }
+  .tlimits-table tr:last-child td { border-bottom:none; }
+  .tlimits-table .lt-p { font-weight:600; white-space:nowrap; }
+  .tlimits-table .lt-lim { font-family:'IBM Plex Mono',monospace; font-size:11.5px; white-space:nowrap; }
+  .rbadge { display:inline-block; font-size:10px; font-weight:600; padding:2px 8px; border-radius:99px; white-space:nowrap; }
+  .rbadge.sim { background:#F5E9DA; color:#A8631E; }
+  .rbadge.nao { background:#E4F0EC; color:#1F6F5C; }
+  .rbadge.cond { background:#E9EAE6; color:#565C57; }
+</style>
+</head>
+<body>
+<div class="viewer">
+  <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="deck" id="deck">
+
+    <!-- 1 : CAPA -->
+    <section class="slide dark active" style="justify-content:center; align-items:center; text-align:center;">
+      <div class="amb amb1"></div><div class="amb amb2"></div>
+      <div class="wordmark">STORM<span>X</span></div>
+
+      <div class="pill reveal" style="--i:0; margin:0 auto 1.8rem;">Unilever | Operação 2026</div>
+
+      <h1 class="headline reveal" style="--i:1; font-size:clamp(2.2rem,4.5vw,4rem); line-height:1.05; margin:0 0 1rem;">
+        Preenchimento do<br>RM_STORMX e do ADP
+      </h1>
+      <p class="subtitle reveal" style="--i:2; max-width:580px; margin:0 auto 5vh; font-size:1rem;">
+        Como conectar o plano de mídia, as abas por veículo e o dicionário de nomenclatura — sem retrabalho.
+      </p>
+
+      <!-- Diagrama de círculos -->
+      <div class="cover-flow reveal" style="--i:3;">
+
+        <div class="cnode">
+          <div class="cnode-circle">1</div>
+          <span class="cnode-label">Camphouse</span>
+        </div>
+
+        <div class="cnode-line"></div>
+
+        <div class="cnode cnode-active">
+          <div class="cnode-circle active">2</div>
+          <span class="cnode-label">RM_STORMX</span>
+        </div>
+
+        <div class="cnode-line"></div>
+
+        <div class="cnode">
+          <div class="cnode-circle">3</div>
+          <span class="cnode-label">StormX</span>
+        </div>
+
+      </div>
+
+      <div class="footer"<div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 2 : AGENDA -->
+    <section class="slide dark">
+      <div class="amb amb1"></div>
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.6rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Agenda</h1>
+      </div>
+      <ul class="plain" style="margin-top:1rem; max-width:760px;">
+        <li class="reveal" style="--i:2; font-size:1.02rem;">Fluxo geral — do Camphouse ao StormX</li>
+        <li class="reveal" style="--i:3; font-size:1.02rem;">RM_STORMX na prática — importar e preencher por veículo</li>
+        <li class="reveal" style="--i:4; font-size:1.02rem;">Código de cores — o que editar e o que não editar</li>
+        <li class="reveal" style="--i:5; font-size:1.02rem;">ADP — de onde vêm os valores e como validar nomenclatura</li>
+        <li class="reveal" style="--i:6; font-size:1.02rem;">Implementação, responsabilidades e Influenciadores (BRD/INF/UGC)</li>
+        <li class="reveal" style="--i:7; font-size:1.02rem;">Nossos SLAs</li>
+        <li class="reveal" style="--i:8; font-size:1.02rem;">Checklist final — erros comuns antes de enviar</li>
+      </ul>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 3 : FLUXO GERAL -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">O fluxo completo, do plano ao ad server</h1>
+      </div>
+      <div class="flow">
+        <div class="flow-step reveal" style="--i:2"><div class="flow-num">1</div><div class="flow-title">Camphouse</div><div class="flow-desc">Exportar o plano de mídia (opção Exportar Stormx)</div></div>
+        <div class="flow-arrow reveal" style="--i:3">→</div>
+        <div class="flow-step reveal" style="--i:3"><div class="flow-num">2</div><div class="flow-title">Plano - Camphouse</div><div class="flow-desc">Colar em C3 com Colar Especial → Valores</div></div>
+        <div class="flow-arrow reveal" style="--i:4">→</div>
+        <div class="flow-step mid reveal" style="--i:4"><div class="flow-num">3</div><div class="flow-title">Abas por veículo</div><div class="flow-desc">Google, Programmatic, YouTube, Meta e TikTok, Pinterest/Snapchat/X, Flashtalking</div></div>
+        <div class="flow-arrow reveal" style="--i:5">→</div>
+        <div class="flow-step reveal" style="--i:5"><div class="flow-num">4</div><div class="flow-title">StormX</div><div class="flow-desc">Processa a solicitação e devolve a taxonomia</div></div>
+      </div>
+      <p class="item-text reveal" style="--i:6; font-style:italic; margin-top:2.4vh;">Repita as etapas 3–4 sempre que novas linhas forem adicionadas no Camphouse.</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 4 : RM_STORMX x ADP -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">RM_STORMX x ADP</h1>
+      </div>
+      <div class="content-cols">
+        <div class="col reveal" style="--i:2">
+          <p class="item-label cyan">RM_STORMX</p>
+          <p class="item-text" style="font-style:italic; margin-bottom:.9rem;">Formulário operacional de solicitação</p>
+          <ul class="plain">
+            <li>Recebe o plano exportado do Camphouse</li>
+            <li>Abas por veículo para preencher a solicitação</li>
+            <li>Código de cores define o que editar</li>
+            <li>É o que você preenche todo dia</li>
+          </ul>
+        </div>
+        <div class="col reveal" style="--i:3">
+          <p class="item-label cyan">ADP</p>
+          <p class="item-text" style="font-style:italic; margin-bottom:.9rem;">Dicionário mestre de nomenclatura</p>
+          <ul class="plain">
+            <li>Mandated Dimensions & Values (regras globais)</li>
+            <li>Brand Pos Level / Campaign By Brand Pos</li>
+            <li>Alimenta os dropdowns do RM_STORMX</li>
+            <li>É a fonte de verdade para validar a string final</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 5 : IMPORTANDO O PLANO -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Importando o plano do Camphouse</h1>
+      </div>
+      <div style="max-width:900px; margin-top:1rem;">
+        <div class="step-row reveal" style="--i:2"><div class="num-circle">1</div><div class="txt"><b>Exportar</b><span>No Camphouse, exportar o plano usando a opção "Exportar Stormx". O sistema gera um arquivo Excel.</span></div></div>
+        <div class="step-row reveal" style="--i:3"><div class="num-circle">2</div><div class="txt"><b>Copiar</b><span>Na aba "Plano - Camphouse", copiar todos os dados do arquivo exportado.</span></div></div>
+        <div class="step-row reveal" style="--i:4"><div class="num-circle">3</div><div class="txt"><b>Colar como valores</b><span>Colar a partir da célula C3 usando Colar Especial → Valores. Evita conflitos de formatação.</span></div></div>
+      </div>
+      <p class="item-text reveal" style="--i:5; font-style:italic; border-top:1px solid var(--line); padding-top:1rem; max-width:900px;">Se novas linhas forem adicionadas no Camphouse: exporte novamente e copie apenas as linhas novas, colando abaixo da última linha (também com Colar Especial → Valores).</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 6 : ABAS POR VEICULO -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Selecionando a aba do veículo certo</h1>
+      </div>
+      <div class="grid3">
+        <div class="vcard reveal" style="--i:2"><span class="dot-tag"></span><span class="vcard-title">Google</span><div class="vcard-desc">Campanhas de busca e display Google</div></div>
+        <div class="vcard reveal" style="--i:2.3"><span class="dot-tag"></span><span class="vcard-title">Programmatic</span><div class="vcard-desc">Mídia programática (DV360, TradeDesk etc.)</div></div>
+        <div class="vcard reveal" style="--i:2.6"><span class="dot-tag"></span><span class="vcard-title">YouTube</span><div class="vcard-desc">Campanhas específicas de vídeo</div></div>
+        <div class="vcard reveal" style="--i:2.9"><span class="dot-tag"></span><span class="vcard-title">Meta e TikTok</span><div class="vcard-desc">Campanhas social</div></div>
+        <div class="vcard reveal" style="--i:3.2"><span class="dot-tag"></span><span class="vcard-title">Pinterest, Snapchat e X</span><div class="vcard-desc">Campanhas social</div></div>
+        <div class="vcard reveal" style="--i:3.5"><span class="dot-tag"></span><span class="vcard-title">Flashtalking</span><div class="vcard-desc">Ad server — tags e contadores</div></div>
+      </div>
+      <p class="item-text reveal" style="--i:4; font-style:italic; margin-top:1.6rem;">Preencha a coluna Linha (G) com o número correspondente no Plano - Camphouse — é isso que conecta os dados automaticamente.</p>
+      <p class="item-text reveal" style="--i:5; font-size:.82rem; color:#83869A;">Campanhas Google PMax têm regras específicas de taxonomia — consulte a seção <strong style="color:#494C67;">Regras de Taxonomia → Google — PMax</strong> nesta apresentação.</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 7 : CODIGO DE CORES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Código de cores — o que editar (e o que não)</h1>
+      </div>
+      <div class="swatch-row reveal" style="--i:2"><div class="swatch" style="background:#7B4B94; color:#fff;">Roxo</div><div class="swatch-desc">Selecionar via dropdown. Preenchimento obrigatório.</div></div>
+      <div class="swatch-row reveal" style="--i:3"><div class="swatch" style="background:#F2C94C; color:#494C67;">Amarelo</div><div class="swatch-desc">Preencher manualmente. Não usar caracteres especiais.</div></div>
+      <div class="swatch-row reveal" style="--i:4"><div class="swatch" style="background:#AEDFF7; color:#494C67;">Azul claro</div><div class="swatch-desc">Preenchido automaticamente pela planilha. Não editar.</div></div>
+      <div class="swatch-row reveal" style="--i:5"><div class="swatch" style="background:#B0B7BD; color:#494C67;">Cinza</div><div class="swatch-desc">Preenchido automaticamente pelo StormX.</div></div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 8 : LINHA G -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">A coluna Linha (G): o elo entre as abas</h1>
+      </div>
+      <div class="content-cols" style="align-items:stretch;">
+        <div class="col reveal" style="--i:2">
+          <p class="item-label">Plano - Camphouse</p>
+          <p style="font-size:.92rem; line-height:2; color:var(--ink);">
+            <b style="color:#0C93A6;">Linha 12</b> → Brand X, CN00456, Google Search...<br>
+            <b style="color:#0C93A6;">Linha 13</b> → Brand X, CN00456, Meta...<br>
+            <b style="color:#0C93A6;">Linha 14</b> → Brand X, CN00456, YouTube...
+          </p>
+          <p class="item-text" style="font-style:italic;">Cada linha do plano exportado tem um número — é essa referência que você informa na aba do veículo.</p>
+        </div>
+        <div class="col reveal" style="--i:3">
+          <p class="item-label">Aba do veículo (ex: Google)</p>
+          <p style="color:#0C93A6; font-weight:700; font-size:.95rem;">Coluna G — Linha: 12</p>
+          <p class="item-text">Ao preencher esse número, a planilha puxa automaticamente os dados do plano (marca, CN Code, veículo) para os campos azul claro dessa linha.</p>
+          <p class="item-text" style="font-style:italic;">Depois disso, é só completar os campos roxo (dropdown) e amarelo (manual).</p>
+        </div>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 9 : ADP DROPDOWNS -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">De onde vêm os valores dos dropdowns</h1>
+      </div>
+      <div class="grid3" style="grid-template-columns:repeat(3,1fr); margin-top:1.6rem;">
+        <div class="reveal" style="--i:2"><p class="item-label">Mandated Dimensions & Values</p><p class="item-text">Regras globais de nomenclatura e codificação do ADP — a base de tudo.</p></div>
+        <div class="reveal" style="--i:3"><p class="item-label">Brand Pos Level</p><p class="item-text">Cruza marca, posicionamento e mercado — define o "Brand Position" usado nas strings.</p></div>
+        <div class="reveal" style="--i:4"><p class="item-label">Campaign By Brand Pos</p><p class="item-text">Lista de campanhas e CN Codes vinculados a cada posicionamento de marca.</p></div>
+      </div>
+      <p class="item-text reveal" style="--i:5; font-style:italic; border-top:1px solid var(--line); padding-top:1rem; margin-top:.8rem;">O RM_STORMX consome esses valores para montar os dropdowns roxo. Se um valor não aparece na lista, o problema costuma estar no cadastro dentro do ADP — não no RM_STORMX.</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 10 : VALIDANDO -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Validando a string antes de enviar</h1>
+      </div>
+      <div style="max-width:920px;">
+        <div class="step-row reveal" style="--i:2"><div class="num-circle">1</div><div class="txt"><span>Antes de enviar a solicitação, confira a string gerada contra as abas de taxonomia (Taxo Google, Taxo YouTube, Taxo Programmatic, Taxo Meta e Tiktok, Taxo Pinterest/Snapchat/X, Taxo Flashtalking).</span></div></div>
+        <div class="step-row reveal" style="--i:3"><div class="num-circle">2</div><div class="txt"><span>Use o ADP como fonte de verdade: se a nomenclatura no RM_STORMX diverge do dicionário mandatório, corrija no RM_STORMX — o ADP não deve ser editado por engano.</span></div></div>
+        <div class="step-row reveal" style="--i:4"><div class="num-circle">3</div><div class="txt"><span>Campanhas novas (sem CN Code ainda) aparecem em "Missing Campaigns" — sinalize para o time responsável antes de seguir com o preenchimento.</span></div></div>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 11 : ERROS RECORRENTES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Erros recorrentes de nomenclatura</h1>
+      </div>
+      <div class="content-cols">
+        <div class="col">
+          <div class="reveal" style="--i:2"><p class="item-label red">Caracteres proibidos</p><p class="item-text">Não usar em nenhum campo: acentos, apóstrofo ('), travessão (– ou —), "_" (underscore) ou "|" (pipe). Use apenas letras sem acentuação, números e hífen (-).</p></div>
+          <div class="reveal" style="--i:3"><p class="item-label red">Campaign Name genérico</p><p class="item-text">Proibido usar nome genérico (ex.: "Always On Non Search"), exceto enquanto o Campaign Name oficial do Global ainda não foi aprovado.</p></div>
+        </div>
+        <div class="col">
+          <div class="reveal" style="--i:2.4"><p class="item-label red">Ad Name duplicado</p><p class="item-text">Não é permitido usar o mesmo Ad Name em mais de um Ad Group, mesmo com asset idêntico. Cada Ad Group deve ter seu próprio Ad Name.</p></div>
+          <div class="reveal" style="--i:3.4"><p class="item-label red">Cópia de Ad Group/Ad Name</p><p class="item-text">Não duplicar direto na plataforma (evite sufixos "cópia"/"copy"). Mesmo com config. idêntica, solicitar sempre uma nova taxonomia à StormX.</p></div>
+        </div>
+      </div>
+      <p class="item-text reveal" style="--i:5; font-style:italic; border-top:1px solid var(--line); padding-top:1rem;">Essas práticas comprometem a leitura dos dados e sujam o banco — sempre exigem retrabalho de correção.</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 12 : REGRAS IMPORTANTES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Regras importantes</h1>
+      </div>
+      <div style="max-width:960px;">
+        <div class="step-row reveal" style="--i:2"><div class="badge-num">•</div><div class="txt"><b>Só a StormX cria taxonomia</b><span>É proibido preencher o ADP manualmente. Se chegar um ADP preenchido, a StormX solicita que a demanda seja descrita na task do Jira.</span></div></div>
+        <div class="step-row reveal" style="--i:3"><div class="badge-num">•</div><div class="txt"><b>Não subir campanha sem taxonomia</b><span>Só em caso de urgência, com autorização do cliente por e-mail — e é obrigatório solicitar a taxonomia via Jira e corrigir a linha em até 24h.</span></div></div>
+        <div class="step-row reveal" style="--i:4"><div class="badge-num">•</div><div class="txt"><b>Taxonomia genérica é exceção</b><span>Só aceita fora do horário comercial/feriado ou campanha urgente sem informações completas. Ajuste para a versão correta em até 24h úteis.</span></div></div>
+        <div class="step-row reveal" style="--i:5"><div class="badge-num">•</div><div class="txt"><b>Campo Extra é a única edição permitida</b><span>Depois de criada, a taxonomia não pode ser alterada — exceto o Campo Extra, que a agência pode ajustar. Toda alteração deve ser avisada à StormX em até 24h.</span></div></div>
+        <div class="step-row reveal" style="--i:6"><div class="badge-num">•</div><div class="txt"><b>Responder o Jira quando solicitado</b><span>Se a StormX pede mais informação no ticket para seguir com a taxonomia, a demanda fica parada até a resposta do mídia — isso atrasa a criação e compromete o SLA.</span></div></div>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 12c : IMPLEMENTACAO RESPONSABILIDADES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Implementação: responsabilidades</h1>
+      </div>
+      <div style="max-width:1080px;">
+        <div class="reveal" style="--i:2; margin-bottom:1.4rem;"><p class="item-label cyan">Aprovação de criativos</p><p class="item-text">A StormX pode apoiar na revisão, mas quem valida o criativo é o mídia — é quem conhece as peculiaridades da peça (CTA, destino/URL correto, formato). A responsabilidade final pela aprovação do criativo é do mídia.</p></div>
+        <div class="reveal" style="--i:3; margin-bottom:1.4rem;"><p class="item-label cyan">Copiar e colar o que vem na RM</p><p class="item-text">Ao implementar na plataforma, o mídia deve copiar e colar exatamente a taxonomia gerada na RM — nunca retranscrever ou digitar de novo. Reduz erro de transcrição e mantém a string idêntica à validada.</p></div>
+        <div class="reveal" style="--i:4"><p class="item-label cyan">Informar os contatos de envio</p><p class="item-text">Sempre indicar para quem os materiais criados devem ser enviados — principalmente quando vêm de Ad Server (Flashtalking). Sem o contato certo, a entrega do material trava.</p></div>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+
+    <!-- 12b : CLASSIFICACAO DE INFLUENCIADORES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Classificação de Influenciadores — BRD, INF e UGC</h1>
+      </div>
+      <div style="max-width:1080px; margin-top:.4rem;">
+        <div class="step-row reveal" style="--i:2">
+          <div class="badge-num" style="background:#0C93A6; border-radius:6px; width:52px;">BRD</div>
+          <div class="txt"><b>Sem influenciador</b><span>Conteúdo da marca (Brand Say). Não deve ter nenhum link de influenciador associado.</span></div>
+        </div>
+        <div class="step-row reveal" style="--i:3">
+          <div class="badge-num" style="background:var(--navy); border-radius:6px; width:52px;">INF</div>
+          <div class="txt"><b>Com influenciador — handle da marca + do influenciador</b><span>Usa Brand Handle e Influencer Handle no Galileo. Link do influenciador é obrigatório.</span></div>
+        </div>
+        <div class="step-row reveal" style="--i:4">
+          <div class="badge-num" style="background:var(--amber); color:var(--navy); border-radius:6px; width:52px;">UGC</div>
+          <div class="txt"><b>Com influenciador — apenas handle do influenciador</b><span>Usa somente o Influencer Handle no Galileo. Link do influenciador é obrigatório.</span></div>
+        </div>
+      </div>
+      <div class="reveal" style="--i:5; max-width:1080px; margin-top:.6rem; padding:.9rem 1.2rem; background:#FDECEA; border:1px solid var(--red); border-radius:8px;">
+        <p style="margin:0; font-size:.9rem; font-style:italic; color:#8A2E2A;">Erro mais comum: classificar como BRD uma campanha que na verdade tem influenciador (ou o contrário). Antes de classificar, confirme se existe link de influenciador — se existir, a classificação nunca pode ser BRD.</p>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 13 : DATAS E ALTERACOES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Datas e alterações — cuidados importantes</h1>
+      </div>
+      <div class="reveal" style="--i:2; max-width:1080px;">
+        <p class="item-label red">Formato de data inconsistente</p>
+        <p class="item-text">Confira se "Data de Início" e "Data Fim" estão no mesmo formato em todas as linhas do Plano - Camphouse. É comum vir misturado — algumas em ISO (2026-05-01), outras em US (05/31/2026), na mesma coluna. Pode gerar leitura errada de data na taxonomia.</p>
+      </div>
+      <div class="reveal" style="--i:3; max-width:1080px; border-top:1px solid var(--line); padding-top:.9rem; margin-top:.3rem;">
+        <p class="item-label red">Alteração na coluna Linha (G)</p>
+        <p class="item-text">Se o pedido muda o valor da coluna G, não trate como alteração simples: o G puxa automaticamente os campos azul claro daquela linha, e mudar o G muda esses campos também — mesmo que o pedido só liste outras colunas. Cancele a linha e crie uma nova solicitação.</p>
+      </div>
+      <div class="reveal" style="--i:4; max-width:1080px; border-top:1px solid var(--line); padding-top:.9rem; margin-top:.3rem;">
+        <p class="item-label red">Mensagem "Verificar Plano de Mídia"</p>
+        <p class="item-text">É um SEERRO: em vez de mostrar #N/A quando a fórmula não encontra correspondência no Plano - Camphouse, a planilha mostra esse aviso. Se aparecer em qualquer coluna, volte à aba Plano/Plano - Camphouse, confira a Linha (G) e ajuste antes de enviar.</p>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 13b : SLA RM COMPLETA -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Nossos SLAs — RM Completa</h1>
+      </div>
+      <div class="reveal" style="--i:2; max-width:1100px;">
+        <table class="datatable">
+          <tr><th>Qtd de linhas</th><th>Criação</th><th>Alteração</th><th>Pausas</th><th>QA (linha implementada)</th><th>QA (total)</th></tr>
+          <tr><td>10</td><td>45min</td><td>20min</td><td>10m</td><td>3 dias</td><td>—</td></tr>
+          <tr><td>40</td><td>2h</td><td>1h</td><td>10m</td><td>5 dias</td><td>8 dias</td></tr>
+          <tr><td>100</td><td>5h</td><td>3h</td><td>10m</td><td>10 dias</td><td>15 dias</td></tr>
+          <tr><td>200</td><td>8h</td><td>5h</td><td>20m</td><td>10 dias</td><td>15 dias</td></tr>
+          <tr><td>500</td><td>16h</td><td>10h</td><td>20m</td><td>15 dias</td><td>20 dias</td></tr>
+        </table>
+        <p class="item-text" style="font-style:italic; margin-top:.7rem;">Prazos considerando a RM completa (sem pendências) e assets recebidos.</p>
+      </div>
+      <div class="callout-warn reveal" style="--i:3; max-width:1100px; margin-top:.6rem;">
+        <b>Dores que afetam o prazo</b>
+        <span style="font-size:.9rem; color:var(--ink);">RM incompleta, sem asset ou tarefa não criada no Jira: nesses casos, o prazo passa a depender do mídia (a ser definido) — o SLA acima só vale quando a solicitação chega completa.</span>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 13c : SLA FLASHTALKING -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Nossos SLAs — Flashtalking e regras gerais</h1>
+      </div>
+      <div class="content-cols">
+        <div class="col reveal" style="--i:2">
+          <p class="item-label cyan">Flashtalking · Tags</p>
+          <table class="datatable">
+            <tr><th>Linhas</th><th>Criação</th><th>Alteração</th></tr>
+            <tr><td>10</td><td>45min +48h</td><td>20min +4h</td></tr>
+            <tr><td>40</td><td>2h +48h</td><td>1h +4h</td></tr>
+            <tr><td>100</td><td>5h +48h</td><td>3h +4h</td></tr>
+          </table>
+          <p class="item-text" style="font-size:.82rem; font-style:italic; margin-top:.5rem;">"+prazo" = retorno de resposta da Flashtalking. Assets vão para a StormX, que solicita a criação à Flash; preview avaliado pelo mídia.</p>
+        </div>
+        <div class="col reveal" style="--i:3">
+          <p class="item-label cyan">Flashtalking · Contadores</p>
+          <table class="datatable">
+            <tr><th>Linhas</th><th>Criação</th><th>Alteração</th></tr>
+            <tr><td>10</td><td>45min +4h</td><td>20min +4h</td></tr>
+            <tr><td>100</td><td>5h +4h</td><td>3h +4h</td></tr>
+            <tr><td>500</td><td>16h +4h</td><td>10h +4h</td></tr>
+          </table>
+          <p class="item-text" style="font-size:.82rem; font-style:italic; margin-top:.5rem;">Prazos de contadores já incluem o retorno de resposta da Flashtalking (até 4h).</p>
+        </div>
+      </div>
+      <div class="reveal" style="--i:4; max-width:1100px; border-top:1px solid var(--line); padding-top:.9rem; margin-top:1rem;">
+        <p class="item-label">Regras gerais de atendimento</p>
+        <ul class="plain">
+          <li>Até 16h: atendimento no mesmo dia útil.</li>
+          <li>Após 16h: atendimento no próximo dia útil.</li>
+          <li>Eventualidades fora da rotina podem ser combinadas caso a caso com o time StormX.</li>
+        </ul>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 14 : CHECKLIST -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Checklist final e erros comuns</h1>
+      </div>
+      <div class="content-cols">
+        <div class="col reveal" style="--i:2">
+          <p class="item-label cyan">Obrigatório preencher</p>
+          <ul class="plain"><li>Status da solicitação</li><li>Solicitado por (responsável)</li><li>Data de envio</li></ul>
+          <p class="item-text" style="font-style:italic; font-size:.82rem; margin-top:.8rem;">O acesso ao Jira é feito por e-mail de time (genérico e compartilhado) — por isso, o nome de quem está pedindo precisa sempre estar no campo Solicitante. Sem isso, ninguém sabe quem fez a solicitação.</p>
+        </div>
+        <div class="col reveal" style="--i:3">
+          <p class="item-label red">Erros comuns a evitar</p>
+          <ul class="plain">
+            <li>Usar caracteres especiais em campos amarelos</li>
+            <li>Editar campos azul claro manualmente</li>
+            <li>Esquecer de exportar de novo ao adicionar linhas</li>
+            <li>Colar sem usar Colar Especial → Valores</li>
+            <li>Formato de data inconsistente no plano colado</li>
+            <li>Alterar a coluna G sem cancelar/recriar a linha</li>
+            <li>Ignorar "Verificar Plano de Mídia" em alguma coluna</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote-bar reveal" style="--i:4">Regra de ouro: consistência. Toda e qualquer mídia precisa ter sempre o mesmo comportamento em qualquer situação, seguindo as originais já validadas.</div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 15 : REGRAS DE TAXONOMIA -->
+    <section class="slide light tax-ref-slide" style="padding:0; overflow:hidden;">
+      <div class="wordmark" style="position:absolute;top:4.5vh;right:6vw;z-index:20;">STORM<span style="color:var(--cyan)">X</span></div>
+      <div class="tax-ref-layout">
+        <div class="tax-ref-header">
+          <div class="pill" style="margin-bottom:.6rem;width:max-content;">Referência Técnica</div>
+          <h1 class="headline" style="color:var(--cyan);font-size:clamp(1.4rem,2.4vw,2.2rem);margin:0 0 .2rem 0;">Regras de Taxonomia</h1>
+          <p style="color:var(--muted);font-size:.82rem;margin:0 0 .7rem 0;">Exceções e quebras por plataforma. Clique numa regra para ver os detalhes.</p>
+          <div class="tax-ref-controls">
+            <div class="tax-ref-search">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input id="taxSearch" type="text" placeholder="Buscar regra, plataforma, campo...">
+            </div>
+            <div class="tax-chips" id="taxChips"></div>
+          </div>
+        </div>
+        <div class="tax-ref-body" id="taxRules"></div>
+        <div class="tax-ref-empty" id="taxEmpty">Nenhuma regra encontrada.</div>
+      </div>
+    </section>
+
+    <!-- 16 : RECAP -->
+    <section class="slide dark">
+      <div class="amb amb1"></div><div class="amb amb2"></div>
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Recapitulando</div>
+      <h1 class="headline reveal" style="--i:1; margin-top:1.6rem;">O que levar desse treinamento</h1>
+      <div style="margin-top:1.6rem; max-width:820px;">
+        <div class="recap-item reveal" style="--i:2"><span class="recap-dot"></span>RM_STORMX = onde você preenche a solicitação por veículo</div>
+        <div class="recap-item reveal" style="--i:3"><span class="recap-dot"></span>ADP = de onde vêm os valores e como validar a nomenclatura</div>
+        <div class="recap-item reveal" style="--i:4"><span class="recap-dot"></span>Linha (G) conecta o Plano - Camphouse às abas de veículo — e mudar o G exige cancelar + recriar</div>
+        <div class="recap-item reveal" style="--i:5"><span class="recap-dot"></span>Código de cores define o que editar — e o que nunca editar</div>
+      </div>
+      <p class="subtitle reveal" style="--i:6; margin-top:1.6rem;">Dúvidas? Fale com o time StormX / Taxonomia.</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+  </div>
+
+  <div class="controls">
+    <button class="navbtn" id="prevBtn" aria-label="Anterior">‹</button>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="counter">01 / 14</div>
+    <button class="navbtn" id="nextBtn" aria-label="Próximo">›</button>
+    <button class="fsbtn" id="fsBtn" title="Tela cheia (F)">⛶</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  const dotsWrap = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const progressFill = document.getElementById('progressFill');
+  let current = 0;
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(d);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function pad(n){ return n < 10 ? '0'+n : ''+n; }
+
+  function restartReveals(slide){
+    const reveals = slide.querySelectorAll('.reveal');
+    reveals.forEach(el => {
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+  }
+
+  function goTo(i){
+    if(i < 0 || i >= total || i === current) return;
+    const dir = i > current ? 1 : -1;
+    slides[current].classList.remove('active');
+    slides[current].classList.toggle('prevslide', dir === 1);
+    slides[i].classList.remove('prevslide');
+    slides[i].classList.add('active');
+    restartReveals(slides[i]);
+    dots[current].classList.remove('active');
+    dots[i].classList.add('active');
+    current = i;
+    counter.textContent = pad(current+1) + ' / ' + pad(total);
+    progressFill.style.width = ((current+1)/total*100) + '%';
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => goTo(current-1));
+  document.getElementById('nextBtn').addEventListener('click', () => goTo(current+1));
+
+  document.addEventListener('keydown', (e) => {
+    if(['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); goTo(current+1); }
+    else if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); goTo(current-1); }
+    else if(e.key === 'Home'){ goTo(0); }
+    else if(e.key === 'End'){ goTo(total-1); }
+    else if(e.key.toLowerCase() === 'f'){ toggleFullscreen(); }
+  });
+
+  let touchStartX = null;
+  document.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX);
+  document.addEventListener('touchend', e => {
+    if(touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(dx) > 60){ dx < 0 ? goTo(current+1) : goTo(current-1); }
+    touchStartX = null;
+  });
+
+  function toggleFullscreen(){
+    if(!document.fullscreenElement){ document.documentElement.requestFullscreen().catch(()=>{}); }
+    else{ document.exitFullscreen(); }
+  }
+  document.getElementById('fsBtn').addEventListener('click', toggleFullscreen);
+
+  // init
+  counter.textContent = pad(1) + ' / ' + pad(total);
+  progressFill.style.width = (1/total*100) + '%';
+  restartReveals(slides[0]);
+})();
+</script>
+<script>
+(function(){
+const TAX_RULES = [
+  {
+    id: "taxonomia-por-plataforma",
+    category: "Geral",
+    title: "Geral — Taxonomia por Plataforma",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "Cada plataforma possui sua própria estrutura de quebra de taxonomia, e elas não são intercambiáveis.",
+    solucaoLabel: "Regra",
+    solucao: "Não é permitido, em nenhuma hipótese, utilizar a taxonomia de uma plataforma em outra, como aplicar a taxonomia do Meta em uma campanha de TikTok, ou vice-versa. Essa prática compromete a leitura dos dados e suja o banco de dados, exigindo retrabalho de correção.",
+    notaLabel: "Global x Local",
+    nota: "O Galileo é a parte Global da taxonomia, separada por _, e o freetext é a parte Local, separada por |. Tudo que é Local pode ser alterado sem passar pelo Global, precisando apenas da aprovação da UL Brasil.",
+    important: [
+      "Proibido subir campanha sem a taxonomia criada pela StormX."
+    ],
+    exception: [
+      "Caso haja uma campanha urgente e não houver tempo para a criação da taxonomia, é obrigatório comunicar a StormX por e-mail, com a autorização do cliente, informando a maneira como a taxonomia será implementada.",
+      "Posteriormente, é necessário solicitar a taxonomia via Jira e corrigir a linha na plataforma. Prazo de até 24h."
+    ],
+    observacao: "Confirme sempre a estrutura de taxonomia específica da plataforma antes de implementar a campanha."
+  },
+  {
+    id: "ad-name-duplicado",
+    category: "Geral",
+    title: "Geral — Ad Name Duplicado entre Ad Groups",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "Cada Ad Group deve ter seu próprio Ad Name, com um ID correspondente e exclusivo, mantendo a integridade dos dados.",
+    solucaoLabel: "Regra",
+    solucao: "Não é permitido, sob nenhuma circunstância, utilizar o mesmo Ad Name (mesmo ID) em mais de um Ad Group, mesmo quando o asset utilizado é idêntico. Cada Ad Name deve ser solicitado individualmente à StormX."
+  },
+  {
+    id: "copia-ad-group-name",
+    category: "Geral",
+    title: "Geral — Cópia de Ad Group ou Ad Name",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "Duplicar Ad Groups ou Ad Names diretamente na plataforma descaracteriza a taxonomia criada pela StormX.",
+    solucaoLabel: "Regra",
+    solucao: "Alguns veículos adicionam automaticamente termos como \"cópia\" ou \"copy\" ao duplicar, o que gera inconsistências na base de dados. Mesmo quando a configuração do Ad Group ou do anúncio é exatamente a mesma, é obrigatório solicitar uma nova taxonomia à StormX, já que cada Ad Name possui um ID único que precisa estar corretamente relacionado ao seu Ad Group.",
+    important: [
+      "Não duplicar Ad Groups ou Ad Names.",
+      "Sempre solicitar uma nova taxonomia à StormX."
+    ],
+    observacao: "A duplicação mantém uma estrutura que não corresponde à taxonomia cadastrada, comprometendo a rastreabilidade das campanhas, a integridade dos dados e a qualidade dos relatórios."
+  },
+  {
+    id: "caracteres-especiais",
+    category: "Geral",
+    title: "Geral — Proibição de Caractere Especial",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "Acentuação, caracteres especiais, apóstrofo, travessão, underscore e pipe comprometem a estrutura da taxonomia e geram inconsistências durante o QA.",
+    notUse: [
+      "Acentos (á, é, í, ó, ú, ã, ê, ç, etc.)",
+      "Apóstrofo (')",
+      "Travessão (—)",
+      "Caracteres especiais (@, #, %, &, /, ?, !, etc.)",
+      "\"_\" (underscore)",
+      "\"|\" (pipe)"
+    ],
+    important: [
+      "Para indicar duração em segundos, utilize \"s\". Exemplo, 10s é correto e 10' é incorreto.",
+      "Quando necessário, utilize hífen (-) e nunca travessão.",
+      "Utilize apenas letras sem acentuação, números e hífen (-), seguindo o padrão definido pela StormX."
+    ]
+  },
+  {
+    id: "limite-caracteres",
+    category: "Geral",
+    title: "Geral — Limite de Caracteres",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "A taxonomia criada pela StormX não deve ser reduzida ou adaptada pelo mídia para atender limitações da plataforma.",
+    solucaoLabel: "Regra",
+    solucao: "Caso algum veículo possua restrição de caracteres ou qualquer limitação técnica que impeça a implementação da taxonomia padrão, a StormX deve ser comunicada antes da implementação para avaliar e definir a melhor solução. Somente a StormX está autorizada a definir adaptações na estrutura da taxonomia.",
+    limits: [
+      { platform: "Meta", field: "—", limit: "400 caracteres", reducao: "Não" },
+      { platform: "TikTok", field: "—", limit: "512 caracteres", reducao: "Não" },
+      { platform: "X (Twitter)", field: "—", limit: "255 caracteres", reducao: "Não" },
+      { platform: "X (Twitter)", field: "Ad Name — Amplify", limit: "Não existe", reducao: "Condição no banco" },
+      { platform: "Pinterest", field: "—", limit: "255 caracteres", reducao: "Não" },
+      { platform: "Globo", field: "Nome do criativo", limit: "200 caracteres", reducao: "Não" },
+      { platform: "Mercado Livre — Compra Direta", field: "IO, Ad Group e Ad Name (Brand Ads)", limit: "100 caracteres", reducao: "Sim" },
+      { platform: "Mercado Livre — Compra Direta", field: "IO, Ad Group (Product Ads)", limit: "100 caracteres", reducao: "Sim" },
+      { platform: "Mercado Livre — Compra Direta", field: "Ad Name (Product Ads)", limit: "Não existe", reducao: "Condição no banco" },
+      { platform: "Mercado Livre — Programática", field: "IO", limit: "200 caracteres", reducao: "Não" },
+      { platform: "Mercado Livre — Programática", field: "Line Item", limit: "200 caracteres", reducao: "Não" },
+      { platform: "Mercado Livre — Programática", field: "Ad Name", limit: "120 caracteres", reducao: "Não" },
+      { platform: "Kwai", field: "Campanha, conjunto e anúncio", limit: "100 caracteres", reducao: "Sim" },
+      { platform: "Amazon Sponsored", field: "Ad Name (alfanumérico, termina em H. Ex.: AMZN1346H)", limit: "12 caracteres", reducao: "Sim" },
+      { platform: "YouTube (Insertion Order)", field: "Deals do YT (Line ups, masthead, first position, YT Select)", limit: "120 caracteres", reducao: "Sim" },
+      { platform: "YouTube (Insertion Order)", field: "Compra sem reserva (VVC, VRC, TF, Shorts, Non-skip)", limit: "240 caracteres", reducao: "Não" },
+      { platform: "YouTube (Insertion Order)", field: "Display e vídeo", limit: "240 caracteres", reducao: "Não" },
+      { platform: "YouTube (Insertion Order)", field: "Nível dos ad groups", limit: "240 caracteres", reducao: "Não" },
+      { platform: "YouTube (Item de Linha)", field: "Grupo de anúncios", limit: "255 caracteres", reducao: "Não" },
+      { platform: "Google Ads", field: "Ad Name — Search", limit: "Não existe", reducao: "Condição no banco" },
+      { platform: "Google Ads", field: "Ad Group e Ad Name — PMax", limit: "Não é possível extrair", reducao: "Condição no banco" }
+    ],
+    taxonomyGroups: [
+      {
+        label: "Mercado Livre — Product Ads",
+        items: [
+          { sublabel: "Campaign (máximo 100 caracteres)", string: "CN-Code-Campaign-Name_Brand-Name_Market-Short-Name-(PCat)_Objective_CampaignLocal | Brandlift-YesorNo | Pilar-da-Campanha | MidiaCampaignLocal-Extra" },
+          { sublabel: "Ad Group (máximo 100 caracteres)", string: "Placement-Type_Creative-Name_Landing-Page-Type_Retailer_Influencer_CampaignLocal | ObjetivodeOtimização | Publisher | BuyingType | Location-Type | Location | AudienceType | MidiaGroup-Extra" },
+          { sublabel: "Ad Name", string: "Não customizável. Sem taxonomia aplicável." }
+        ]
+      },
+      {
+        label: "Mercado Livre — Brand Ads",
+        items: [
+          { sublabel: "Campaign (máximo 100 caracteres)", string: "CN-Code-Campaign-Name_Brand-Name_Market-Short-Name-(PCat)_Objective_CampaignLocal | Brandlift-YesorNo | Pilar-da-Campanha | MidiaCampaignLocal-Extra" },
+          { sublabel: "Ad Group (máximo 100 caracteres)", string: "Placement-Type_Creative-Name_Landing-Page-Type_Retailer_Influencer_CampaignLocal | ObjetivodeOtimização | Publisher | BuyingType | Location-Type | Location | AudienceType | MidiaGroup-Extra" },
+          { sublabel: "Ad Name (máximo 100 caracteres)", string: "Creative-Name_Format-Type(freetext) | Position | Influencer-or-Brand | Influencer-Name | Seconds | MidiaAdName-extra" }
+        ]
+      },
+      {
+        label: "Mercado Livre — Programática",
+        items: [
+          { sublabel: "IO (máximo 200 caracteres)", string: "CN-Code-Campaign-Name_Market-Short-Name-(PCat)_Brand-Name_Objective_CampaignLocal|Brandlift-YesorNo|Publisher|LocationType|Location|Pilar-da-Campanha|MidiaIO-Extra" },
+          { sublabel: "Line Item (máximo 200 caracteres)", string: "Buy-Model_Targeting-Strategy_Audience-Party_Audience-Name_Gender_Age-(lower-upper)_Device-Type_ObjetivodeOtimização|AudienceType|BuyingType|MidiaLineitem-Extra" },
+          { sublabel: "Ad Name (máximo 120 caracteres)", string: "Placement-Type_Creative-Name_Landing-Page-Type_Retailer_Influencer_FormatGroup|Position|InfluencerorBrand|InfluencerName|Seconds|TipodeTag|MidiaAdName-Extra" }
+        ]
+      },
+      {
+        label: "Flashtalking (redução de caracteres)",
+        items: [
+          { sublabel: "Campaign (remoção de Pilar da Campanha, Campaign Local e Brandlift)", string: "CN-Code-Campaign-Name_Brand-Name_Market-Short-Name-(PCat)_Objective_MidiaCampaignLocal-Extra" },
+          { sublabel: "Ad Group", string: "Placement-Type_Creative-Name_Landing-Page-Type_Retailer_Influencer_CampaignLocal | ObjetivodeOtimização | Publisher | BuyingType | Location-Type | Location | AudienceType | MidiaGroup-Extra" },
+          { sublabel: "Ad Name (inclusão de Pilar da Campanha, Campaign Local e Brandlift)", string: "Creative-Name_Format-Type(freetext) | Position | Brandlift-YesorNo | Influencer-or-Brand | Influencer-Name | Seconds | Pilar da Campanha | PI | MidiaAdName-extra" }
+        ]
+      },
+      {
+        label: "YouTube — DV360",
+        items: [
+          { sublabel: "IO — Deals do YT (remoção do Campaign Name, mantendo apenas o CN Code)", string: "CN-Code_Market-Short-Name-(PCat)_Brand-Name_Buy-Model_Objective_CampaignLocal|Brandlift-YesorNo|Publisher|Pilar-da-Campanha|MidiaIO-Extra" }
+        ]
+      },
+      {
+        label: "YouTube — Google Ads",
+        items: [
+          { sublabel: "Campaign — Deals do YT (remoção do Campaign Name, mantendo apenas o CN Code)", string: "CN-Code_Language_Market-Short-Name-(PCat)_Objective_Format-Type_Buy-Type_Placement-Type_CampaignLocal|BrandName|Brandlift-YesorNo|Pilar-da-Campanha|MidiaCampaignLocal-Extra" }
+        ]
+      }
+    ],
+    nota: "A redução de Flashtalking listada aqui é específica para contornar o limite de caracteres, e é diferente da limitação estrutural da API descrita na regra Flashtalking — Limitações de Taxonomia via API (essa remove Ad Group e usa \"na\" em campos que mudam entre linhas).",
+    important: [
+      "Não reduzir a taxonomia por conta própria.",
+      "Não remover campos para atender limitações da plataforma.",
+      "Sempre informar a StormX quando houver restrições técnicas de um novo veículo ou plataforma."
+    ]
+  },
+  {
+    id: "taxonomia-generica",
+    category: "Geral",
+    title: "Geral — Taxonomia Genérica",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "Ad Names implementados sem taxonomia comprometem a qualidade do banco de dados. Por isso, a taxonomia genérica só é aceita em casos específicos.",
+    casos: [
+      "Quando a implementação da campanha ocorrer em feriado, final de semana ou fora do expediente, e o time de mídia ainda não tiver todas as informações necessárias para a taxonomia correta, já que nesse momento o time de AdOps já estará offline.",
+      "Quando se tratar de campanha urgente e o time de mídia ainda não tiver todas as informações, ou o criativo ainda não estiver disponível para confirmar formato e duração específicos."
+    ],
+    solucaoLabel: "Regra",
+    solucao: "Nesses casos, a taxonomia genérica segue o padrão de quebras estabelecido pela Unilever, com algumas informações genéricas em substituição às específicas, permitindo a implementação da campanha sem comprometer o banco de dados.",
+    observacao: "É obrigatório solicitar o ajuste da taxonomia genérica para a versão correta em até 24h úteis."
+  },
+  {
+    id: "campaign-name-local",
+    category: "Geral",
+    title: "Geral — Campaign Name e Campaign Local",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "O Campaign Name é o nome da campanha global, definido diretamente pelo Global da Unilever. A StormX recebe a atualização das campanhas globais toda sexta-feira e inclui essas informações no ADP enviado aos mídias toda segunda-feira, em uma nova versão.",
+    important: [
+      "É proibido o uso de Campaign Name genérico, como Always On Non Search, autorizado apenas quando o Campaign Name solicitado pelo mídia ainda não tiver sido aprovado.",
+      "Assim que o Global enviar o Campaign Name oficial, todas as taxonomias devem ser ajustadas para refletir o novo nome."
+    ],
+    solucaoLabel: "Regra",
+    solucao: "Para criar um Campaign Name, os mídias devem solicitar diretamente à Unilever, que aprova e envia a atualização do Global à StormX às sextas-feiras. O Campaign Local (campanha local, Brasil) deve sempre ser igual ao Campaign Name (global). É permitido adicionar informações extras no Campaign Local Extra, que deve ser solicitado pelo mídia para que a StormX crie e cadastre no ADP.",
+    exception: [
+      "Caso o mídia queira que o Campaign Local seja diferente do Campaign Name, é necessário enviar por e-mail a aprovação do cliente Unilever, com a StormX em cópia: carolina.dobner@stormx.com.br."
+    ],
+    observacao: "O ADP atualizado com essas informações é enviado aos mídias toda segunda-feira."
+  },
+  {
+    id: "google-pmax",
+    category: "Google",
+    title: "Google — PMax",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "O formato PMax não possui Ad Group. Por isso, as informações de Ad Group e Ad Name não são extraídas no banco de dados, o que impede a identificação correta dessas campanhas e faz com que essas linhas caiam como erro.",
+    solucao: "Incluir uma quebra a mais no Campaign, exclusiva para campanhas PMax, adicionando o Format Type Local. Com essa informação, o banco identifica que a linha é de uma campanha PMax e deixa de acusar erro pela ausência de Ad Group e Ad Name.",
+    taxonomyDiff: {
+      before: "CN-Code-Campaign-Name_Language_Market-Short-Name-(PCat)_Objective_Format-Type_Buy-Type_CampaignLocal|BrandName|Brandlift-YesorNo|Pilar-da-Campanha|MidiaCampaignLocal-Extra",
+      after: "CN-Code-Campaign-Name_Language_Market-Short-Name-(PCat)_Objective_Format-Type_Buy-Type_CampaignLocal|BrandName|<span class=\"seg-new\">Format-Type-Local</span>|Brandlift-YesorNo|Pilar-da-Campanha|MidiaCampaignLocal-Extra"
+    },
+    ajustes: [],
+    observacao: "PMax terá uma quebra a mais de freetext, o Format Type Local, reconhecida como: pmax. Preencher \"Google-pmax\" no campo inicial do ADP e selecionar o Publisher \"google-pmax\"."
+  },
+  {
+    id: "google-search",
+    category: "Google",
+    title: "Google — Search",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "Padronizar a identificação de campanhas de Search no banco de dados.",
+    solucao: "O campo Publisher deve ser preenchido como google-search para esse tipo de campanha.",
+    simpleDiff: { field: "Publisher", before: "google", after: "google-search" },
+    ajustes: [],
+    observacao: "Aplica-se sempre que a campanha for do tipo Search."
+  },
+  {
+    id: "google-demandgen",
+    category: "Google",
+    title: "Google — Demand Gen",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "Campanhas de Demand Gen podem veicular tanto em Google quanto em YouTube, e o Publisher precisa refletir corretamente essa origem para identificação no banco.",
+    solucao: "Quando Plataforma = Google, o campo Publisher varia de acordo com o Publisher original informado.",
+    mapping: [
+      { condition: "Plataforma = Google e Publisher = Google", result: "google-ads" },
+      { condition: "Plataforma = Google e Publisher = YouTube", result: "youtube" }
+    ],
+    ajustes: [],
+    observacao: "Verificar sempre o Publisher original antes de definir o valor final, já que os dois casos partem da mesma Plataforma."
+  },
+  {
+    id: "influencer-handle",
+    category: "Influenciadores",
+    title: "Influenciadores — Classificação e Taxonomia por Handle",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "Ao preencher a RM, é importante que a classificação do influenciador esteja de acordo com a estratégia da campanha e com o link informado.",
+    definitions: [
+      { code: "BRD", desc: "Campanhas sem influenciador (Brand Say — Galileo)." },
+      { code: "INF", desc: "Campanhas com influenciador (Brand Handle + Influencer Handle — Galileo)." },
+      { code: "UGC", desc: "Campanhas com influenciador (Influencer Handle — Galileo)." }
+    ],
+    important: [
+      "Se a campanha for BRD, não deve haver link de influenciador.",
+      "Se a campanha possuir influenciador, é obrigatório informar o link correspondente e utilizar a classificação INF ou UGC, conforme a estratégia da campanha."
+    ],
+    solucao: "Quando for utilizado Influencer Handle, a quebra de Influencer Name do freetext da taxonomia cai, porque o @ do influenciador passa a ser preenchido na quebra Influencer-Handle do Galileo. A estrutura varia por plataforma, selecione abaixo para ver cada uma.",
+    taxonomyVariants: [
+      {
+        platform: "Meta",
+        labelBefore: "Sem Influencer Handle",
+        labelAfter: "Com Influencer Handle",
+        before: "Creative-Name_Format-Type_Landing-Page-Type_Retailer_Format-Size_Influencer-Post-Type_Influencer_[Influencer-Handle]_Position|InfluencerorBrand|<span class=\"seg-remove\">InfluencerName</span>|MidiaAdName-Extra",
+        after: "Creative-Name_Format-Type_Landing-Page-Type_Retailer_Format-Size_Influencer-Post-Type_Influencer_<span class=\"seg-new\">[Influencer-Handle]</span>_Position|InfluencerorBrand|MidiaAdName-Extra"
+      },
+      {
+        platform: "TikTok",
+        labelBefore: "Sem Influencer Handle",
+        labelAfter: "Com Influencer Handle",
+        before: "Creative-Name_Format-Type_Landing-Page-Type_Retailer_Format-Size_Add-On_Influencer-Post-Type_Influencer_[Influencer-Handle]_Creative-Exchange_Position|InfluencerorBrand|<span class=\"seg-remove\">InfluencerName</span>|MidiaAdName-Extra",
+        after: "Creative-Name_Format-Type_Landing-Page-Type_Retailer_Format-Size_Add-On_Influencer-Post-Type_Influencer_<span class=\"seg-new\">[Influencer-Handle]</span>_Creative-Exchange_Position|InfluencerorBrand|MidiaAdName-Extra"
+      },
+      {
+        platform: "Twitter",
+        labelBefore: "Sem Influencer Handle",
+        labelAfter: "Com Influencer Handle",
+        before: "Creative-Name_Format-Type_Landing-Page-Type_Retailer_Format-Size_Influencer-Post-Type_Influencer_[Influencer-Handle]_Position|InfluencerorBrand|<span class=\"seg-remove\">InfluencerName</span>|MidiaAdName-Extra",
+        after: "Creative-Name_Format-Type_Landing-Page-Type_Retailer_Format-Size_Influencer-Post-Type_Influencer_<span class=\"seg-new\">[Influencer-Handle]</span>_Position|InfluencerorBrand|MidiaAdName-Extra"
+      },
+      {
+        platform: "Pinterest",
+        labelBefore: "Sem Influencer Handle",
+        labelAfter: "Com Influencer Handle",
+        before: "Creative-Name_Format-Type_Landing-Page-Type_Retailer_Format-Size_Influencer-Post-Type_Influencer_[Influencer-Handle]_Position|InfluencerorBrand|<span class=\"seg-remove\">InfluencerName</span>|MidiaAdName-Extra",
+        after: "Creative-Name_Format-Type_Landing-Page-Type_Retailer_Format-Size_Influencer-Post-Type_Influencer_<span class=\"seg-new\">[Influencer-Handle]</span>_Position|InfluencerorBrand|MidiaAdName-Extra"
+      }
+    ],
+    ajustes: [],
+    observacao: "A quebra InfluencerName (destacada em laranja) some do freetext apenas quando o Influencer Handle (destacado em verde) é utilizado no Global. TikTok possui duas quebras extras (Add-On e Creative-Exchange) que as demais plataformas não têm."
+  },
+  {
+    id: "twitter-amplify",
+    category: "Twitter",
+    title: "Twitter — Amplify",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "Campanhas de Twitter Amplify não possuem Ad Name preenchido, o que faz o banco não reconhecer a campanha corretamente e acusar erro.",
+    solucao: "Seguir o mesmo modelo já usado para Google. A diferença é selecionar Twitter-Amplify no Publisher, em vez de Twitter. Com isso, o banco reconhece a campanha como Twitter Amplify, extrai a informação corretamente e não acusa mais erro pela ausência do Ad Name.",
+    simpleDiff: { field: "Publisher", before: "Twitter", after: "Twitter-Amplify" },
+    ajustes: [
+      "Selecionar \"Twitter-Amplify\" no campo Publisher para esse tipo de campanha"
+    ],
+    observacao: "Não há alteração na estrutura do Campaign, apenas na seleção do Publisher."
+  },
+  {
+    id: "tiktok-branded-mission",
+    category: "TikTok",
+    title: "TikTok — Branded Mission e Branded Buzz",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "A API do TikTok possui uma limitação que impede a extração dos dados desses formatos de campanha (Branded Mission e Branded Buzz).",
+    solucaoLabel: "Regra",
+    solucao: "A solução é preencher esses dados na planilha de compra direta. Como o mídia não pode utilizar a taxonomia de TikTok nessa planilha, quando a campanha for de um desses dois formatos é necessário solicitar à StormX dois tipos de taxonomia, uma para o TikTok, que deve ser implementada na plataforma, e outra de compra direta, que deve ser preenchida na planilha.",
+    important: [
+      "O mídia é responsável pela implementação correta tanto na plataforma TikTok quanto na planilha de compra direta.",
+      "No banco de dados, essa linha aparecerá como Compra Direta, com o Publisher preenchido como \"TikTok\". Isso está correto e não deve ser alterado, mesmo sendo uma campanha de TikTok.",
+      "A StormX envia as duas taxonomias com o mesmo ID, já que se trata da mesma linha.",
+      "A solicitação da taxonomia deve ser feita na aba correta, ou seja, TikTok Branded Mission e Branded Buzz devem ser solicitados na aba de TikTok."
+    ],
+    observacao: "A planilha de compra direta é o método já existente para casos em que o veículo não envia os dados via API da Flashtalking, com preenchimento manual em Excel. O TikTok não passa pela Flashtalking, mas estamos reaproveitando esse mesmo método para Branded Mission e Branded Buzz, para não ser necessário criar uma planilha nova e exclusiva para TikTok."
+  },
+  {
+    id: "tiktok-shop",
+    category: "TikTok",
+    title: "TikTok — TikTok Shop",
+    status: "pending",
+    statusLabel: "Em análise",
+    motivo: "O TikTok Shop ainda não permite extração via API. Enquanto essa extração não é possível, o time de mídia precisa preencher os dados manualmente na planilha de Compra Direta.",
+    definitions: [
+      { code: "Product GMV", desc: "Formato voltado para produtos." },
+      { code: "Live GMV", desc: "Formato que impulsiona os produtos via live." }
+    ],
+    solucaoLabel: "Regra",
+    solucao: "TikTok Shop só possui taxonomia de Campaign, sem Ad Group ou Ad Name. Por isso, criamos a taxonomia padrão de Compra Direta apenas para o Campaign, incluindo três campos extras: Publisher (preenchido como TikTok), Format (Product ou Live) e Location (nacional).",
+    notUse: [
+      "Influencer or Brand",
+      "Seconds",
+      "Creative Name"
+    ],
+    taxonomyDiff: {
+      labelBefore: "Padrão Compra Direta",
+      labelAfter: "TikTok Shop",
+      before: "CN-Code-Campaign-Name_Brand-Name_Market-Short-Name-(PCat)_Objective_CampaignLocal | Brandlift-YesorNo | Pilar-da-Campanha | MidiaCampaignLocal-Extra",
+      after: "CN-Code-Campaign-Name_Brand-Name_Market-Short-Name-(PCat)_Objective_CampaignLocal | Brandlift-YesorNo | <span class=\"seg-new\">Publisher</span> | <span class=\"seg-new\">Format</span> | <span class=\"seg-new\">Location</span> | Pilar-da-Campanha | MidiaCampaignLocal-Extra"
+    },
+    nota: "Assim que a extração via API for viável, essa regra deve mudar. Provavelmente será usada uma lógica parecida com o Placement da Flashtalking, mas isso ainda não foi definido.",
+    important: [
+      "Essa regra ainda está em análise e pode mudar antes de ser aplicada.",
+      "É uma solução temporária, enquanto a extração via API do TikTok Shop não é possível.",
+      "A solicitação da taxonomia deve ser feita na aba de TikTok."
+    ]
+  },
+  {
+    id: "youtube-masthead-cph",
+    category: "YouTube",
+    title: "YouTube — Masthead CPH",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "Há uma limitação na extração dos dados do YouTube para campanhas de Masthead CPH, seguindo a mesma lógica já aplicada ao TikTok — Branded Mission e Branded Buzz.",
+    solucaoLabel: "Regra",
+    solucao: "Como essas informações não são extraídas, o time de mídia precisa preencher os dados manualmente na planilha de Compra Direta. Como as quebras utilizadas pela plataforma são diferentes das quebras de Compra Direta, é necessário criar taxonomias exclusivas com as quebras de Compra Direta, para evitar erros no banco de dados e garantir que os dados sejam enviados corretamente para o dashboard da Unilever.",
+    important: [
+      "Inclusão do Buying Type: cph.",
+      "A solicitação da taxonomia deve ser feita na aba correta, ou seja, YouTube Masthead CPH deve ser solicitado na aba de YouTube."
+    ],
+    observacao: "A planilha de compra direta é o método já existente para casos em que o veículo não envia os dados via API da Flashtalking, com preenchimento manual em Excel. O YouTube Masthead CPH não passa pela Flashtalking, mas reaproveita esse mesmo método, seguindo a mesma lógica já aplicada ao TikTok Branded Mission e Branded Buzz."
+  },
+  {
+    id: "flashtalking",
+    category: "Flashtalking",
+    title: "Flashtalking — Limitações de Taxonomia via API",
+    status: "approved",
+    statusLabel: "Regra vigente",
+    motivo: "Tudo o que é de compra direta e vem via API da Flashtalking não segue a estrutura de taxonomia padrão, porque a Flashtalking só reconhece o Campaign e o Placement (que seria o Ad Name), com algumas limitações e mudanças.",
+    solucaoLabel: "Regra",
+    solucao: "Como a Flashtalking não extrai a informação de Ad Group, o Ad Group e o Ad Name foram unificados em uma taxonomia só de Placement Name. Além disso, o Campaign tem limitações, sendo necessário preencher alguns campos como \"na\" no lugar da informação correta, já que algumas informações mudam. Mesmo se tratando da mesma campanha, a Flashtalking reconhece como campanhas diferentes.",
+    taxonomyGroups: [
+      {
+        label: "Compra Direta (padrão)",
+        items: [
+          { sublabel: "Campaign (Insertion Order)", string: "CN-Code-Campaign-Name_Brand-Name_Market-Short-Name-(PCat)_Objective_CampaignLocal | Brandlift-YesorNo | Pilar-da-Campanha | MidiaCampaignLocal-Extra" },
+          { sublabel: "Ad Group (Line Item)", string: "Placement-Type_Creative-Name_Landing-Page-Type_Retailer_Influencer_CampaignLocal | ObjetivodeOtimização | Publisher | BuyingType | Location-Type | Location | AudienceType | MidiaGroup-Extra" },
+          { sublabel: "Ad Name", string: "Creative-Name_Format-Type(freetext) | Position | Influencer-or-Brand | Influencer-Name | Seconds | MidiaAdName-extra" }
+        ]
+      },
+      {
+        label: "Flashtalking (via API)",
+        items: [
+          { sublabel: "Campaign (Insertion Order)", string: "CN-Code-Campaign-Name_Brand-Name_<span class=\"seg-remove\">na</span>_<span class=\"seg-remove\">na</span>_CampaignLocal | <span class=\"seg-remove\">na</span> | <span class=\"seg-remove\">na</span> | <span class=\"seg-remove\">na</span>" },
+          { sublabel: "Placement Name / Ad Name", string: "CN-Code-Campaign-Name_Market-Short-Name-(PCat)_Placement-Type_Creative-Name_Landing-Page-Type_Retailer_Objective_CampaignLocal | MidiaCampaignLocal-Extra | ObjetivodeOtimização | Publisher | BuyingType | Location-Type | Location | AudienceType | MidiaGroup-Extra | FormatType | Position | Influencer-or-Brand | Influencer-Name | Brandlift-YesorNo | Seconds | Pilar-da-Campanha | MidiaName-Extra" }
+        ]
+      }
+    ],
+    nota: "O Ad Group e o Ad Name da Flashtalking não seguem a estrutura de Compra Direta acima. Como a Flashtalking só reconhece um nível de Placement, essas duas quebras são unificadas em uma única taxonomia de Placement Name.",
+    observacao: "Os campos destacados em laranja (\"na\") substituem informações que mudariam entre linhas de uma mesma campanha, já que a Flashtalking reconhece cada variação como uma campanha diferente."
+  }
+];
+
+function tLimitsBlock(rows){
+  const bc = r => r==="Sim"?"sim":r==="Não"?"nao":"cond";
+  return `<table class="tlimits-table"><thead><tr><th>Plataforma</th><th>Campo</th><th>Limite</th><th>Redução</th></tr></thead><tbody>
+    ${rows.map(r=>`<tr><td class="lt-p">${r.platform}</td><td>${r.field}</td><td class="lt-lim">${r.limit}</td><td><span class="rbadge ${bc(r.reducao)}">${r.reducao}</span></td></tr>`).join('')}
+  </tbody></table>`;
+}
+function tDefsBlock(items){ return `<div class="tdefs">${items.map(d=>`<div class="tdef-row"><span class="tdef-code">${d.code}</span><span class="tdef-desc">${d.desc}</span></div>`).join('')}</div>`; }
+function tCalloutBlock(items){ return `<div class="tcallout"><ul>${items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`; }
+function tListBlock(items){ return `<ul class="tlist">${items.map(i=>`<li>${i}</li>`).join('')}</ul>`; }
+function tSimpleDiff(d){ return `<div class="tsimple"><span>${d.field}:</span><span class="old">${d.before}</span><span>→</span><span class="new">${d.after}</span></div>`; }
+function tMappingBlock(rows){ return `<div class="tmapping">${rows.map(r=>`<div class="tmapping-row"><span class="cond">${r.condition}</span><span>→</span><span class="result">Publisher: ${r.result}</span></div>`).join('')}</div>`; }
+function tDiffBlock(d){
+  const lb=d.labelBefore||"Padrão atual", la=d.labelAfter||"Com a nova regra";
+  return `<div class="tdiff-toggle"><button class="active" data-view="before">${lb}</button><button data-view="after">${la}</button></div>
+    <div class="ttax-view active" data-view="before"><div class="tstring">${d.before}</div></div>
+    <div class="ttax-view" data-view="after"><div class="tstring">${d.after}</div></div>`;
+}
+function tVariantsBlock(variants){
+  const tabs=variants.map((v,i)=>`<button class="tptab ${i===0?'active':''}" data-pf="${v.platform}">${v.platform}</button>`).join('');
+  const panels=variants.map((v,i)=>`
+    <div class="tpp ${i===0?'active':''}" data-pf="${v.platform}">
+      <div class="tdiff-toggle"><button class="active" data-view="before">${v.labelBefore||"Sem Handle"}</button><button data-view="after">${v.labelAfter||"Com Handle"}</button></div>
+      <div class="ttax-view active" data-view="before"><div class="tstring">${v.before}</div></div>
+      <div class="ttax-view" data-view="after"><div class="tstring">${v.after}</div></div>
+    </div>`).join('');
+  return `<div class="tptabs">${tabs}</div>${panels}`;
+}
+function tGroupsBlock(groups){
+  const opts=groups.map((g,i)=>`<option value="${i}">${g.label}</option>`).join('');
+  const panels=groups.map((g,i)=>`<div class="tgp ${i===0?'active':''}" data-group="${i}">${g.items.map(it=>`<div class="tsublabel">${it.sublabel}</div><div class="tstring">${it.string}</div>`).join('')}</div>`).join('');
+  return `<select class="tpsel">${opts}</select>${panels}`;
+}
+
+function renderTRules(list){
+  const wrap=document.getElementById('taxRules');
+  wrap.innerHTML=list.map(rule=>`
+    <div class="trule" data-id="${rule.id}" data-cat="${rule.category}">
+      <div class="trule-head">
+        <div class="trule-head-left">
+          <span class="tdot"></span>
+          <span class="trule-title">${rule.title}</span>
+          <span class="trule-cat">${rule.category}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="tstatus ${rule.status}">${rule.statusLabel}</span>
+          <svg class="tchev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="trule-body"><div class="trule-inner">
+        <div class="tslabel">Motivo</div><p class="tstext">${rule.motivo}</p>
+        ${rule.definitions?`<div class="tslabel">Classificações</div>${tDefsBlock(rule.definitions)}`:''}
+        ${rule.notUse?`<div class="tslabel">Não utilizar</div>${tListBlock(rule.notUse)}`:''}
+        ${rule.casos?`<div class="tslabel">Quando é permitido</div>${tListBlock(rule.casos)}`:''}
+        ${rule.solucao?`<div class="tslabel">${rule.solucaoLabel||"Solução proposta"}</div><p class="tstext">${rule.solucao}</p>`:''}
+        ${rule.limits?`<div class="tslabel">Limitações por plataforma</div>${tLimitsBlock(rule.limits)}`:''}
+        ${(rule.taxonomyDiff||rule.mapping||rule.simpleDiff||rule.taxonomyVariants||rule.taxonomyGroups)?`
+          <div class="tslabel">Taxonomia</div>
+          ${rule.taxonomyGroups?tGroupsBlock(rule.taxonomyGroups):rule.taxonomyVariants?tVariantsBlock(rule.taxonomyVariants):rule.taxonomyDiff?tDiffBlock(rule.taxonomyDiff):rule.mapping?tMappingBlock(rule.mapping):tSimpleDiff(rule.simpleDiff)}`:''}
+        ${rule.nota?`<div class="tslabel">${rule.notaLabel||"Nota"}</div><p class="tstext">${rule.nota}</p>`:''}
+        ${rule.exception?`<div class="tslabel">Exceção</div>${tCalloutBlock(rule.exception)}`:''}
+        ${rule.observacao?`<div class="tslabel">Observação de preenchimento</div><p class="tstext">${rule.observacao}</p>`:''}
+        ${rule.important?`<div class="tslabel">Importante</div>${tCalloutBlock(rule.important)}`:''}
+      </div></div>
+    </div>`).join('');
+
+  // accordion
+  wrap.querySelectorAll('.trule-head').forEach(h=>h.addEventListener('click',()=>h.parentElement.classList.toggle('open')));
+
+  // platform tabs
+  wrap.querySelectorAll('.tptabs').forEach(tabs=>{
+    tabs.addEventListener('click',e=>{
+      const btn=e.target.closest('.tptab'); if(!btn) return; e.stopPropagation();
+      const pf=btn.dataset.pf;
+      tabs.querySelectorAll('.tptab').forEach(b=>b.classList.toggle('active',b===btn));
+      tabs.parentElement.querySelectorAll('.tpp').forEach(p=>p.classList.toggle('active',p.dataset.pf===pf));
+    });
+  });
+
+  // group selects
+  wrap.querySelectorAll('.tpsel').forEach(sel=>{
+    sel.addEventListener('change',e=>{ e.stopPropagation();
+      const container=sel.parentElement;
+      container.querySelectorAll('.tgp').forEach(p=>p.classList.toggle('active',p.dataset.group===sel.value));
+    });
+    sel.addEventListener('click',e=>e.stopPropagation());
+  });
+
+  // diff toggles
+  wrap.querySelectorAll('.tdiff-toggle').forEach(toggle=>{
+    toggle.addEventListener('click',e=>{
+      const btn=e.target.closest('button'); if(!btn) return; e.stopPropagation();
+      const view=btn.dataset.view;
+      toggle.querySelectorAll('button').forEach(b=>b.classList.toggle('active',b===btn));
+      toggle.parentElement.querySelectorAll('.ttax-view').forEach(v=>v.classList.toggle('active',v.dataset.view===view));
+    });
+  });
+}
+
+function initTaxRef(){
+  const cats=["Todos",...new Set(TAX_RULES.map(r=>r.category))];
+  let activeCategory="Todos";
+  const chipsEl=document.getElementById('taxChips');
+  const searchEl=document.getElementById('taxSearch');
+  const emptyEl=document.getElementById('taxEmpty');
+
+  function renderChips(){
+    chipsEl.innerHTML=cats.map(c=>`<button class="tax-chip ${c===activeCategory?'active':''}" data-cat="${c}">${c}</button>`).join('');
+    chipsEl.querySelectorAll('.tax-chip').forEach(chip=>{
+      chip.addEventListener('click',e=>{ e.stopPropagation(); activeCategory=chip.dataset.cat; renderChips(); filterRules(); });
+    });
+  }
+  function filterRules(){
+    const q=searchEl.value.trim().toLowerCase();
+    const filtered=TAX_RULES.filter(r=>{
+      const matchCat=activeCategory==="Todos"||r.category===activeCategory;
+      const haystack=[r.title,r.category,r.motivo,r.solucao||'',r.observacao||'',
+        (r.important||[]).join(' '),(r.notUse||[]).join(' '),(r.casos||[]).join(' '),
+        (r.limits||[]).map(l=>l.platform+' '+l.field).join(' ')].join(' ').toLowerCase();
+      return matchCat&&(q===''||haystack.includes(q));
+    });
+    renderTRules(filtered);
+    emptyEl.classList.toggle('show',filtered.length===0);
+  }
+  searchEl.addEventListener('input',filterRules);
+  searchEl.addEventListener('click',e=>e.stopPropagation());
+  renderChips(); filterRules();
+}
+
+// Inicializar após o DOM estar pronto
+if(document.readyState==='loading'){ document.addEventListener('DOMContentLoaded',initTaxRef); }
+else { initTaxRef(); }
+})();
+</script>
+</body>
+</html>
