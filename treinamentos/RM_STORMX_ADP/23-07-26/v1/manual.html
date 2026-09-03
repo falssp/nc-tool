@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manual do Usuário — RM StormX 2026 v5.8</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:         #0F1117;
+    --surface:    #181C27;
+    --surface2:   #1F2435;
+    --border:     #2A3049;
+    --accent:     #4F6EF7;
+    --accent2:    #7B93FF;
+    --text:       #E2E8F8;
+    --muted:      #7A86A8;
+    --danger:     #EF4444;
+
+    /* Legenda de cores da planilha */
+    --c-status:   #111111;
+    --c-agencia:  #1A4775;
+    --c-azul:     #CFE2F3;
+    --c-verde:    #93C47D;
+    --c-roxo:     #B482DA;
+    --c-amarelo:  #FFE599;
+    --c-lilas:    #D9D2E9;
+
+    --radius: 8px;
+    --radius-sm: 4px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.8;
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ────────────────────────────────────────────── */
+  .wrapper {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ── SIDEBAR ────────────────────────────────────────────── */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 40px 0;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 0 28px 28px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .sidebar-logo .tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .sidebar-logo h2 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .sidebar-logo .ver {
+    font-size: 13px;
+    color: var(--muted);
+    font-family: 'JetBrains Mono', monospace;
+    margin-top: 2px;
+  }
+
+  .nav-group { margin-bottom: 8px; padding: 0 16px; }
+  .nav-group-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 8px 10px;
+  }
+  .nav-link {
+    display: block;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 15px;
+    transition: all 0.15s;
+  }
+  .nav-link:hover { background: var(--surface2); color: var(--text); }
+  .nav-link.active { background: rgba(79,110,247,0.15); color: var(--accent2); }
+
+  /* ── MAIN ────────────────────────────────────────────── */
+  .main { padding: 56px 72px; max-width: none; width: 100%; }
+
+  /* ── HERO ────────────────────────────────────────────── */
+  .hero {
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 56px;
+    margin-bottom: 64px;
+  }
+  .hero .eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 12px;
+  }
+  .hero h1 {
+    font-size: 52px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.15;
+    margin-bottom: 20px;
+  }
+  .hero p {
+    color: var(--muted);
+    font-size: 17px;
+    max-width: 820px;
+  }
+  .hero .meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .hero .meta span { display: flex; align-items: center; gap: 6px; }
+  .hero .meta strong { color: var(--text); }
+
+  /* ── SECTIONS ────────────────────────────────────────────── */
+  .section { margin-bottom: 64px; }
+  .section-header { margin-bottom: 28px; }
+  .section-header h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .section-header .num {
+    width: 34px; height: 34px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .section-header p { color: var(--muted); margin-top: 10px; font-size: 16px; }
+
+  /* ── LEGENDA DE CORES ────────────────────────────────────── */
+  .color-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .color-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .color-swatch {
+    width: 52px; height: 52px;
+    border-radius: var(--radius-sm);
+    flex-shrink: 0;
+    border: 2px solid rgba(255,255,255,0.06);
+    margin-top: 2px;
+  }
+  .color-card .label { font-weight: 600; font-size: 16px; color: var(--text); }
+  .color-card .desc { font-size: 14px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+  .color-card .rule {
+    font-size: 13px;
+    margin-top: 6px;
+    color: var(--danger);
+    font-weight: 500;
+  }
+
+  /* ── STEPS / FLUXO ────────────────────────────────────────── */
+  .steps { display: flex; flex-direction: column; gap: 0; }
+  .step {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 0 24px;
+  }
+  .step-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .step-dot {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: var(--surface2);
+    border: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    color: var(--accent2);
+    flex-shrink: 0;
+  }
+  .step-connector {
+    flex: 1;
+    width: 2px;
+    background: var(--border);
+    margin: 4px 0;
+    min-height: 24px;
+  }
+  .step:last-child .step-connector { display: none; }
+  .step-body { padding-bottom: 28px; }
+  .step-body h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 5px; padding-top: 7px; }
+  .step-body p { font-size: 15px; color: var(--muted); }
+  .step-body .badge {
+    display: inline-block;
+    background: rgba(79,110,247,0.15);
+    color: var(--accent2);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 7px;
+  }
+  .step-body .warn {
+    display: block;
+    margin-top: 7px;
+    font-size: 13px;
+    color: #F59E0B;
+    font-weight: 500;
+  }
+
+  /* ── ABAS TABLE ────────────────────────────────────────── */
+  .tab-cards { display: flex; flex-direction: column; gap: 12px; }
+  .tab-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .tab-card-header {
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    user-select: none;
+  }
+  .tab-card-header:hover { background: var(--surface2); }
+  .tab-icon {
+    width: 42px; height: 42px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  .tab-card-header .tab-name { font-weight: 600; font-size: 16px; color: var(--text); }
+  .tab-card-header .tab-role { font-size: 13px; color: var(--muted); }
+  .tab-card-header .arrow { margin-left: auto; color: var(--muted); font-size: 12px; transition: transform 0.2s; }
+  .tab-card.open .arrow { transform: rotate(90deg); }
+  .tab-card-body { display: none; border-top: 1px solid var(--border); padding: 24px 28px; }
+  .tab-card.open .tab-card-body { display: block; }
+
+  /* ── CAMPO TABLE ────────────────────────────────────────── */
+  .field-table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .field-table th {
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .field-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(42,48,73,0.5);
+    vertical-align: top;
+  }
+  .field-table tr:last-child td { border-bottom: none; }
+  .field-table .field-name { font-weight: 500; color: var(--text); }
+  .field-table .field-desc { color: var(--muted); }
+
+  .dot-badge {
+    display: inline-block;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+
+  /* ── REGRAS ────────────────────────────────────────────── */
+  .rules-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+  }
+  .rule-card.do { border-left: 3px solid #22C55E; }
+  .rule-card.dont { border-left: 3px solid var(--danger); }
+  .rule-card h4 {
+    font-size: 11px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .rule-card.do h4 { color: #22C55E; }
+  .rule-card.dont h4 { color: var(--danger); }
+  .rule-card ul { list-style: none; }
+  .rule-card li {
+    font-size: 15px;
+    color: var(--muted);
+    padding: 5px 0;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .rule-card li::before {
+    flex-shrink: 0;
+    margin-top: 2px;
+    font-size: 12px;
+  }
+  .rule-card.do li::before { content: '✓'; color: #22C55E; }
+  .rule-card.dont li::before { content: '✕'; color: var(--danger); }
+
+  /* ── CALLOUT ────────────────────────────────────────────── */
+  .callout {
+    background: rgba(79,110,247,0.08);
+    border: 1px solid rgba(79,110,247,0.25);
+    border-radius: var(--radius);
+    padding: 18px 22px;
+    font-size: 15px;
+    color: var(--text);
+    margin: 20px 0;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .callout .ico { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout.warn {
+    background: rgba(245,158,11,0.08);
+    border-color: rgba(245,158,11,0.25);
+  }
+  .callout.danger {
+    background: rgba(239,68,68,0.08);
+    border-color: rgba(239,68,68,0.3);
+  }
+
+  /* ── CODE ────────────────────────────────────────────── */
+  code {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 2px 7px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--accent2);
+  }
+
+  /* ── DIVIDER ────────────────────────────────────────────── */
+  .divider { border: none; border-top: 1px solid var(--border); margin: 40px 0; }
+
+  /* ── HIDDEN TABS NOTE ────────────────────────────────────── */
+  .hidden-tabs {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+  }
+  .hidden-tabs h3 { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 14px; }
+  .hidden-tabs table { width: 100%; border-collapse: collapse; font-size: 15px; }
+  .hidden-tabs td { padding: 11px 12px; border-bottom: 1px solid var(--border); color: var(--muted); }
+  .hidden-tabs td:first-child { font-family: 'JetBrains Mono', monospace; color: var(--accent2); font-size: 13px; width: 240px; }
+  .hidden-tabs tr:last-child td { border-bottom: none; }
+
+  @media (max-width: 900px) {
+    .wrapper { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .main { padding: 32px 20px; }
+    .rules-grid { grid-template-columns: 1fr; }
+    .color-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div class="sidebar-logo">
+      <span class="tag">Manual do Usuário</span>
+      <h2>RM StormX 2026</h2>
+      <div class="ver">v5.8 · 09/03/2026</div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Visão Geral</div>
+      <a href="#intro" class="nav-link">Introdução</a>
+      <a href="#legenda" class="nav-link">Legenda de Cores</a>
+      <a href="#fluxo" class="nav-link">Fluxo de Preenchimento</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Abas Visíveis</div>
+      <a href="#capa" class="nav-link">CAPA</a>
+      <a href="#guia" class="nav-link">Guia de Uso</a>
+      <a href="#estrutura" class="nav-link">Estrutura das Abas</a>
+      <a href="#plano" class="nav-link">Plano - Camphouse</a>
+      <a href="#veiculos" class="nav-link">Abas de Veículos</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">Referência</div>
+      <a href="#regras" class="nav-link">O que Fazer / Não Fazer</a>
+      <a href="#ocultas" class="nav-link">Abas Ocultas</a>
+    </div>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+
+    <!-- HERO -->
+    <div class="hero" id="intro">
+      <div class="eyebrow">Manual do Usuário</div>
+      <h1>RM StormX 2026</h1>
+      <p>Guia completo de preenchimento da planilha de Requisição de Material. Siga o fluxo na ordem correta e respeite a legenda de cores para garantir a geração automática das nomenclaturas.</p>
+      <div class="meta">
+        <span>Versão <strong>5.8</strong></span>
+        <span>Atualizado em <strong>09/03/2026</strong></span>
+        <span>Abas visíveis: <strong>10</strong></span>
+      </div>
+    </div>
+
+    <!-- LEGENDA -->
+    <div class="section" id="legenda">
+      <div class="section-header">
+        <h2><span class="num">1</span> Legenda de Cores</h2>
+        <p>Cada cor de célula na planilha indica quem preenche e como. Entender isso é o passo mais importante antes de começar.</p>
+      </div>
+
+      <div class="color-grid">
+        <div class="color-card">
+          <div class="color-swatch" style="background:#1A4775;"></div>
+          <div>
+            <div class="label">Azul Escuro — Agência</div>
+            <div class="desc">Status, Solicitado por, Datas de solicitação e entrega</div>
+            <div class="rule">⚑ Obrigatório · Preenche a agência</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background:#93C47D;"></div>
+          <div>
+            <div class="label">Verde — Plano Camphouse</div>
+            <div class="desc">Linha plano, Market L5 PCat, Campanha Local</div>
+            <div class="desc" style="margin-top:4px;">Puxado automaticamente via coluna Linha (G)</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background:#CFE2F3;"></div>
+          <div>
+            <div class="label">Azul Claro — Auto Camphouse</div>
+            <div class="desc">Campos como datas início/fim, objective, gênero, idades, buy model</div>
+            <div class="rule">✕ Não editar — preenchido automaticamente</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background:#B482DA;"></div>
+          <div>
+            <div class="label">Roxo — Dropdown obrigatório</div>
+            <div class="desc">Selecionar via lista suspensa. Ex: Audience Name, Objetivo de Otimização, Influ Brand</div>
+            <div class="rule">⚑ Obrigatório · Usar somente opções da lista</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background:#FFE599;"></div>
+          <div>
+            <div class="label">Amarelo — Preenchimento manual</div>
+            <div class="desc">Link do asset, Nome do asset, Format Size, Pilar da Campanha, campos livres (Campaign, Ad Group, Ad Name), URL, ID de terceiros</div>
+            <div class="rule">⚑ Obrigatório · Sem caracteres especiais</div>
+          </div>
+        </div>
+        <div class="color-card">
+          <div class="color-swatch" style="background:#D9D2E9;"></div>
+          <div>
+            <div class="label">Lilás — Gerado pela StormX</div>
+            <div class="desc">ID Flashtalking, Contadores, Campaign, Ad Group, Ad Name finais, URL Parametrizada, QA StormX</div>
+            <div class="rule">✕ Não editar — gerado pelo sistema</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout warn">
+        <span class="ico">⚠</span>
+        <div>Os <strong>campos verdes claro</strong> (como Keyword Type e Keyword Match na aba Google) são condicionais — aparecem apenas em formatos específicos como Display ou Search. Preencha somente quando aplicável.</div>
+      </div>
+    </div>
+
+    <!-- FLUXO -->
+    <div class="section" id="fluxo">
+      <div class="section-header">
+        <h2><span class="num">2</span> Fluxo de Preenchimento</h2>
+        <p>Siga sempre essa ordem. Pular etapas quebra os vínculos automáticos entre as abas.</p>
+      </div>
+
+      <div class="steps" style="display:grid;grid-template-columns:1fr 1fr;gap:0 48px;">
+        <div class="step">
+          <div class="step-line"><div class="step-dot">1</div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <span class="badge">Camphouse</span>
+            <h3>Exportar o plano de mídia</h3>
+            <p>No Camphouse, utilize a opção <strong>Exportar StormX</strong>. O sistema gera um arquivo Excel com todas as linhas do plano.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-dot">2</div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <span class="badge">Aba: Plano - Camphouse</span>
+            <h3>Colar os dados exportados</h3>
+            <p>Copie todos os dados do arquivo exportado e cole <strong>a partir da célula C3</strong> usando <code>Colar Especial → Valores</code>.</p>
+            <span class="warn">⚠ Nunca use Colar normal — isso copia formatação e pode quebrar as fórmulas.</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-dot">3</div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <span class="badge">Abas de Veículos</span>
+            <h3>Selecionar a aba do veículo</h3>
+            <p>Abra a aba correspondente à plataforma da campanha: <strong>Google, Programmatic, YouTube, Meta e TikTok, Pinterest/Snapchat/X</strong> ou <strong>Flashtalking</strong>.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-dot">4</div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <span class="badge">Coluna G — Linha plano</span>
+            <h3>Informar o número da linha</h3>
+            <p>Na coluna <strong>G (Linha plano)</strong>, insira o número da linha correspondente no Plano - Camphouse. Isso aciona o preenchimento automático dos campos verdes e azuis.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-dot">5</div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <span class="badge">Campos Roxos</span>
+            <h3>Preencher os dropdowns obrigatórios</h3>
+            <p>Selecione as opções nos campos roxos via lista suspensa. Não digite manualmente — use apenas as opções disponíveis.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-dot">6</div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <span class="badge">Campos Amarelos</span>
+            <h3>Preencher os campos manuais</h3>
+            <p>Insira os dados nos campos amarelos: link e nome do asset, format size, pilar da campanha, campos livres de nomenclatura e URL do anúncio.</p>
+            <span class="warn">⚠ Não use caracteres especiais: acentos, ç, /, \, &amp;, (, ), !, ?, @, #, $, %, *</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-dot">7</div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <span class="badge">Cabeçalho da Aba</span>
+            <h3>Informar os dados administrativos</h3>
+            <p>Nas primeiras colunas (azul escuro), preencha: <strong>Status</strong>, <strong>Solicitado por</strong> e <strong>Data de Solicitação</strong>. Esses três campos são obrigatórios.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-line"><div class="step-dot">8</div><div class="step-connector"></div></div>
+          <div class="step-body">
+            <span class="badge">StormX</span>
+            <h3>Aguardar o retorno da StormX</h3>
+            <p>Os campos lilás (IDs, contadores, nomenclaturas finais, URL parametrizada e QA) são preenchidos exclusivamente pela StormX. Não edite essas colunas.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <span class="ico">🔄</span>
+        <div><strong>Novas linhas no Camphouse?</strong> Exporte o plano novamente. Copie <em>apenas as linhas novas</em> e cole abaixo da última linha preenchida na aba Plano - Camphouse, usando Colar Especial → Valores.</div>
+      </div>
+    </div>
+
+    <!-- CAPA -->
+    <div class="section" id="capa">
+      <div class="section-header">
+        <h2>Aba: CAPA</h2>
+        <p>Página de identificação do arquivo. Dados institucionais da campanha.</p>
+      </div>
+      <table class="field-table">
+        <thead><tr><th>Campo</th><th>Instrução</th></tr></thead>
+        <tbody>
+          <tr><td class="field-name">Marca (D10)</td><td class="field-desc">Nome da marca/produto da campanha. Ex: <code>Rexona</code></td></tr>
+          <tr><td class="field-name">Campanha Global (D11)</td><td class="field-desc">Nome da campanha conforme naming global. Ex: <code>BR_2026_PC_Rexona_Hulk</code></td></tr>
+          <tr><td class="field-name">CN Code (D12)</td><td class="field-desc">Código de identificação interno da campanha no sistema</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- PLANO CAMPHOUSE -->
+    <div class="section" id="plano">
+      <div class="section-header">
+        <h2>Aba: Plano - Camphouse</h2>
+        <p>Recebe os dados exportados do Camphouse. Funciona como fonte de dados central que alimenta todas as abas de veículos automaticamente.</p>
+      </div>
+
+      <div class="callout danger">
+        <span class="ico">🚫</span>
+        <div><strong>Não altere a formatação desta aba.</strong> Cole sempre a partir da célula <code>C3</code> usando <strong>Colar Especial → Valores</strong>. Colar com formatação pode corromper as referências automáticas nas abas de veículos.</div>
+      </div>
+
+      <p style="color:var(--muted); font-size:13px; margin-top:16px;">Os dados colados aqui incluem: ID Linha, Approval Step, Plan, Brand Name, Objective, Campaign Phase, Ad Buying Platform, Media Vehicle, Device Type, Placement Global, Format Type, Creative Name, Influencer info, Datas, Buy Model, Custos e Métricas. Esses dados ficam disponíveis automaticamente nas abas de veículos conforme o número da linha for informado na coluna G.</p>
+    </div>
+
+    <!-- ABAS DE VEÍCULOS -->
+    <div class="section" id="veiculos">
+      <div class="section-header">
+        <h2>Abas de Veículos</h2>
+        <p>Cada veículo tem sua própria aba. A estrutura de colunas é a mesma em todas, com variações específicas por plataforma.</p>
+      </div>
+
+      <div class="tab-cards" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start;">
+
+        <!-- GOOGLE -->
+        <div class="tab-card" id="google">
+          <div class="tab-card-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="tab-icon" style="background:rgba(66,133,244,0.15);">🔵</div>
+            <div>
+              <div class="tab-name">Google</div>
+              <div class="tab-role">Search, Display, campanhas Google Ads</div>
+            </div>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="tab-card-body">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Campos exclusivos desta aba: <strong>Publisher</strong> (col. 10, roxo), <strong>Keyword Type</strong> e <strong>Keyword Match</strong> (verde claro — apenas para campanhas Search).</p>
+            <table class="field-table">
+              <thead><tr><th>Campo</th><th>Cor</th><th>Instrução</th></tr></thead>
+              <tbody>
+                <tr><td class="field-name">STATUS</td><td><span class="dot-badge" style="background:#1A4775;"></span>Azul Escuro</td><td class="field-desc">Status da solicitação. Obrigatório</td></tr>
+                <tr><td class="field-name">Solicitado por</td><td><span class="dot-badge" style="background:#1A4775;"></span>Azul Escuro</td><td class="field-desc">Nome do responsável. Obrigatório</td></tr>
+                <tr><td class="field-name">Data da Solicitação</td><td><span class="dot-badge" style="background:#1A4775;"></span>Azul Escuro</td><td class="field-desc">Data de envio pelo cliente/agência</td></tr>
+                <tr><td class="field-name">Data de Entrega</td><td><span class="dot-badge" style="background:#1A4775;"></span>Azul Escuro</td><td class="field-desc">Prazo acordado com a StormX</td></tr>
+                <tr><td class="field-name">Linha plano (G)</td><td><span class="dot-badge" style="background:#93C47D;"></span>Verde</td><td class="field-desc">Número da linha no Plano - Camphouse. Aciona automação</td></tr>
+                <tr><td class="field-name">Publisher</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Selecionar via dropdown</td></tr>
+                <tr><td class="field-name">Audience Name</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Segmento de audiência — selecionar via dropdown</td></tr>
+                <tr><td class="field-name">Objetivo de Otimização</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Selecionar via dropdown</td></tr>
+                <tr><td class="field-name">Link do Asset</td><td><span class="dot-badge" style="background:#FFE599;"></span>Amarelo</td><td class="field-desc">URL completa do criativo. Sem espaços</td></tr>
+                <tr><td class="field-name">Nome do Asset</td><td><span class="dot-badge" style="background:#FFE599;"></span>Amarelo</td><td class="field-desc">Nome do arquivo da peça. Sem caracteres especiais</td></tr>
+                <tr><td class="field-name">Format Size</td><td><span class="dot-badge" style="background:#FFE599;"></span>Amarelo</td><td class="field-desc">Ex: <code>300x250</code>, <code>728x90</code>, <code>15s</code></td></tr>
+                <tr><td class="field-name">Keyword Type</td><td><span class="dot-badge" style="background:#DAF2D0;"></span>Verde Claro</td><td class="field-desc">Apenas para Search. Deixar em branco para Display/Video</td></tr>
+                <tr><td class="field-name">Pilar da Campanha</td><td><span class="dot-badge" style="background:#FFE599;"></span>Amarelo</td><td class="field-desc">Fase ou pilar criativo da campanha</td></tr>
+                <tr><td class="field-name">Campaign / Ad Group / Ad Name (livres)</td><td><span class="dot-badge" style="background:#FFE599;"></span>Amarelo</td><td class="field-desc">Campos livres para composição da nomenclatura</td></tr>
+                <tr><td class="field-name">URL do anúncio</td><td><span class="dot-badge" style="background:#FFE599;"></span>Amarelo</td><td class="field-desc">URL de destino do anúncio (landing page)</td></tr>
+                <tr><td class="field-name">ID de terceiros</td><td><span class="dot-badge" style="background:#FFE599;"></span>Amarelo</td><td class="field-desc">ID externo quando aplicável</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PROGRAMMATIC -->
+        <div class="tab-card" id="programmatic">
+          <div class="tab-card-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="tab-icon" style="background:rgba(168,85,247,0.15);">🟣</div>
+            <div>
+              <div class="tab-name">Programmatic</div>
+              <div class="tab-role">DSP, mídia programática, DV360, The Trade Desk etc.</div>
+            </div>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="tab-card-body">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Campos exclusivos: <strong>Amazon Product</strong>, <strong>Buying Type</strong>, <strong>Format Group</strong>, <strong>Tipo de Tag</strong>, <strong>IO - Campo Livre</strong>, <strong>Line Item - Campo Livre</strong>, e campo <strong>Tag ou Contador?</strong>.</p>
+            <table class="field-table">
+              <thead><tr><th>Campo</th><th>Cor</th><th>Instrução</th></tr></thead>
+              <tbody>
+                <tr><td class="field-name">Buy Model</td><td><span class="dot-badge" style="background:#CFE2F3;"></span>Azul Claro</td><td class="field-desc">Puxado automaticamente do plano</td></tr>
+                <tr><td class="field-name">Buying Type</td><td><span class="dot-badge" style="background:#CFE2F3;"></span>Azul Claro</td><td class="field-desc">Puxado automaticamente do plano</td></tr>
+                <tr><td class="field-name">Tipo de Tag</td><td><span class="dot-badge" style="background:#CFE2F3;"></span>Azul Claro</td><td class="field-desc">Preenchido automaticamente conforme configuração</td></tr>
+                <tr><td class="field-name">Tag ou Contador?</td><td><span class="dot-badge" style="background:#CFE2F3;"></span>Azul Claro</td><td class="field-desc">Automático — indica o tipo de entregável</td></tr>
+                <tr><td class="field-name">Amazon Product</td><td><span class="dot-badge" style="background:#CFE2F3;"></span>Azul Claro</td><td class="field-desc">Preencher apenas para campanhas Amazon</td></tr>
+                <tr><td class="field-name">Audience Name</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Dropdown obrigatório</td></tr>
+                <tr><td class="field-name">Objetivo de Otimização</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Dropdown obrigatório</td></tr>
+                <tr><td class="field-name">IO / Line Item (campo livre)</td><td><span class="dot-badge" style="background:#FFE599;"></span>Amarelo</td><td class="field-desc">Nomenclatura livre para composição da estrutura da campanha</td></tr>
+                <tr><td class="field-name">Faturamento (Valor Bruto)</td><td><span class="dot-badge" style="background:#CFE2F3;"></span>Azul Claro</td><td class="field-desc">Puxado do plano automaticamente</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- YOUTUBE -->
+        <div class="tab-card" id="youtube">
+          <div class="tab-card-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="tab-icon" style="background:rgba(239,68,68,0.15);">🔴</div>
+            <div>
+              <div class="tab-name">YouTube</div>
+              <div class="tab-role">Campanhas de vídeo no YouTube</div>
+            </div>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="tab-card-body">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Estrutura similar ao Google. Campos exclusivos: <strong>IO Reduzido</strong> (lilás, gerado automaticamente). Não tem campo Keyword.</p>
+            <table class="field-table">
+              <thead><tr><th>Campo</th><th>Cor</th><th>Instrução</th></tr></thead>
+              <tbody>
+                <tr><td class="field-name">Objetivo de Otimização</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Selecionar via dropdown</td></tr>
+                <tr><td class="field-name">Format Group</td><td><span class="dot-badge" style="background:#CFE2F3;"></span>Azul Claro</td><td class="field-desc">Automático conforme formato do plano</td></tr>
+                <tr><td class="field-name">Pilar da Campanha</td><td><span class="dot-badge" style="background:#FFE599;"></span>Amarelo</td><td class="field-desc">Fase/pilar criativo</td></tr>
+                <tr><td class="field-name">IO / Line Item / Ad Group (livres)</td><td><span class="dot-badge" style="background:#FFE599;"></span>Amarelo</td><td class="field-desc">Composição da estrutura da campanha</td></tr>
+                <tr><td class="field-name">IO Reduzido</td><td><span class="dot-badge" style="background:#D9D2E9;"></span>Lilás</td><td class="field-desc">Gerado automaticamente — não editar</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- META E TIKTOK -->
+        <div class="tab-card" id="meta-tiktok">
+          <div class="tab-card-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="tab-icon" style="background:rgba(59,130,246,0.15);">📱</div>
+            <div>
+              <div class="tab-name">Meta e TikTok</div>
+              <div class="tab-role">Facebook, Instagram, TikTok</div>
+            </div>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="tab-card-body">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Campos exclusivos desta aba: <strong>Collaborative Account Type</strong>, <strong>Collaborative Ads</strong>, <strong>Add-on (TikTok)</strong>, <strong>Influencer-Post-Type</strong> e <strong>Creative-Exchange</strong> — todos roxos, via dropdown.</p>
+            <table class="field-table">
+              <thead><tr><th>Campo</th><th>Cor</th><th>Instrução</th></tr></thead>
+              <tbody>
+                <tr><td class="field-name">Collaborative Account Type</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Dropdown — preencher para campanhas collaborative (Meta)</td></tr>
+                <tr><td class="field-name">Collaborative Ads</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Dropdown — indicar se é collab ad ou não</td></tr>
+                <tr><td class="field-name">Add-on (TikTok)</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Extensões específicas do TikTok — deixar em branco se Meta</td></tr>
+                <tr><td class="field-name">Influencer-Post-Type</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Tipo de post do influencer. Dropdown</td></tr>
+                <tr><td class="field-name">Creative-Exchange</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Indicar se usa Creative Exchange. Dropdown</td></tr>
+                <tr><td class="field-name">Influ Brand</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Brand, Influencer ou UGC. Dropdown obrigatório</td></tr>
+                <tr><td class="field-name">Audience Name</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Segmento de audiência — dropdown</td></tr>
+                <tr><td class="field-name">Objetivo de Otimização</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Dropdown obrigatório</td></tr>
+                <tr><td class="field-name">Link do Perfil do Influenciador</td><td><span class="dot-badge" style="background:#FFE599;"></span>Amarelo</td><td class="field-desc">URL do perfil. Preencher quando campanha de influencer</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PINTEREST SNAPCHAT X -->
+        <div class="tab-card" id="pinterest">
+          <div class="tab-card-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="tab-icon" style="background:rgba(231,0,56,0.12);">📌</div>
+            <div>
+              <div class="tab-name">Pinterest, Snapchat e X</div>
+              <div class="tab-role">Plataformas sociais complementares</div>
+            </div>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="tab-card-body">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Similar ao Meta e TikTok. Campos exclusivos: <strong>Tipo de Tag</strong> (roxo) e <strong>Tag ou Contador?</strong> (azul claro — automático). Possui campos de Faturamento, Impressão e Custo Unitário (azul claro) puxados do plano.</p>
+            <table class="field-table">
+              <thead><tr><th>Campo</th><th>Cor</th><th>Instrução</th></tr></thead>
+              <tbody>
+                <tr><td class="field-name">Tipo de Tag</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Selecionar tipo de tag via dropdown</td></tr>
+                <tr><td class="field-name">Tag ou Contador?</td><td><span class="dot-badge" style="background:#CFE2F3;"></span>Azul Claro</td><td class="field-desc">Definido automaticamente</td></tr>
+                <tr><td class="field-name">Faturamento / Impressão / Custo</td><td><span class="dot-badge" style="background:#CFE2F3;"></span>Azul Claro</td><td class="field-desc">Puxados do Plano - Camphouse automaticamente</td></tr>
+                <tr><td class="field-name">Influencer-Post-Type</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Dropdown — quando aplicável</td></tr>
+                <tr><td class="field-name">Collaborative Ads</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Dropdown — quando aplicável (Pinterest)</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- FLASHTALKING -->
+        <div class="tab-card" id="flashtalking">
+          <div class="tab-card-header" onclick="this.parentElement.classList.toggle('open')">
+            <div class="tab-icon" style="background:rgba(245,158,11,0.15);">⚡</div>
+            <div>
+              <div class="tab-name">Flashtalking</div>
+              <div class="tab-role">Ad Server — configuração e tags de terceiros</div>
+            </div>
+            <span class="arrow">▶</span>
+          </div>
+          <div class="tab-card-body">
+            <p style="font-size:13px;color:var(--muted);margin-bottom:16px;">Aba do ad server. Campos exclusivos: <strong>Tipo de Tag</strong> (roxo), <strong>Tag ou Contador?</strong> (azul claro), <strong>Format Type</strong> (roxo) e <strong>Título Globo</strong> (lilás — gerado pela StormX). Possui campos de custo/impressão puxados do plano.</p>
+            <table class="field-table">
+              <thead><tr><th>Campo</th><th>Cor</th><th>Instrução</th></tr></thead>
+              <tbody>
+                <tr><td class="field-name">Format Type</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Dropdown obrigatório — tipo de formato do ad</td></tr>
+                <tr><td class="field-name">Tipo de Tag</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Selecionar via dropdown</td></tr>
+                <tr><td class="field-name">Influ Brand</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Dropdown obrigatório</td></tr>
+                <tr><td class="field-name">Objetivo de Otimização</td><td><span class="dot-badge" style="background:#B482DA;"></span>Roxo</td><td class="field-desc">Dropdown obrigatório</td></tr>
+                <tr><td class="field-name">Tag ou Contador?</td><td><span class="dot-badge" style="background:#CFE2F3;"></span>Azul Claro</td><td class="field-desc">Definido automaticamente</td></tr>
+                <tr><td class="field-name">Faturamento / Impressão / Custo</td><td><span class="dot-badge" style="background:#CFE2F3;"></span>Azul Claro</td><td class="field-desc">Puxados automaticamente do plano</td></tr>
+                <tr><td class="field-name">Título Globo</td><td><span class="dot-badge" style="background:#D9D2E9;"></span>Lilás</td><td class="field-desc">Gerado pela StormX — não editar</td></tr>
+                <tr><td class="field-name">ID Flashtalking/StormX</td><td><span class="dot-badge" style="background:#D9D2E9;"></span>Lilás</td><td class="field-desc">Gerado pela StormX — não editar</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- REGRAS -->
+    <div class="section" id="regras">
+      <div class="section-header">
+        <h2><span class="num">3</span> O que Fazer e Não Fazer</h2>
+        <p>Erros comuns e boas práticas consolidadas.</p>
+      </div>
+
+      <div class="rules-grid">
+        <div class="rule-card do">
+          <h4>✓ Fazer</h4>
+          <ul>
+            <li>Usar sempre <strong>Colar Especial → Valores</strong> ao colar dados do Camphouse</li>
+            <li>Colar na célula <strong>C3</strong> da aba Plano - Camphouse</li>
+            <li>Informar a <strong>Linha do Plano (col. G)</strong> antes de qualquer outro campo nos veículos</li>
+            <li>Usar <strong>somente as opções de dropdown</strong> nos campos roxos</li>
+            <li>Preencher <strong>Status, Solicitado por e Data</strong> em toda solicitação</li>
+            <li>Para novas linhas do Camphouse: colar <strong>abaixo da última linha</strong> existente</li>
+            <li>Verificar se a linha do plano corresponde ao veículo da aba selecionada</li>
+          </ul>
+        </div>
+        <div class="rule-card dont">
+          <h4>✕ Não Fazer</h4>
+          <ul>
+            <li><strong>Não editar</strong> células de cor azul claro ou lilás</li>
+            <li><strong>Não usar caracteres especiais</strong> nos campos amarelos: <code>/ \ &amp; ( ) ! ? @ # $ % * ç</code> e acentos</li>
+            <li><strong>Não colar com formatação</strong> — sempre usar Colar Especial → Valores</li>
+            <li><strong>Não apagar linhas</strong> preenchidas sem alinhamento com a StormX</li>
+            <li><strong>Não reorganizar</strong> colunas nem alterar a ordem das abas</li>
+            <li><strong>Não duplicar</strong> a mesma linha do plano em múltiplas linhas da aba de veículo sem necessidade</li>
+            <li><strong>Não usar a mesma linha</strong> do plano em abas de veículos diferentes (cada linha do plano deve ir para o veículo correto)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ABAS OCULTAS -->
+    <div class="section" id="ocultas">
+      <div class="section-header">
+        <h2>Abas Ocultas — Referência</h2>
+        <p>Estas abas não aparecem para o usuário final mas são fundamentais para o funcionamento da planilha. <strong>Não devem ser editadas ou excluídas.</strong></p>
+      </div>
+
+      <div class="hidden-tabs">
+        <h3>Abas protegidas (ocultas)</h3>
+        <table>
+          <tr>
+            <td>Dados</td>
+            <td>Base central que alimenta todos os dropdowns e preenchimentos automáticos da planilha. Contém as listas de valores válidos para cada campo.</td>
+          </tr>
+          <tr>
+            <td>Taxonomy_FT_CampaignLocal</td>
+            <td>Estrutura de padronização de nomenclaturas (taxonomia). Define as regras de composição dos nomes de campanha, IO, line item e ad names gerados automaticamente pela StormX.</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="callout" style="margin-top:16px;">
+        <span class="ico">ℹ</span>
+        <div>Se um dropdown aparecer vazio ou uma fórmula retornar erro, verifique primeiro se as abas ocultas estão presentes. Reabrir uma cópia limpa do arquivo resolve na maioria dos casos.</div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Highlight active nav link on scroll
+  const sections = document.querySelectorAll('[id]');
+  const links = document.querySelectorAll('.nav-link');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        const active = document.querySelector(`.nav-link[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -60% 0px' });
+
+  sections.forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
