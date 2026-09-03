@@ -309,8 +309,10 @@ function setStats(fase, data) {
   el.innerHTML = rows || '<span class="stat-loading">Sem dados ainda</span>';
 }
 
+var PROXY = 'https://nc-proxy.falssp.workers.dev/';
+
 function fetchStats(fase) {
-  var url = URLS[env][fase] + '?action=stats';
+  var url = PROXY + '?fase=' + fase + '&env=' + env + '&action=stats';
   setStatus(fase, '', 'Verificando...');
 
   fetch(url)
@@ -319,6 +321,7 @@ function fetchStats(fase) {
       return r.json();
     })
     .then(function(d) {
+      if (d.error) throw new Error(d.error);
       setStatus(fase, 'ok', 'Online');
       setStats(fase, d);
     })
