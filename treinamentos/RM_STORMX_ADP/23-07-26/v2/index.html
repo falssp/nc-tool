@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preenchimento do RM_STORMX e do ADP — StormX</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#494C67;
+    --navy-deep:#3B3D54;
+    --navy-soft:#5B5E78;
+    --cyan:#14D7FF;
+    --amber:#FFAB40;
+    --red:#D9534F;
+    --ink:#2B2D3D;
+    --muted:#83869A;
+    --line:#E4E6EE;
+    --paper:#FFFFFF;
+    --paper-tint:#F7F8FB;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;height:100%;background:#1B1C27;}
+  body{
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    overflow:hidden;
+  }
+  .viewer{
+    position:fixed; inset:0;
+    display:flex; flex-direction:column;
+  }
+  .progress{
+    height:3px; background:rgba(255,255,255,0.08); position:relative; z-index:20; flex:0 0 auto;
+  }
+  .progress-fill{
+    height:100%; width:7.14%; background:linear-gradient(90deg,var(--cyan),var(--amber));
+    transition:width .5s cubic-bezier(.65,0,.35,1);
+  }
+  .deck{
+    flex:1 1 auto; position:relative; overflow:hidden;
+  }
+  .slide{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; justify-content:center;
+    padding:5.5vh 7vw;
+    opacity:0; pointer-events:none;
+    transform:translateX(28px) scale(.99);
+    transition:opacity .55s cubic-bezier(.16,1,.3,1), transform .55s cubic-bezier(.16,1,.3,1);
+  }
+  .slide.prevslide{ transform:translateX(-28px) scale(.99); }
+  .slide.active{
+    opacity:1; pointer-events:auto; transform:translateX(0) scale(1); z-index:5;
+  }
+  .slide.dark{ background:radial-gradient(120% 140% at 15% 10%, var(--navy-soft) 0%, var(--navy) 45%, var(--navy-deep) 100%); color:#fff; }
+  .slide.light{ background:var(--paper); color:var(--ink); }
+
+  /* ambient floating shapes on dark slides */
+  .amb{position:absolute; border-radius:50%; filter:blur(2px); opacity:.12; background:var(--cyan); pointer-events:none;}
+  .slide.dark .amb1{ width:340px; height:340px; top:-90px; right:8%; animation:float1 14s ease-in-out infinite; }
+  .slide.dark .amb2{ width:180px; height:180px; bottom:-40px; left:6%; background:var(--amber); animation:float2 11s ease-in-out infinite; }
+  @keyframes float1{ 0%,100%{transform:translateY(0px)} 50%{transform:translateY(26px)} }
+  @keyframes float2{ 0%,100%{transform:translateY(0px)} 50%{transform:translateY(-20px)} }
+
+  /* brand mark: rounded bars glyph */
+  .mark{ display:inline-flex; flex-direction:column; gap:3px; width:26px; }
+  .mark span{ display:block; height:4px; border-radius:3px; background:currentColor; }
+  .mark span:nth-child(1){width:100%;}
+  .mark span:nth-child(2){width:70%;}
+  .mark span:nth-child(3){width:45%;}
+  .light .mark{ color:var(--navy); }
+  .dark .mark{ color:#fff; }
+
+  .wordmark{ position:absolute; top:4.5vh; right:6vw; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:.5px; z-index:6; }
+  .wordmark span{ color:var(--cyan); }
+  .dark .wordmark{ color:#fff; }
+  .light .wordmark{ color:var(--navy); opacity:.55; }
+
+  .pill{
+    display:inline-flex; align-items:center; gap:.55rem;
+    background:var(--navy-soft); color:#fff;
+    padding:.5rem 1.1rem .5rem 1.5rem; border-radius:999px;
+    font-size:.78rem; font-weight:700; letter-spacing:.2px;
+    position:relative; width:max-content;
+  }
+  .light .pill{ background:var(--navy); }
+  .pill::before{
+    content:''; position:absolute; left:-7px; top:50%; transform:translateY(-50%);
+    width:16px; height:16px; border-radius:50%; background:var(--cyan);
+    box-shadow:0 0 0 3px rgba(20,215,255,.15);
+  }
+
+  .eyebrow-row{ display:flex; align-items:center; gap:.8rem; margin-bottom:.9rem; }
+  h1.headline{
+    font-family:'Space Grotesk',sans-serif; font-weight:700;
+    font-size:clamp(1.9rem, 3.4vw, 3.1rem); line-height:1.08; margin:0 0 .5rem 0;
+    color:var(--cyan);
+  }
+  .dark h1.headline{ font-size:clamp(2.1rem,4vw,3.6rem); }
+  .subtitle{ font-size:clamp(.95rem,1.25vw,1.25rem); color:var(--muted); max-width:52ch; line-height:1.5; }
+  .dark .subtitle{ color:#D7DBE8; }
+
+  .section-title{ display:flex; align-items:center; gap:.7rem; margin-bottom:1.7vh; }
+  .section-title h1{ margin:0; }
+
+  .content-cols{ display:flex; gap:3.5vw; margin-top:1vh; }
+  .col{ flex:1; }
+  .col + .col{ border-left:1px solid var(--line); padding-left:3.5vw; }
+
+  .item-label{ font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.02rem; color:var(--navy); margin:0 0 .35rem 0; }
+  .item-label.cyan{ color:#0C93A6; }
+  .item-label.red{ color:var(--red); }
+  .item-text{ font-size:.95rem; color:var(--ink); opacity:.85; line-height:1.5; margin:0 0 1.3rem 0; }
+
+  ul.plain{ list-style:none; margin:0; padding:0; }
+  ul.plain li{ position:relative; padding-left:1.1rem; margin-bottom:.65rem; font-size:.98rem; line-height:1.45; color:var(--ink); }
+  ul.plain li::before{ content:'–'; position:absolute; left:0; color:#0C93A6; font-weight:700; }
+  .dark ul.plain li{ color:#E4E7F2; }
+  .dark ul.plain li::before{ color:var(--cyan); }
+
+  .reveal{ opacity:0; transform:translateY(16px); }
+  .slide.active .reveal{
+    animation:riseIn .65s cubic-bezier(.16,1,.3,1) both;
+    animation-delay:calc(var(--i,0) * 90ms + 150ms);
+  }
+  @keyframes riseIn{ from{opacity:0; transform:translateY(16px);} to{opacity:1; transform:translateY(0);} }
+
+  /* footer */
+  .footer{ position:absolute; bottom:2.2vh; left:7vw; right:7vw; display:flex; justify-content:space-between; font-size:.72rem; color:var(--muted); z-index:6; }
+  .dark .footer{ color:#8286A0; }
+  .footer b{ color:var(--navy); font-weight:700; }
+  .dark .footer b{ color:#fff; }
+
+  /* controls */
+  .controls{
+    flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:1.4rem;
+    padding:1.1rem 0; background:#14151E;
+  }
+  .navbtn{
+    width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.18);
+    background:rgba(255,255,255,.04); color:#fff; font-size:1.1rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; transition:background .2s, transform .15s;
+  }
+  .navbtn:hover{ background:rgba(20,215,255,.16); border-color:var(--cyan); }
+  .navbtn:active{ transform:scale(.92); }
+  .dots{ display:flex; gap:.4rem; }
+  .dot{ width:7px; height:7px; border-radius:50%; background:rgba(255,255,255,.22); cursor:pointer; transition:background .2s, transform .2s; }
+  .dot:hover{ background:rgba(255,255,255,.5); }
+  .dot.active{ background:var(--cyan); transform:scale(1.35); }
+  .counter{ font-family:'Space Grotesk',sans-serif; color:#8286A0; font-size:.78rem; letter-spacing:.5px; min-width:64px; text-align:center; }
+  .fsbtn{ width:38px; height:38px; border-radius:50%; border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.04); color:#fff; cursor:pointer; font-size:.95rem; display:flex; align-items:center; justify-content:center;}
+  .fsbtn:hover{ background:rgba(255,171,64,.18); border-color:var(--amber); }
+
+  /* diagram: flow steps */
+  .flow{ display:flex; align-items:stretch; gap:1.1vw; margin-top:2.2vh; }
+  .flow-step{ flex:1; background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:1.6rem 1.1rem 1.3rem; position:relative; text-align:center; color:var(--ink); }
+  .flow-step.mid{ background:var(--navy); color:#fff; border-color:var(--navy); }
+  .flow-num{ width:38px; height:38px; border-radius:50%; border:2px solid #0C93A6; color:#0C93A6; background:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'Space Grotesk',sans-serif; margin:-2.9rem auto .8rem; position:relative; z-index:2; }
+  .flow-step.mid .flow-num{ background:#fff; }
+  .flow-title{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1rem; margin-bottom:.5rem; }
+  .flow-desc{ font-size:.82rem; color:var(--muted); line-height:1.4; }
+  .flow-step.mid .flow-desc{ color:#CADCFC; }
+  .flow-arrow{ align-self:center; color:#0C93A6; font-size:1.3rem; }
+
+  /* vehicle grid */
+  .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:1vw 1.2vw; margin-top:2vh; }
+  .vcard{ background:var(--paper); border:1px solid var(--line); border-radius:10px; padding:1.1rem 1.2rem; }
+  .vcard .dot-tag{ width:9px; height:9px; border-radius:50%; background:#0C93A6; display:inline-block; margin-right:.5rem; }
+  .vcard-title{ font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.98rem; }
+  .vcard-desc{ font-size:.8rem; color:var(--muted); margin-top:.35rem; }
+
+  /* swatches */
+  .swatch-row{ display:flex; align-items:stretch; gap:.9rem; margin-top:2.4vh; }
+  .swatch{ flex:0 0 180px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'Space Grotesk',sans-serif; }
+  .swatch-desc{ flex:1; background:var(--paper-tint); border-radius:10px; display:flex; align-items:center; padding:0 1.4rem; font-size:.92rem; color:var(--ink); }
+
+  .num-circle{ width:34px; height:34px; border-radius:50%; border:2px solid #0C93A6; color:#0C93A6; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'Space Grotesk',sans-serif; font-size:.95rem; flex:0 0 auto;}
+
+  .step-row{ display:flex; align-items:flex-start; gap:1rem; margin-bottom:1.1rem; }
+  .step-row .txt b{ font-family:'Space Grotesk',sans-serif; display:block; margin-bottom:.15rem; }
+  .step-row .txt span{ font-size:.9rem; color:var(--muted); }
+
+  .badge-num{ width:30px; height:30px; border-radius:8px; background:#0C93A6; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-family:'Space Grotesk',sans-serif; font-size:.85rem; flex:0 0 auto; }
+
+  .recap-item{ display:flex; align-items:center; gap:1rem; margin-bottom:1.05rem; font-size:1.08rem; }
+  .recap-dot{ width:10px; height:10px; border-radius:50%; background:var(--amber); flex:0 0 auto; }
+
+  .quote-bar{ margin-top:2.4vh; padding:1rem 1.4rem; background:var(--navy); color:#fff; border-radius:10px; font-style:italic; font-size:.95rem; }
+
+  table.datatable{ border-collapse:collapse; width:100%; font-size:.85rem; }
+  table.datatable th, table.datatable td{ border:1px solid var(--line); padding:.45rem .5rem; text-align:center; }
+  table.datatable th{ background:#EFF1F6; color:var(--navy); font-family:'Space Grotesk',sans-serif; font-weight:700; }
+  table.datatable tr:nth-child(even) td{ background:var(--paper-tint); }
+  .callout-warn{ background:#FDF3E7; border:1px solid var(--amber); border-radius:8px; padding:.9rem 1.2rem; }
+  .callout-warn b{ color:#8A5A17; font-family:'Space Grotesk',sans-serif; display:block; margin-bottom:.3rem; }
+
+  kbd{ background:rgba(255,255,255,.1); border-radius:4px; padding:1px 6px; font-family:inherit; }
+  .hint{ position:absolute; top:4.5vh; left:7vw; font-size:.7rem; color:rgba(255,255,255,.35); }
+  .light .hint{ color:rgba(43,45,61,.35); }
+
+  @media (max-width:820px){
+    .content-cols{ flex-direction:column; }
+    .col + .col{ border-left:none; padding-left:0; border-top:1px solid var(--line); padding-top:1.2rem; margin-top:1.2rem; }
+    .grid3{ grid-template-columns:1fr 1fr; }
+    .flow{ flex-direction:column; }
+    .flow-arrow{ transform:rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+<div class="viewer">
+  <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="deck" id="deck">
+
+    <!-- 1 : CAPA -->
+    <section class="slide dark active">
+      <div class="amb amb1"></div><div class="amb amb2"></div>
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Time StormX · Reforço de Processo</div>
+      <h1 class="headline reveal" style="--i:1; margin-top:2.2rem;">Preenchimento do<br>RM_STORMX e do ADP</h1>
+      <p class="subtitle reveal" style="--i:2">Como conectar o plano de mídia, as abas por veículo e o dicionário de nomenclatura — sem retrabalho.</p>
+      <div class="flow reveal" style="--i:3; max-width:640px; margin-top:6vh;">
+        <div class="flow-step" style="padding-top:1.6rem;"><div class="vcard-title" style="font-family:'Space Grotesk',sans-serif; color:var(--navy);">Camphouse</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step mid" style="padding-top:1.6rem;"><div class="vcard-title" style="font-family:'Space Grotesk',sans-serif;">RM_STORMX</div></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-step" style="padding-top:1.6rem;"><div class="vcard-title" style="font-family:'Space Grotesk',sans-serif; color:var(--navy);">StormX</div></div>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 2 : AGENDA -->
+    <section class="slide dark">
+      <div class="amb amb1"></div>
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.6rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Agenda</h1>
+      </div>
+      <ul class="plain" style="margin-top:1rem; max-width:760px;">
+        <li class="reveal" style="--i:2; font-size:1.02rem;">Fluxo geral — do Camphouse ao StormX</li>
+        <li class="reveal" style="--i:3; font-size:1.02rem;">RM_STORMX na prática — importar e preencher por veículo</li>
+        <li class="reveal" style="--i:4; font-size:1.02rem;">Código de cores — o que editar e o que não editar</li>
+        <li class="reveal" style="--i:5; font-size:1.02rem;">ADP — de onde vêm os valores e como validar nomenclatura</li>
+        <li class="reveal" style="--i:6; font-size:1.02rem;">Implementação, responsabilidades e Influenciadores (BRD/INF/UGC)</li>
+        <li class="reveal" style="--i:7; font-size:1.02rem;">Nossos SLAs</li>
+        <li class="reveal" style="--i:8; font-size:1.02rem;">Checklist final — erros comuns antes de enviar</li>
+      </ul>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 3 : FLUXO GERAL -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">O fluxo completo, do plano ao ad server</h1>
+      </div>
+      <div class="flow">
+        <div class="flow-step reveal" style="--i:2"><div class="flow-num">1</div><div class="flow-title">Camphouse</div><div class="flow-desc">Exportar o plano de mídia (opção "Exportar Stormx" — nunca criar outra exportação, pois altera a ordem das colunas)</div></div>
+        <div class="flow-arrow reveal" style="--i:3">→</div>
+        <div class="flow-step reveal" style="--i:3"><div class="flow-num">2</div><div class="flow-title">Plano - Camphouse</div><div class="flow-desc">Colar em C3 com Colar Especial → Valores</div></div>
+        <div class="flow-arrow reveal" style="--i:4">→</div>
+        <div class="flow-step mid reveal" style="--i:4"><div class="flow-num">3</div><div class="flow-title">Abas por veículo</div><div class="flow-desc">Google, Programmatic, YouTube, Meta e TikTok, Pinterest/Snapchat/X, Flashtalking</div></div>
+        <div class="flow-arrow reveal" style="--i:5">→</div>
+        <div class="flow-step reveal" style="--i:5"><div class="flow-num">4</div><div class="flow-title">StormX</div><div class="flow-desc">Processa a solicitação e devolve a taxonomia</div></div>
+      </div>
+      <p class="item-text reveal" style="--i:6; font-style:italic; margin-top:2.4vh;">Sempre que houver linhas novas no Camphouse, exporte novamente com "Exportar Stormx" e repita todo o processo a partir da etapa 2.</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 4 : RM_STORMX x ADP -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">RM_STORMX x ADP</h1>
+      </div>
+      <div class="content-cols">
+        <div class="col reveal" style="--i:2">
+          <p class="item-label cyan">RM_STORMX</p>
+          <p class="item-text" style="font-style:italic; margin-bottom:.9rem;">Formulário operacional de solicitação</p>
+          <ul class="plain">
+            <li>Recebe o plano exportado do Camphouse</li>
+            <li>Abas por veículo para preencher a solicitação</li>
+            <li>Código de cores define o que editar</li>
+            <li>É o que você preenche todo dia</li>
+          </ul>
+        </div>
+        <div class="col reveal" style="--i:3">
+          <p class="item-label cyan">ADP</p>
+          <p class="item-text" style="font-style:italic; margin-bottom:.9rem;">Dicionário mestre de nomenclatura</p>
+          <ul class="plain">
+            <li>Mandated Dimensions & Values (regras globais)</li>
+            <li>Brand Pos Level / Campaign By Brand Pos</li>
+            <li>Alimenta os dropdowns do RM_STORMX</li>
+            <li>É a fonte de verdade para validar a string final
+String: nome estruturado gerado pela planilha que define a nomenclatura de cada linha nas plataformas (ex: BR_UL_DOVE_2026_Google_Search).</li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 5 : IMPORTANDO O PLANO -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Importando o plano do Camphouse</h1>
+      </div>
+      <div style="max-width:900px; margin-top:1rem;">
+        <div class="step-row reveal" style="--i:2"><div class="num-circle">1</div><div class="txt"><b>Exportar</b><span>No Camphouse, exportar o plano usando a opção "Exportar Stormx". O sistema gera um arquivo Excel.</span></div></div>
+        <div class="step-row reveal" style="--i:3"><div class="num-circle">2</div><div class="txt"><b>Copiar</b><span>Na aba "Plano - Camphouse", copiar todos os dados do arquivo exportado.</span></div></div>
+        <div class="step-row reveal" style="--i:4"><div class="num-circle">3</div><div class="txt"><b>Colar como valores</b><span>Colar a partir da célula C3 usando Colar Especial → Valores. Evita conflitos de formatação.</span></div></div>
+      </div>
+      <p class="item-text reveal" style="--i:5; font-style:italic; border-top:1px solid var(--line); padding-top:1rem; max-width:900px;">Se novas linhas forem adicionadas no Camphouse: exporte novamente e copie apenas as linhas novas, colando abaixo da última linha (também com Colar Especial → Valores).</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 6 : ABAS POR VEICULO -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Selecionando a aba do veículo certo</h1>
+      </div>
+      <div class="grid3">
+        <div class="vcard reveal" style="--i:2"><span class="dot-tag"></span><span class="vcard-title">Google</span><div class="vcard-desc">Campanhas de busca e display Google</div></div>
+        <div class="vcard reveal" style="--i:2.3"><span class="dot-tag"></span><span class="vcard-title">Programmatic</span><div class="vcard-desc">Mídia programática (DV360, TradeDesk etc.)</div></div>
+        <div class="vcard reveal" style="--i:2.6"><span class="dot-tag"></span><span class="vcard-title">YouTube</span><div class="vcard-desc">Campanhas específicas de vídeo</div></div>
+        <div class="vcard reveal" style="--i:2.9"><span class="dot-tag"></span><span class="vcard-title">Meta e TikTok</span><div class="vcard-desc">Campanhas social</div></div>
+        <div class="vcard reveal" style="--i:3.2"><span class="dot-tag"></span><span class="vcard-title">Pinterest, Snapchat e X</span><div class="vcard-desc">Campanhas social</div></div>
+        <div class="vcard reveal" style="--i:3.5"><span class="dot-tag"></span><span class="vcard-title">Flashtalking</span><div class="vcard-desc">Ad server — tags e contadores</div></div>
+      </div>
+      <p class="item-text reveal" style="--i:4; font-style:italic; margin-top:1.6rem;">Preencha a coluna Linha (G) com o número correspondente no Plano - Camphouse — é isso que conecta os dados automaticamente.</p>
+      <p class="item-text reveal" style="--i:5; font-style:italic; color:#0C93A6;">Google Ads (PMax): campanhas de Performance Max devem sempre vir sinalizadas como "pmax" no campo Campaign Local Extra.</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 7 : CODIGO DE CORES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Código de cores — o que editar (e o que não)</h1>
+      </div>
+      <div class="swatch-row reveal" style="--i:2"><div class="swatch" style="background:#7B4B94; color:#fff;">Roxo</div><div class="swatch-desc">Selecionar via dropdown. Preenchimento obrigatório.</div></div>
+      <div class="swatch-row reveal" style="--i:3"><div class="swatch" style="background:#F2C94C; color:#494C67;">Amarelo</div><div class="swatch-desc">Preencher manualmente. Não usar caracteres especiais.</div></div>
+      <div class="swatch-row reveal" style="--i:4"><div class="swatch" style="background:#AEDFF7; color:#494C67;">Azul claro</div><div class="swatch-desc">Preenchido automaticamente pela planilha. Não editar.</div></div>
+      <div class="swatch-row reveal" style="--i:5"><div class="swatch" style="background:#B0B7BD; color:#494C67;">Cinza</div><div class="swatch-desc">Preenchido automaticamente pelo StormX.</div></div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 8 : LINHA G -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">A coluna Linha (G): o elo entre as abas</h1>
+      </div>
+      <div class="content-cols" style="align-items:stretch;">
+        <div class="col reveal" style="--i:2">
+          <p class="item-label">Plano - Camphouse</p>
+          <p style="font-size:.92rem; line-height:2; color:var(--ink);">
+            <b style="color:#0C93A6;">Linha 12</b> → Brand X, CN00456, Google Search...<br>
+            <b style="color:#0C93A6;">Linha 13</b> → Brand X, CN00456, Meta...<br>
+            <b style="color:#0C93A6;">Linha 14</b> → Brand Y, CN00457, YouTube...
+          </p>
+          <p class="item-text" style="font-style:italic;">Cada linha do plano exportado tem um número — é essa referência que você informa na aba do veículo.</p>
+        </div>
+        <div class="col reveal" style="--i:3">
+          <p class="item-label">Aba do veículo (ex: Google)</p>
+          <p style="color:#0C93A6; font-weight:700; font-size:.95rem;">Coluna G — Linha: 12</p>
+          <p class="item-text">Ao preencher esse número, a planilha puxa automaticamente os dados do plano (marca, CN Code, veículo) para os campos azul claro dessa linha.</p>
+          <p class="item-text" style="font-style:italic;">Campos amarelos: nunca use caracteres especiais. Dropdowns roxo: não modifique os valores sem consentimento expresso da Unilever.
+Depois disso, complete os campos roxo (dropdown) e amarelo (manual).</p>
+        </div>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 9 : ADP DROPDOWNS -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">De onde vêm os valores dos dropdowns</h1>
+      </div>
+      <div class="grid3" style="grid-template-columns:repeat(3,1fr); margin-top:1.6rem;">
+        <div class="reveal" style="--i:2"><p class="item-label">Mandated Dimensions & Values</p><p class="item-text">Regras globais de nomenclatura e codificação do ADP — a base de tudo.</p></div>
+        <div class="reveal" style="--i:3"><p class="item-label">Brand Pos Level</p><p class="item-text">Cruza marca, posicionamento e mercado — define o "Brand Position" usado nas strings.</p></div>
+        <div class="reveal" style="--i:4"><p class="item-label">Campaign By Brand Pos</p><p class="item-text">Lista de campanhas e CN Codes vinculados a cada posicionamento de marca.</p></div>
+      </div>
+      <p class="item-text reveal" style="--i:5; font-style:italic; border-top:1px solid var(--line); padding-top:1rem; margin-top:.8rem;">O ADP alimenta os dropdowns roxo do RM_STORMX. Se um valor não aparece no dropdown, o problema está no cadastro dentro do próprio ADP — não no RM_STORMX. Acione a StormX para corrigir.</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 10 : VALIDANDO -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Validando a string antes de enviar</h1>
+      </div>
+      <div style="max-width:920px;">
+        <div class="step-row reveal" style="--i:2"><div class="num-circle">1</div><div class="txt"><span>Antes de enviar a solicitação, confira a string gerada nas abas de taxonomia do RM_STORMX: Taxo Google, Taxo YouTube, Taxo Programmatic, Taxo Meta e TikTok, Taxo Pinterest/Snapchat/X e Taxo Flashtalking.</span></div></div>
+        <div class="step-row reveal" style="--i:3"><div class="num-circle">2</div><div class="txt"><span>Use o ADP como fonte de verdade: se a nomenclatura no RM_STORMX diverge do dicionário mandatório, corrija no RM_STORMX — o ADP não deve ser editado por engano.</span></div></div>
+        <div class="step-row reveal" style="--i:4"><div class="num-circle">3</div><div class="txt"><span>Campanhas novas (sem CN Code ainda) aparecem em "Missing Campaigns" — sinalize para o time responsável antes de seguir com o preenchimento.</span></div></div>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 11 : ERROS RECORRENTES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Erros recorrentes de nomenclatura</h1>
+      </div>
+      <div class="content-cols">
+        <div class="col">
+          <div class="reveal" style="--i:2"><p class="item-label red">Caracteres proibidos</p><p class="item-text">Não usar em nenhum campo: acentos, ç, til (~), apóstrofo ('), travessão (– ou —), "_" (underscore) ou "|" (pipe). Use apenas letras sem acentuação, sem ç e sem til, números e hífen (-).</p></div>
+          <div class="reveal" style="--i:3"><p class="item-label red">Campaign Name genérico</p><p class="item-text">Proibido usar nome genérico (ex.: "Always On Non Search"), exceto enquanto o Campaign Name oficial do Global ainda não foi aprovado.</p></div>
+        </div>
+        <div class="col">
+          <div class="reveal" style="--i:2.4"><p class="item-label red">Ad Name duplicado</p><p class="item-text">Não é permitido usar o mesmo Ad Name em mais de um Ad Group, mesmo com asset idêntico. Cada Ad Group deve ter seu próprio Ad Name.</p></div>
+          <div class="reveal" style="--i:3.4"><p class="item-label red">Cópia de Ad Group/Ad Name</p><p class="item-text">Não duplicar direto na plataforma (evite sufixos "cópia"/"copy"). Mesmo com configuração idêntica, solicitar sempre uma nova taxonomia à StormX.</p></div>
+        </div>
+      </div>
+      <p class="item-text reveal" style="--i:5; font-style:italic; border-top:1px solid var(--line); padding-top:1rem;">Essas práticas comprometem a leitura dos dados e sujam o banco — sempre exigem retrabalho de correção.</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 12 : REGRAS IMPORTANTES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Regras importantes</h1>
+      </div>
+      <div style="max-width:960px;">
+        <div class="step-row reveal" style="--i:2"><div class="badge-num">•</div><div class="txt"><b>Somente a StormX cria taxonomia</b><span>É proibido preencher o ADP manualmente. Se chegar um ADP preenchido, a StormX solicita que a demanda seja descrita na task do Jira.</span></div></div>
+        <div class="step-row reveal" style="--i:3"><div class="badge-num">•</div><div class="txt"><b>Não subir campanha sem taxonomia aprovada</b><span>Somente em casos de urgência, com autorização do cliente por e-mail. O e-mail de autorização deve ser arquivado no Jira junto à task. É obrigatório solicitar a taxonomia correta via Jira e corrigir a linha na plataforma em até 24h.</span></div></div>
+        <div class="step-row reveal" style="--i:4"><div class="badge-num">•</div><div class="txt"><b>Taxonomia genérica é exceção</b><span>Somente aceita fora do horário comercial/feriado ou campanha urgente — e precisa passar pela aprovação da StormX. Ajuste para a versão correta em até 24h úteis.</span></div></div>
+        <div class="step-row reveal" style="--i:5"><div class="badge-num">•</div><div class="txt"><b>Campo Extra é a única edição permitida</b><span>Depois de criada, a taxonomia não pode ser alterada — exceto o Campo Extra, que a agência pode ajustar. Toda alteração deve ser avisada à StormX em até 24h.</span></div></div>
+        <div class="step-row reveal" style="--i:6"><div class="badge-num">•</div><div class="txt"><b>Responder o Jira quando solicitado</b><span>Se a StormX pede mais informação no ticket para seguir com a taxonomia, a demanda fica parada até a resposta do mídia — isso atrasa a criação e compromete o SLA.</span></div></div>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 12c : IMPLEMENTACAO RESPONSABILIDADES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Implementação: responsabilidades</h1>
+      </div>
+      <div style="max-width:1080px;">
+        <div class="reveal" style="--i:2; margin-bottom:1.4rem;"><p class="item-label cyan">Aprovação de criativos</p><p class="item-text">A StormX pode apoiar na revisão, mas quem valida o criativo é o mídia — é quem conhece as peculiaridades da peça (CTA, destino/URL correto, formato). A responsabilidade final pela aprovação do criativo é do mídia.</p></div>
+        <div class="reveal" style="--i:3; margin-bottom:1.4rem;"><p class="item-label cyan">Copiar e colar o que vem na RM</p><p class="item-text">Ao implementar na plataforma, o mídia deve copiar e colar exatamente a taxonomia gerada na RM — nunca retranscrever ou digitar de novo. Reduz erro de transcrição e mantém a string idêntica à validada.</p></div>
+        <div class="reveal" style="--i:4"><p class="item-label cyan">Informar os contatos de envio</p><p class="item-text">Sempre indicar para quem os materiais criados devem ser enviados — principalmente quando vêm de Ad Server (Flashtalking). Sem o contato certo, a entrega do material trava.</p></div>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+
+    <!-- 12b : CLASSIFICACAO DE INFLUENCIADORES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Classificação de Influenciadores — BRD, INF e UGC</h1>
+      </div>
+      <div style="max-width:1080px; margin-top:.4rem;">
+        <div class="step-row reveal" style="--i:2">
+          <div class="badge-num" style="background:#0C93A6; border-radius:6px; width:52px;">BRD</div>
+          <div class="txt"><b>Sem influenciador</b><span>Conteúdo da marca (Brand Say). Não deve ter nenhum link de influenciador associado.</span></div>
+        </div>
+        <div class="step-row reveal" style="--i:3">
+          <div class="badge-num" style="background:var(--navy); border-radius:6px; width:52px;">INF</div>
+          <div class="txt"><b>Com influenciador — handle da marca + do influenciador</b><span>Campanha com influenciador usando Brand Handle e Influencer Handle no Galileo. O link do influenciador é obrigatório. As informações de Influ Handle e Brand Handle precisam estar corretas no Camphouse/ADP. Dados incorretos exigem ajuste e correção antes de prosseguir.</span></div>
+        </div>
+        <div class="step-row reveal" style="--i:4">
+          <div class="badge-num" style="background:var(--amber); color:var(--navy); border-radius:6px; width:52px;">UGC</div>
+          <div class="txt"><b>Com influenciador — apenas handle do influenciador</b><span>Usa somente o Influencer Handle no Galileo. Link do influenciador é obrigatório.</span></div>
+        </div>
+      </div>
+      <div class="reveal" style="--i:5; max-width:1080px; margin-top:.6rem; padding:.9rem 1.2rem; background:#FDECEA; border:1px solid var(--red); border-radius:8px;">
+        <p style="margin:0; font-size:.9rem; font-style:italic; color:#8A2E2A;">Erro mais comum: classificar como BRD uma campanha que na verdade tem influenciador (ou o contrário). Antes de classificar, confirme se existe link de influenciador — se existir, a classificação nunca pode ser BRD.</p>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 13 : DATAS E ALTERACOES -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Datas e alterações — cuidados importantes</h1>
+      </div>
+      <div class="reveal" style="--i:2; max-width:1080px;">
+        <p class="item-label red">Formato de data inconsistente</p>
+        <p class="item-text">Somente o formato pode ser ajustado — o conteúdo das datas não pode ser alterado. Datas em branco não são aceitas. Datas desatualizadas também não (ex.: enviar hoje com Data Fim 20/05). É comum vir misturado — ISO (2026-05-01), outras em US (05/31/2026), na mesma coluna. Pode gerar leitura errada de data na taxonomia.</p>
+      </div>
+      <div class="reveal" style="--i:3; max-width:1080px; border-top:1px solid var(--line); padding-top:.9rem; margin-top:.3rem;">
+        <p class="item-label red">Alteração na coluna Linha (G)</p>
+        <p class="item-text">Se o pedido muda o valor da coluna G, não trate como alteração simples: o G puxa automaticamente os campos azul claro daquela linha, e mudar o G muda esses campos também — mesmo que o pedido só liste outras colunas. Cancele a linha e crie uma nova solicitação.</p>
+      </div>
+      <div class="reveal" style="--i:4; max-width:1080px; border-top:1px solid var(--line); padding-top:.9rem; margin-top:.3rem;">
+        <p class="item-label red">Mensagem "Verificar Plano de Mídia"</p>
+        <p class="item-text">É um aviso de fórmula (SEERRO no lugar do #N/A): a fórmula não encontrou correspondência no Plano - Camphouse. Se não for corrigido, pode atrapalhar a confecção da taxonomia ou levar a erro de implementação. Se aparecer em qualquer coluna, volte à aba Plano/Plano - Camphouse, confira a Linha (G) e ajuste antes de enviar.</p>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 13b : SLA RM COMPLETA -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Nossos SLAs — RM Completa</h1>
+      </div>
+      <div class="reveal" style="--i:2; max-width:1100px;">
+        <table class="datatable">
+          <tr><th>Qtd de linhas</th><th>Criação</th><th>Alteração</th><th>Pausas</th><th>QA (linha implementada)</th><th>QA (total)</th></tr>
+          <tr><td>10</td><td>45min</td><td>20min</td><td>10m</td><td>3 dias</td><td>—</td></tr>
+          <tr><td>40</td><td>2h</td><td>1h</td><td>10m</td><td>5 dias</td><td>8 dias</td></tr>
+          <tr><td>100</td><td>5h</td><td>3h</td><td>10m</td><td>10 dias</td><td>15 dias</td></tr>
+          <tr><td>200</td><td>8h</td><td>5h</td><td>20m</td><td>10 dias</td><td>15 dias</td></tr>
+          <tr><td>500</td><td>16h</td><td>10h</td><td>20m</td><td>15 dias</td><td>20 dias</td></tr>
+        </table>
+        <p class="item-text" style="font-style:italic; margin-top:.7rem;">Prazos considerando a RM completa (sem pendências) e assets recebidos.</p>
+      </div>
+      <div class="callout-warn reveal" style="--i:3; max-width:1100px; margin-top:.6rem;">
+        <b>O SLA só vale com RM completa e correta</b>
+        <span style="font-size:.9rem; color:var(--ink);">RM incompleta, sem asset ou tarefa não criada no Jira: nesses casos, o prazo passa a depender do mídia (a ser definido) — o SLA acima só vale quando a solicitação chega completa.</span>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 13c : SLA FLASHTALKING -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Nossos SLAs — Flashtalking e regras gerais</h1>
+      </div>
+      <div class="content-cols">
+        <div class="col reveal" style="--i:2">
+          <p class="item-label cyan">Flashtalking · Tags</p>
+          <table class="datatable">
+            <tr><th>Linhas</th><th>Criação</th><th>Alteração</th></tr>
+            <tr><td>10</td><td>45min +48h</td><td>20min +4h</td></tr>
+            <tr><td>40</td><td>2h +48h</td><td>1h +4h</td></tr>
+            <tr><td>100</td><td>5h +48h</td><td>3h +4h</td></tr>
+          </table>
+          <p class="item-text" style="font-size:.82rem; font-style:italic; margin-top:.5rem;">"+prazo" = retorno de resposta da Flashtalking. Assets vão para a StormX, que solicita a criação à Flash; preview avaliado pelo mídia.</p>
+        </div>
+        <div class="col reveal" style="--i:3">
+          <p class="item-label cyan">Flashtalking · Contadores</p>
+          <table class="datatable">
+            <tr><th>Linhas</th><th>Criação</th><th>Alteração</th></tr>
+            <tr><td>10</td><td>45min +4h</td><td>20min +4h</td></tr>
+            <tr><td>100</td><td>5h +4h</td><td>3h +4h</td></tr>
+            <tr><td>500</td><td>16h +4h</td><td>10h +4h</td></tr>
+          </table>
+          <p class="item-text" style="font-size:.82rem; font-style:italic; margin-top:.5rem;">Prazos de contadores já incluem o retorno de resposta da Flashtalking (até 4h).</p>
+        </div>
+      </div>
+      <div class="reveal" style="--i:4; max-width:1100px; border-top:1px solid var(--line); padding-top:.9rem; margin-top:1rem;">
+        <p class="item-label">Regras gerais de atendimento</p>
+        <ul class="plain">
+          <li>Até 16h: atendimento no mesmo dia útil.</li>
+          <li>Após 16h: atendimento no próximo dia útil.</li>
+          <li>Eventualidades fora da rotina podem ser combinadas caso a caso com o time StormX. Casos de urgência precisam ser avisados à StormX, que irá gerenciar junto ao time de Ad Server.</li>
+        </ul>
+      </div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 14 : CHECKLIST -->
+    <section class="slide light">
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Unilever | Operação 2026</div>
+      <div class="section-title reveal" style="--i:1; margin-top:1.4rem;">
+        <span class="mark"><span></span><span></span><span></span></span>
+        <h1 class="headline" style="margin:0;">Checklist final e erros comuns</h1>
+      </div>
+      <div class="content-cols">
+        <div class="col reveal" style="--i:2">
+          <p class="item-label cyan">Obrigatório preencher</p>
+          <ul class="plain"><li>Status da solicitação</li><li>Solicitado por (responsável)</li><li>Data de envio</li></ul>
+          <p class="item-text" style="font-style:italic; font-size:.82rem; margin-top:.8rem;">O acesso ao Jira é feito por e-mail de time (genérico e compartilhado) — o nome de quem está pedindo precisa sempre estar no campo Solicitante. Também é necessário indicar se o pedido é de criação, alteração ou cancelamento, e enviar o link correto da RM. Recomenda-se que os colaboradores do time StormX tenham acesso às RMs para eventuais ajustes.</p>
+        </div>
+        <div class="col reveal" style="--i:3">
+          <p class="item-label red">Erros comuns a evitar</p>
+          <ul class="plain">
+            <li>Usar caracteres especiais em campos amarelos</li>
+            <li>Editar campos azul claro manualmente</li>
+            <li>Esquecer de exportar de novo ao adicionar linhas</li>
+            <li>Colar sem usar Colar Especial → Valores</li>
+            <li>Formato de data inconsistente no plano colado</li>
+            <li>Alterar a coluna G sem cancelar/recriar a linha</li>
+            <li>Ignorar "Verificar Plano de Mídia" em alguma coluna</li>
+          </ul>
+        </div>
+      </div>
+      <div class="quote-bar reveal" style="--i:4">Regra de ouro: consistência. Toda e qualquer mídia precisa ter sempre o mesmo comportamento em qualquer situação, seguindo as originais já validadas.</div>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+    <!-- 15 : RECAP -->
+    <section class="slide dark">
+      <div class="amb amb1"></div><div class="amb amb2"></div>
+      <div class="wordmark">STORM<span>X</span></div>
+      <div class="pill reveal" style="--i:0">Recapitulando</div>
+      <h1 class="headline reveal" style="--i:1; margin-top:1.6rem;">O que levar desse treinamento</h1>
+      <div style="margin-top:1.6rem; max-width:820px;">
+        <div class="recap-item reveal" style="--i:2"><span class="recap-dot"></span>RM_STORMX = onde você preenche a solicitação por veículo</div>
+        <div class="recap-item reveal" style="--i:3"><span class="recap-dot"></span>ADP = de onde vêm os valores e como validar a nomenclatura</div>
+        <div class="recap-item reveal" style="--i:4"><span class="recap-dot"></span>Linha (G) conecta o Plano - Camphouse às abas de veículo — e mudar o G exige cancelar + recriar</div>
+        <div class="recap-item reveal" style="--i:5"><span class="recap-dot"></span>Código de cores define o que editar — e o que nunca editar</div>
+      </div>
+      <p class="subtitle reveal" style="--i:6; margin-top:1.6rem;">Dúvidas? Fale com o time StormX / Taxonomia.</p>
+      <div class="footer"><b>Stormx for Unilever</b><span>All rights reserved to Stormx © 2026 // Digital Forward</span></div>
+    </section>
+
+  </div>
+
+  <div class="controls">
+    <button class="navbtn" id="prevBtn" aria-label="Anterior">‹</button>
+    <div class="dots" id="dots"></div>
+    <div class="counter" id="counter">01 / 14</div>
+    <button class="navbtn" id="nextBtn" aria-label="Próximo">›</button>
+    <button class="fsbtn" id="fsBtn" title="Tela cheia (F)">⛶</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  const dotsWrap = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const progressFill = document.getElementById('progressFill');
+  let current = 0;
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i===0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dotsWrap.appendChild(d);
+  });
+  const dots = Array.from(dotsWrap.children);
+
+  function pad(n){ return n < 10 ? '0'+n : ''+n; }
+
+  function restartReveals(slide){
+    const reveals = slide.querySelectorAll('.reveal');
+    reveals.forEach(el => {
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+  }
+
+  function goTo(i){
+    if(i < 0 || i >= total || i === current) return;
+    const dir = i > current ? 1 : -1;
+    slides[current].classList.remove('active');
+    slides[current].classList.toggle('prevslide', dir === 1);
+    slides[i].classList.remove('prevslide');
+    slides[i].classList.add('active');
+    restartReveals(slides[i]);
+    dots[current].classList.remove('active');
+    dots[i].classList.add('active');
+    current = i;
+    counter.textContent = pad(current+1) + ' / ' + pad(total);
+    progressFill.style.width = ((current+1)/total*100) + '%';
+  }
+
+  document.getElementById('prevBtn').addEventListener('click', () => goTo(current-1));
+  document.getElementById('nextBtn').addEventListener('click', () => goTo(current+1));
+
+  document.addEventListener('keydown', (e) => {
+    if(['ArrowRight','PageDown',' '].includes(e.key)){ e.preventDefault(); goTo(current+1); }
+    else if(['ArrowLeft','PageUp'].includes(e.key)){ e.preventDefault(); goTo(current-1); }
+    else if(e.key === 'Home'){ goTo(0); }
+    else if(e.key === 'End'){ goTo(total-1); }
+    else if(e.key.toLowerCase() === 'f'){ toggleFullscreen(); }
+  });
+
+  let touchStartX = null;
+  document.addEventListener('touchstart', e => touchStartX = e.touches[0].clientX);
+  document.addEventListener('touchend', e => {
+    if(touchStartX === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if(Math.abs(dx) > 60){ dx < 0 ? goTo(current+1) : goTo(current-1); }
+    touchStartX = null;
+  });
+
+  function toggleFullscreen(){
+    if(!document.fullscreenElement){ document.documentElement.requestFullscreen().catch(()=>{}); }
+    else{ document.exitFullscreen(); }
+  }
+  document.getElementById('fsBtn').addEventListener('click', toggleFullscreen);
+
+  // init
+  counter.textContent = pad(1) + ' / ' + pad(total);
+  progressFill.style.width = (1/total*100) + '%';
+  restartReveals(slides[0]);
+})();
+</script>
+</body>
+</html>
