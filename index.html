@@ -12,8 +12,9 @@
       --f3:#1565c0; --f3-bg:#e3f2fd;
       --f4:#2e7d32; --f4-bg:#e8f5e9;
       --f5:#e65100; --f5-bg:#fff8e1;
+      --ok:#2e7d32; --aviso:#e65100; --erro:#c62828; --inativo:#9e9e9e;
     }
-    html, body { height: 100%; }
+    html, body { height:100%; }
     body {
       font-family:'Segoe UI',Arial,sans-serif;
       background:var(--bg);
@@ -28,84 +29,101 @@
     header h1 { font-size:1.7rem; font-weight:800; color:var(--escuro); letter-spacing:-.5px; }
     header p { font-size:.85rem; color:var(--muted); margin-top:4px; }
 
+    .env-toggle {
+      display:flex; gap:8px; margin-bottom:28px;
+      background:#fff; border:1px solid var(--borda);
+      border-radius:10px; padding:4px;
+    }
+    .env-btn {
+      flex:1; padding:8px 28px; border:none; border-radius:7px;
+      font-size:.85rem; font-weight:600; cursor:pointer;
+      transition:all .2s; color:var(--muted); background:transparent;
+    }
+    .env-btn.active { background:var(--azul); color:#fff; }
+
     .cards {
-      width:100%;
-      max-width:1100px;
+      width:100%; max-width:1100px;
       display:grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns:repeat(3,1fr);
       gap:20px;
       align-items:stretch;
     }
 
     .card {
-      background:#fff;
-      border:1px solid var(--borda);
-      border-radius:16px;
-      overflow:hidden;
-      display:flex;
-      flex-direction:column;
+      background:#fff; border:1px solid var(--borda);
+      border-radius:16px; overflow:hidden;
+      display:flex; flex-direction:column;
       transition:box-shadow .2s, transform .2s;
     }
-    .card:hover {
-      box-shadow:0 8px 32px rgba(31,54,199,.12);
-      transform:translateY(-2px);
-    }
+    .card:hover { box-shadow:0 8px 32px rgba(31,54,199,.12); transform:translateY(-2px); }
 
-    .card-header { padding:24px 22px 18px; }
+    .card-header { padding:22px 22px 16px; }
+    .card-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
+
     .card-icon {
-      width:44px; height:44px;
-      border-radius:12px;
-      display:flex; align-items:center; justify-content:center;
-      font-size:1.3rem;
-      margin-bottom:14px;
+      width:44px; height:44px; border-radius:12px;
+      display:flex; align-items:center; justify-content:center; font-size:1.3rem;
     }
     .icon-f3{background:var(--f3-bg);}
     .icon-f4{background:var(--f4-bg);}
     .icon-f5{background:var(--f5-bg);}
 
+    .status-badge {
+      display:flex; align-items:center; gap:5px;
+      font-size:.72rem; font-weight:600; padding:4px 10px;
+      border-radius:20px; background:#f5f5f5; color:var(--inativo);
+    }
+    .status-dot {
+      width:7px; height:7px; border-radius:50%; background:var(--inativo);
+      animation:pulse 2s infinite;
+    }
+    .status-badge.ok { background:#e8f5e9; color:var(--ok); }
+    .status-badge.ok .status-dot { background:var(--ok); }
+    .status-badge.aviso { background:#fff8e1; color:var(--aviso); }
+    .status-badge.aviso .status-dot { background:var(--aviso); }
+    .status-badge.erro { background:#ffebee; color:var(--erro); }
+    .status-badge.erro .status-dot { background:var(--erro); animation:none; }
+    @keyframes pulse {
+      0%,100%{opacity:1;} 50%{opacity:.4;}
+    }
+
     .card-fase { font-size:.68rem; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-bottom:4px; }
-    .fase-f3{color:var(--f3);}
-    .fase-f4{color:var(--f4);}
-    .fase-f5{color:var(--f5);}
+    .fase-f3{color:var(--f3);} .fase-f4{color:var(--f4);} .fase-f5{color:var(--f5);}
+    .card-title { font-size:1.05rem; font-weight:800; color:var(--escuro); margin-bottom:3px; }
+    .card-desc { font-size:.78rem; color:#888; }
 
-    .card-title { font-size:1.1rem; font-weight:800; color:var(--escuro); margin-bottom:4px; }
-    .card-desc { font-size:.78rem; color:#888; line-height:1.4; }
-
-    .card-body {
-      padding:0 22px 24px;
-      flex:1;
+    .card-stats {
+      margin:0 22px 14px;
+      padding:12px 14px;
+      background:#fafafa;
+      border:1px solid var(--borda);
+      border-radius:10px;
+      font-size:.76rem;
+      color:#555;
       display:flex;
       flex-direction:column;
+      gap:5px;
+      min-height:72px;
     }
+    .stat-row { display:flex; justify-content:space-between; align-items:center; }
+    .stat-label { color:#888; }
+    .stat-val { font-weight:600; color:var(--escuro); }
+    .stat-loading { color:var(--muted); font-style:italic; font-size:.74rem; }
 
-    .divider { height:1px; background:var(--borda); margin-bottom:18px; }
+    .card-body { padding:0 22px 22px; flex:1; display:flex; flex-direction:column; }
+    .divider { height:1px; background:var(--borda); margin-bottom:16px; }
 
-    .modulos {
-      list-style:none;
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      flex:1;
-      margin-bottom:22px;
-    }
-    .modulos li { display:flex; align-items:center; gap:9px; font-size:.82rem; color:#444; }
+    .modulos { list-style:none; display:flex; flex-direction:column; gap:7px; flex:1; margin-bottom:20px; }
+    .modulos li { display:flex; align-items:center; gap:9px; font-size:.8rem; color:#444; }
     .dot { width:6px; height:6px; border-radius:50%; flex-shrink:0; }
-    .dot-f3{background:var(--f3);}
-    .dot-f4{background:var(--f4);}
-    .dot-f5{background:var(--f5);}
+    .dot-f3{background:var(--f3);} .dot-f4{background:var(--f4);} .dot-f5{background:var(--f5);}
 
     .btn-group { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     .btn-abrir {
-      display:block;
-      padding:11px 8px;
-      border-radius:10px;
-      font-size:.82rem;
-      font-weight:700;
-      cursor:pointer;
-      text-align:center;
-      text-decoration:none;
-      transition:opacity .18s, transform .18s;
-      border:none;
+      display:block; padding:11px 8px; border-radius:10px;
+      font-size:.82rem; font-weight:700; cursor:pointer;
+      text-align:center; text-decoration:none;
+      transition:opacity .18s, transform .18s; border:none;
     }
     .btn-abrir:hover { opacity:.85; transform:translateY(-1px); }
     .btn-corp { background:var(--azul); color:#fff; }
@@ -126,15 +144,26 @@
   <p>Unilever BR &times; Grasp</p>
 </header>
 
+<div class="env-toggle">
+  <button class="env-btn active" onclick="setEnv('corp')">Corp</button>
+  <button class="env-btn" onclick="setEnv('pessoal')">Pessoal</button>
+</div>
+
 <div class="cards">
 
   <!-- F3 -->
   <div class="card">
     <div class="card-header">
-      <div class="card-icon icon-f3">&#128269;</div>
+      <div class="card-top">
+        <div class="card-icon icon-f3">&#128269;</div>
+        <div class="status-badge" id="status-f3"><span class="status-dot"></span><span>Verificando...</span></div>
+      </div>
       <div class="card-fase fase-f3">F3</div>
       <div class="card-title">Validator</div>
       <div class="card-desc">Validação de naming conventions</div>
+    </div>
+    <div class="card-stats" id="stats-f3">
+      <span class="stat-loading">Carregando dados...</span>
     </div>
     <div class="card-body">
       <div class="divider"></div>
@@ -147,17 +176,9 @@
         <li><span class="dot dot-f3"></span>Verificador de Hash</li>
         <li><span class="dot dot-f3"></span>Histórico</li>
       </ul>
-      <div id="f3-stats" style="margin:10px 0 4px;padding:8px 10px;background:var(--f3-bg);border-radius:8px;font-size:.78rem;color:var(--f3);display:none">
-        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
-          <span>📅 Mês: <strong id="f3-totalMes">—</strong></span>
-          <span>✅ Strings: <strong id="f3-totalStrings">—</strong></span>
-          <span>📖 Dict: <strong id="f3-dictStatus">—</strong></span>
-        </div>
-        <div style="margin-top:4px;color:#555;font-size:.73rem" id="f3-ultimaVal"></div>
-      </div>
       <div class="btn-group">
-        <a class="btn-abrir btn-corp" href="https://falssp.github.io/nc-tool/f3-corp/" target="_blank">Corp &rarr;</a>
-        <a class="btn-abrir btn-pessoal" href="https://falssp.github.io/nc-tool/f3-pessoal/" target="_blank">Pessoal &rarr;</a>
+        <a class="btn-abrir btn-corp" id="btn-f3-corp" href="https://script.google.com/macros/s/AKfycby9YQftWg586o1m1gPEaMyHMMYzyYUJ8MRWY0WRSv67kGAkeEX4TVPXeLbB4_I6Wv7neA/exec" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" id="btn-f3-pes" href="https://script.google.com/macros/s/AKfycbw7QryYGzik1bbT0Mf4N5JcpuuNVoHAudTAbrT2jfzzXnz0wkuJfBFLIeMNViDO4SE2/exec" target="_blank">Pessoal &rarr;</a>
       </div>
     </div>
   </div>
@@ -165,10 +186,16 @@
   <!-- F4 -->
   <div class="card">
     <div class="card-header">
-      <div class="card-icon icon-f4">&#128295;</div>
+      <div class="card-top">
+        <div class="card-icon icon-f4">&#128295;</div>
+        <div class="status-badge" id="status-f4"><span class="status-dot"></span><span>Verificando...</span></div>
+      </div>
       <div class="card-fase fase-f4">F4</div>
       <div class="card-title">Acessórios</div>
       <div class="card-desc">Suite de ferramentas de apoio</div>
+    </div>
+    <div class="card-stats" id="stats-f4">
+      <span class="stat-loading">Carregando dados...</span>
     </div>
     <div class="card-body">
       <div class="divider"></div>
@@ -187,8 +214,8 @@
         <li><span class="dot dot-f4"></span>Removedor de Caracteres</li>
       </ul>
       <div class="btn-group">
-        <a class="btn-abrir btn-corp" href="https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec" target="_blank">Corp &rarr;</a>
-        <a class="btn-abrir btn-pessoal" href="https://script.google.com/macros/s/AKfycby6h6qvXqacFrf2TmcXYaflRQp7rvhklpnR27VWhIueh9pLxWvUCRYkFToJPxYezUN7cw/exec" target="_blank">Pessoal &rarr;</a>
+        <a class="btn-abrir btn-corp" id="btn-f4-corp" href="https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" id="btn-f4-pes" href="https://script.google.com/macros/s/AKfycby6h6qvXqacFrf2TmcXYaflRQp7rvhklpnR27VWhIueh9pLxWvUCRYkFToJPxYezUN7cw/exec" target="_blank">Pessoal &rarr;</a>
       </div>
     </div>
   </div>
@@ -196,10 +223,16 @@
   <!-- F5 -->
   <div class="card">
     <div class="card-header">
-      <div class="card-icon icon-f5">&#128218;</div>
+      <div class="card-top">
+        <div class="card-icon icon-f5">&#128218;</div>
+        <div class="status-badge" id="status-f5"><span class="status-dot"></span><span>Verificando...</span></div>
+      </div>
       <div class="card-fase fase-f5">F5</div>
       <div class="card-title">FT Flashtalking</div>
       <div class="card-desc">Validação de naming Flashtalking</div>
+    </div>
+    <div class="card-stats" id="stats-f5">
+      <span class="stat-loading">Carregando dados...</span>
     </div>
     <div class="card-body">
       <div class="divider"></div>
@@ -210,8 +243,8 @@
         <li><span class="dot dot-f5"></span>Histórico</li>
       </ul>
       <div class="btn-group">
-        <a class="btn-abrir btn-corp" href="https://falssp.github.io/nc-tool/f5-corp/" target="_blank">Corp &rarr;</a>
-        <a class="btn-abrir btn-pessoal" href="https://falssp.github.io/nc-tool/f5-pessoal/" target="_blank">Pessoal &rarr;</a>
+        <a class="btn-abrir btn-corp" id="btn-f5-corp" href="https://script.google.com/macros/s/AKfycbwKsOut5TyYLf1pW_xm1He-zBvzZGYFM4KAEE5C6hssNZHsg9fL_QBXWjfF-zzIDxfXNQ/exec" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" id="btn-f5-pes" href="https://script.google.com/macros/s/AKfycbym0772425DQEUrNQn9TZc6C-wdRuqU1_erQVSoWzV-MEBbyCN4DOfJkaSd90cdVZHjSA/exec" target="_blank">Pessoal &rarr;</a>
       </div>
     </div>
   </div>
@@ -220,40 +253,92 @@
 
 <footer>NC Tool &copy; 2026</footer>
 
-
 <script>
-(function() {
-  var CORP_API = 'https://script.google.com/macros/s/AKfycbzKKuKhr111DFtk5jAhx3ofQzZL78sQvliDKtxDj_FlBZmbPaLuufd6-oHxq7Tsr9sp_w/exec';
-  function fetchStats() {
-    fetch(CORP_API + '?action=stats')
-      .then(function(r) { return r.json(); })
-      .then(function(d) {
-        if (!d.ok) return;
-        var panel = document.getElementById('f3-stats');
-        if (panel) panel.style.display = 'block';
-
-        var el = document.getElementById('f3-totalMes');
-        if (el) el.textContent = d.totalMes || '0';
-
-        var es = document.getElementById('f3-totalStrings');
-        if (es) es.textContent = (d.totalStrings || 0).toLocaleString('pt-BR');
-
-        var ed = document.getElementById('f3-dictStatus');
-        if (ed && d.saude) {
-          var icon = d.saude.status === 'ok' ? '🟢' : d.saude.status === 'aviso' ? '🟡' : '🔴';
-          ed.textContent = icon + ' ' + (d.saude.totalSlugs || 0).toLocaleString('pt-BR') + ' slugs';
-        }
-
-        var eu = document.getElementById('f3-ultimaVal');
-        if (eu && d.ultimaValidacao) {
-          var uv = d.ultimaValidacao;
-          eu.textContent = 'Última: ' + (uv.data || '') + ' ' + (uv.hora || '') + ' · ' + (uv.usuario || '');
-        }
-      })
-      .catch(function() {});
+var URLS = {
+  corp: {
+    f3: 'https://script.google.com/macros/s/AKfycby9YQftWg586o1m1gPEaMyHMMYzyYUJ8MRWY0WRSv67kGAkeEX4TVPXeLbB4_I6Wv7neA/exec',
+    f4: 'https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec',
+    f5: 'https://script.google.com/macros/s/AKfycbwKsOut5TyYLf1pW_xm1He-zBvzZGYFM4KAEE5C6hssNZHsg9fL_QBXWjfF-zzIDxfXNQ/exec'
+  },
+  pessoal: {
+    f3: 'https://script.google.com/macros/s/AKfycbw7QryYGzik1bbT0Mf4N5JcpuuNVoHAudTAbrT2jfzzXnz0wkuJfBFLIeMNViDO4SE2/exec',
+    f4: 'https://script.google.com/macros/s/AKfycby6h6qvXqacFrf2TmcXYaflRQp7rvhklpnR27VWhIueh9pLxWvUCRYkFToJPxYezUN7cw/exec',
+    f5: 'https://script.google.com/macros/s/AKfycbym0772425DQEUrNQn9TZc6C-wdRuqU1_erQVSoWzV-MEBbyCN4DOfJkaSd90cdVZHjSA/exec'
   }
-  fetchStats();
-})();
+};
+
+var env = 'corp';
+
+function setEnv(e) {
+  env = e;
+  document.querySelectorAll('.env-btn').forEach(function(b) {
+    b.classList.toggle('active', b.textContent.toLowerCase() === e);
+  });
+  loadAll();
+}
+
+function setStatus(fase, state, label) {
+  var el = document.getElementById('status-' + fase);
+  el.className = 'status-badge ' + state;
+  el.querySelector('span:last-child').textContent = label;
+}
+
+function setStats(fase, data) {
+  var el = document.getElementById('stats-' + fase);
+  if (!data) {
+    el.innerHTML = '<span class="stat-loading">Dados indisponíveis</span>';
+    return;
+  }
+
+  var rows = '';
+
+  if (data.ultimaValidacao) {
+    rows += '<div class="stat-row"><span class="stat-label">Última validação</span><span class="stat-val">' + data.ultimaValidacao.data + ' ' + data.ultimaValidacao.hora + '</span></div>';
+    rows += '<div class="stat-row"><span class="stat-label">Total no mês</span><span class="stat-val">' + (data.totalMes || 0) + ' validações</span></div>';
+  }
+  if (data.ultimaOperacao) {
+    rows += '<div class="stat-row"><span class="stat-label">Última operação</span><span class="stat-val">' + data.ultimaOperacao.data + ' · ' + (data.ultimaOperacao.modulo || '') + '</span></div>';
+    rows += '<div class="stat-row"><span class="stat-label">Total no mês</span><span class="stat-val">' + (data.totalMes || 0) + ' operações</span></div>';
+  }
+  if (data.saude) {
+    var s = data.saude;
+    var cor = s.status === 'ok' ? '#2e7d32' : s.status === 'aviso' ? '#e65100' : '#c62828';
+    rows += '<div class="stat-row"><span class="stat-label">Dicionário</span><span class="stat-val" style="color:' + cor + '">' + (s.totalSlugs || 0) + ' slugs · ' + (s.diasSemMerge || 0) + 'd</span></div>';
+  }
+
+  el.innerHTML = rows || '<span class="stat-loading">Sem dados ainda</span>';
+}
+
+function fetchStats(fase) {
+  var url = URLS[env][fase] + '?action=stats';
+  setStatus(fase, '', 'Verificando...');
+
+  fetch(url)
+    .then(function(r) {
+      if (!r.ok) throw new Error('http ' + r.status);
+      return r.json();
+    })
+    .then(function(d) {
+      setStatus(fase, 'ok', 'Online');
+      setStats(fase, d);
+    })
+    .catch(function() {
+      setStatus(fase, 'erro', 'Offline');
+      setStats(fase, null);
+    });
+}
+
+function loadAll() {
+  ['f3','f4','f5'].forEach(function(f) {
+    fetchStats(f);
+  });
+}
+
+// Inicia
+loadAll();
+// Refresh a cada 5 minutos
+setInterval(loadAll, 5 * 60 * 1000);
 </script>
+
 </body>
 </html>
