@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Treinamentos | NC Tool</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --azul:#1F36C7; --escuro:#1a237e; --muted:#9fa8da; --borda:#d6dbf2; --bg:#f0f2ff; }
+    html, body { height:100%; }
+    body { font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:32px 24px; }
+    header { text-align:center; margin-bottom:36px; }
+    header h1 { font-size:1.7rem; font-weight:800; color:var(--escuro); }
+    header p { font-size:.85rem; color:var(--muted); margin-top:4px; }
+    .cards { width:100%; max-width:700px; display:flex; flex-direction:column; gap:16px; }
+    .card { background:#fff; border:1px solid var(--borda); border-radius:16px; padding:24px 22px; display:flex; flex-direction:column; gap:12px; transition:box-shadow .2s, transform .2s; }
+    .card:hover { box-shadow:0 8px 32px rgba(31,54,199,.12); transform:translateY(-2px); }
+    .card-title { font-size:1rem; font-weight:800; color:var(--escuro); }
+    .card-desc { font-size:.78rem; color:#888; }
+    .versoes { display:flex; flex-wrap:wrap; gap:8px; }
+    .btn { display:inline-block; padding:8px 16px; border-radius:9px; font-size:.8rem; font-weight:700; text-decoration:none; transition:opacity .18s; }
+    .btn:hover { opacity:.85; }
+    .btn-html { background:var(--azul); color:#fff; }
+    .btn-manual { background:#fff; color:var(--azul); border:2px solid var(--azul); }
+    footer { margin-top:40px; font-size:.72rem; color:var(--muted); }
+    .back { display:inline-block; margin-bottom:24px; font-size:.8rem; color:var(--azul); text-decoration:none; font-weight:600; }
+    .back:hover { opacity:.8; }
+  </style>
+</head>
+<body>
+<a class="back" href="/nc-tool/">&larr; Voltar ao portal</a>
+<header>
+  <h1>Treinamentos</h1>
+  <p>NC Tool | Unilever BR &times; Grasp</p>
+</header>
+<div class="cards">
+  <div class="card">
+    <div class="card-title">&#127979; RM STORMX ADP</div>
+    <div class="card-desc">Treinamento sobre o fluxo RM &rarr; ADP na plataforma StormX.</div>
+    <div class="versoes">
+      <a class="btn btn-html" href="RM_STORMX_ADP/23-07-26/v3/index.html" target="_blank">&#128196; v3 — Jul/26 (atual)</a>
+      <a class="btn btn-manual" href="RM_STORMX_ADP/24-08-26/index.html" target="_blank">&#128196; Ago/26 Completo</a>
+      <a class="btn btn-manual" href="RM_STORMX_ADP/24-08-26/regras-taxonomia.html" target="_blank">&#128196; Regras Taxonomia</a>
+    </div>
+    <div class="versoes">
+      <a class="btn btn-manual" href="RM_STORMX_ADP/23-07-26/v1/index.html" target="_blank">v1</a>
+      <a class="btn btn-manual" href="RM_STORMX_ADP/23-07-26/v2/index.html" target="_blank">v2</a>
+      <a class="btn btn-manual" href="RM_STORMX_ADP/23-07-26/v1/manual.html" target="_blank">Manual</a>
+    </div>
+  </div>
+</div>
+<footer>NC Tool &copy; 2026</footer>
+</body>
+</html>
