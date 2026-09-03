@@ -147,9 +147,17 @@
         <li><span class="dot dot-f3"></span>Verificador de Hash</li>
         <li><span class="dot dot-f3"></span>Histórico</li>
       </ul>
+      <div id="f3-stats" style="margin:10px 0 4px;padding:8px 10px;background:var(--f3-bg);border-radius:8px;font-size:.78rem;color:var(--f3);display:none">
+        <div style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <span>📅 Mês: <strong id="f3-totalMes">—</strong></span>
+          <span>✅ Strings: <strong id="f3-totalStrings">—</strong></span>
+          <span>📖 Dict: <strong id="f3-dictStatus">—</strong></span>
+        </div>
+        <div style="margin-top:4px;color:#555;font-size:.73rem" id="f3-ultimaVal"></div>
+      </div>
       <div class="btn-group">
-        <a class="btn-abrir btn-corp" href="https://script.google.com/macros/s/AKfycby9YQftWg586o1m1gPEaMyHMMYzyYUJ8MRWY0WRSv67kGAkeEX4TVPXeLbB4_I6Wv7neA/exec" target="_blank">Corp &rarr;</a>
-        <a class="btn-abrir btn-pessoal" href="https://script.google.com/macros/s/AKfycbw7QryYGzik1bbT0Mf4N5JcpuuNVoHAudTAbrT2jfzzXnz0wkuJfBFLIeMNViDO4SE2/exec" target="_blank">Pessoal &rarr;</a>
+        <a class="btn-abrir btn-corp" href="https://falssp.github.io/nc-tool/f3-corp/" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" href="https://falssp.github.io/nc-tool/f3-pessoal/" target="_blank">Pessoal &rarr;</a>
       </div>
     </div>
   </div>
@@ -212,5 +220,40 @@
 
 <footer>NC Tool &copy; 2026</footer>
 
+
+<script>
+(function() {
+  var CORP_API = 'https://script.google.com/macros/s/AKfycbzKKuKhr111DFtk5jAhx3ofQzZL78sQvliDKtxDj_FlBZmbPaLuufd6-oHxq7Tsr9sp_w/exec';
+  function fetchStats() {
+    fetch(CORP_API + '?action=stats')
+      .then(function(r) { return r.json(); })
+      .then(function(d) {
+        if (!d.ok) return;
+        var panel = document.getElementById('f3-stats');
+        if (panel) panel.style.display = 'block';
+
+        var el = document.getElementById('f3-totalMes');
+        if (el) el.textContent = d.totalMes || '0';
+
+        var es = document.getElementById('f3-totalStrings');
+        if (es) es.textContent = (d.totalStrings || 0).toLocaleString('pt-BR');
+
+        var ed = document.getElementById('f3-dictStatus');
+        if (ed && d.saude) {
+          var icon = d.saude.status === 'ok' ? '🟢' : d.saude.status === 'aviso' ? '🟡' : '🔴';
+          ed.textContent = icon + ' ' + (d.saude.totalSlugs || 0).toLocaleString('pt-BR') + ' slugs';
+        }
+
+        var eu = document.getElementById('f3-ultimaVal');
+        if (eu && d.ultimaValidacao) {
+          var uv = d.ultimaValidacao;
+          eu.textContent = 'Última: ' + (uv.data || '') + ' ' + (uv.hora || '') + ' · ' + (uv.usuario || '');
+        }
+      })
+      .catch(function() {});
+  }
+  fetchStats();
+})();
+</script>
 </body>
 </html>
