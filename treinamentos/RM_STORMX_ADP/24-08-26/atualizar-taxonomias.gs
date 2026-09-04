@@ -1,21 +1,12 @@
 /**
- * DICIONÁRIO DE TAXONOMIAS UL — Atualizador v2
- * Cole este script em uma planilha PRIVADA @stormx.com.br
- *
- * SETUP (uma única vez):
- *   1. Crie uma planilha privada em sua conta @stormx.com.br
- *   2. Crie uma aba chamada "Galileo e Freetext"
- *   3. Na célula A1 cole:
- *      =IMPORTRANGE("1qIJIAz8UnYxHsRk1I5eRl1S9oPbewJhi7l7PjDnvgs0";"Galielo e Freetext!A:G")
- *   4. Autorize o IMPORTRANGE quando solicitado
- *   5. Cole este script em Extensões → Apps Script
- *   6. Preencha GITHUB_TOKEN abaixo
- *   7. Execute atualizarTaxonomias() para autorizar e testar
+ * DICIONÁRIO DE TAXONOMIAS UL — Corp (StormX)
+ * Commit silencioso no GitHub. Sem referência ao Git no menu.
+ * IMPORTRANGE configurado automaticamente via setupImportRange().
  */
 
-const GITHUB_TOKEN = 'COLE_SEU_TOKEN_AQUI';  // Gere em: github.com/settings/tokens (scope: repo)
-
-const ABA = 'Galielo e Freetext';  // nome da aba na plan privada
+const GITHUB_TOKEN = 'COLE_SEU_TOKEN_AQUI';
+const SOURCE_ID    = '1qIJIAz8UnYxHsRk1I5eRl1S9oPbewJhi7l7PjDnvgs0';
+const ABA          = 'Galielo e Freetext';
 
 const TARGETS = [
   { owner: 'falssp', repo: 'nc-tool',    path: 'treinamentos/RM_STORMX_ADP/24-08-26/taxonomias-ul.html' },
@@ -27,59 +18,101 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('NC Tool')
     .addItem('▶ Atualizar dicionário de taxonomias', 'atualizarTaxonomias')
-    .addItem('⚙ Verificar conexão com GitHub', 'verificarGitHub')
+    .addItem('⚙ Configurar importação de dados', 'setupImportRange')
     .addToUi();
 }
 
-// ── PONTO DE ENTRADA ─────────────────────────────────────────
-function atualizarTaxonomias() {
+// ── SETUP AUTOMÁTICO DO IMPORTRANGE ──────────────────────────
+// Roda uma única vez para criar a aba e configurar o IMPORTRANGE.
+// Depois que rodar, a aba "Galielo e Freetext" fica limpa e alimentada.
+function setupImportRange() {
   const ui = SpreadsheetApp.getUi();
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+
+  // Cria a aba se não existir
+  let aba = ss.getSheetByName(ABA);
+  if(!aba) {
+    aba = ss.insertSheet(ABA);
+    Logger.log('Aba "' + ABA + '" criada.');
+  } else {
+    aba.clearContents();
+    Logger.log('Aba "' + ABA + '" limpa.');
+  }
+
+  // Cola o IMPORTRANGE na A1
+  const formula = '=IMPORTRANGE("' + SOURCE_ID + '";"' + ABA + '!A:G")';
+  aba.getRange('A1').setFormula(formula);
+
+  // Aguarda o Sheets processar (necessário para autorizar)
+  SpreadsheetApp.flush();
+  Utilities.sleep(3000);
+
+  // Tenta autorizar o IMPORTRANGE programaticamente
   try {
-    Logger.log('▶ Lendo aba "' + ABA + '"…');
-    const dados = lerAba(ABA);
-
-    Logger.log('▶ ' + dados.length + ' campos. Buscando HTML base…');
-    const htmlBase = buscarHTMLBase();
-
-    Logger.log('▶ Injetando dados…');
-    const htmlFinal = injetarDATA(htmlBase, JSON.stringify(dados, null, 2));
-
-    Logger.log('▶ Fazendo commit…');
-    const erros = [];
-    TARGETS.forEach(t => {
-      try {
-        commitGitHub(t.owner, t.repo, t.path, htmlFinal);
-        Logger.log('  ✓ ' + t.owner + '/' + t.repo);
-      } catch(e) {
-        Logger.log('  ✗ ' + t.repo + ': ' + e.message);
-        erros.push(t.repo + ': ' + e.message);
-      }
+    const token = ScriptApp.getOAuthToken();
+    const url = 'https://docs.google.com/spreadsheets/d/' + ss.getId() +
+                '/externaldata/addimportrangepermissions?key=' + SOURCE_ID;
+    UrlFetchApp.fetch(url, {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + token },
+      muteHttpExceptions: true
     });
-
-    const msg = erros.length
-      ? '⚠ Commit com erros:\n' + erros.join('\n')
-      : '✓ Dicionário atualizado!\n\nhttps://falssp.github.io/nc-tool/treinamentos/RM_STORMX_ADP/24-08-26/taxonomias-ul.html';
-    ui.alert('NC Tool', msg, ui.ButtonSet.OK);
-
+    Logger.log('Autorização do IMPORTRANGE solicitada.');
   } catch(e) {
-    ui.alert('Erro', e.message, ui.ButtonSet.OK);
-    Logger.log('ERRO: ' + e.message + '\n' + e.stack);
+    Logger.log('Autorização manual necessária: ' + e.message);
+  }
+
+  SpreadsheetApp.flush();
+  Utilities.sleep(2000);
+
+  // Verifica se carregou
+  const val = aba.getRange('A1').getDisplayValue();
+  if(val && val !== '#ERROR!' && val !== 'Carregando…') {
+    ui.alert('NC Tool', '✓ Importação configurada!\nAba "' + ABA + '" pronta com os dados.', ui.ButtonSet.OK);
+  } else {
+    ui.alert('NC Tool',
+      'Aba criada com a fórmula, mas pode precisar de autorização manual.\n\n' +
+      '1. Clique na célula A1 da aba "' + ABA + '"\n' +
+      '2. Se aparecer "Permitir acesso", clique\n' +
+      '3. Aguarde carregar e rode novamente "Atualizar dicionário"',
+      ui.ButtonSet.OK);
   }
 }
 
-function verificarGitHub() {
+// ── WEBAPP ───────────────────────────────────────────────────
+function doGet() {
+  try {
+    const htmlBase  = buscarHTMLBase();
+    const dados     = lerAba(ABA);
+    const htmlFinal = injetarDATA(htmlBase, JSON.stringify(dados, null, 2));
+    return HtmlService.createHtmlOutput(htmlFinal)
+      .setTitle('Dicionário de Taxonomias UL')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+  } catch(e) {
+    return HtmlService.createHtmlOutput(
+      '<p style="font-family:sans-serif;padding:2rem;color:#c00">Erro: ' + e.message + '</p>'
+    );
+  }
+}
+
+// ── ATUALIZAR GITHUB ─────────────────────────────────────────
+function atualizarTaxonomias() {
   const ui = SpreadsheetApp.getUi();
   try {
-    const r = UrlFetchApp.fetch('https://api.github.com/user', {
-      headers: { Authorization: 'token ' + GITHUB_TOKEN, Accept: 'application/vnd.github.v3+json' },
-      muteHttpExceptions: true
+    const dados     = lerAba(ABA);
+    const htmlBase  = buscarHTMLBase();
+    const htmlFinal = injetarDATA(htmlBase, JSON.stringify(dados, null, 2));
+
+    const erros = [];
+    TARGETS.forEach(t => {
+      try { commitGitHub(t.owner, t.repo, t.path, htmlFinal); }
+      catch(e) { erros.push(t.repo + ': ' + e.message); }
     });
-    const d = JSON.parse(r.getContentText());
-    if(r.getResponseCode() === 200) {
-      ui.alert('GitHub OK', 'Conectado como: ' + d.login, ui.ButtonSet.OK);
-    } else {
-      ui.alert('GitHub ERRO', 'HTTP ' + r.getResponseCode() + ': ' + d.message, ui.ButtonSet.OK);
-    }
+
+    const msg = erros.length
+      ? '⚠ Alguns erros:\n' + erros.join('\n')
+      : '✓ Dicionário atualizado com sucesso!';
+    ui.alert('NC Tool', msg, ui.ButtonSet.OK);
   } catch(e) {
     ui.alert('Erro', e.message, ui.ButtonSet.OK);
   }
@@ -90,34 +123,20 @@ function lerAba(nomeAba) {
   const ss  = SpreadsheetApp.getActiveSpreadsheet();
   const aba = ss.getSheetByName(nomeAba);
   if(!aba) throw new Error(
-    'Aba "' + nomeAba + '" não encontrada.\n\n' +
-    'Crie a aba com esse nome exato e cole na A1:\n' +
-    '=IMPORTRANGE("1qIJIAz8UnYxHsRk1I5eRl1S9oPbewJhi7l7PjDnvgs0";"Galielo e Freetext!A:G")'
+    'Aba "' + nomeAba + '" não encontrada.\nRode: NC Tool → Configurar importação de dados'
   );
 
   const rows = aba.getDataRange().getValues();
-  if(rows.length < 2) throw new Error('Aba "' + nomeAba + '" vazia. Verifique o IMPORTRANGE.');
+  if(rows.length < 2) throw new Error('Aba vazia. Rode: NC Tool → Configurar importação de dados');
 
   const header = rows[0].map(h => h.toString().toLowerCase().trim());
+  function col(kw) { return header.findIndex(h => h.includes(kw)); }
 
-  function col(kw) {
-    const i = header.findIndex(h => h.includes(kw));
-    return i >= 0 ? i : -1;
-  }
-
-  const iCampo = col('campo');
-  const iDesc  = col('descri');
-  const iOpt   = col('op');
-  const iAbr   = col('abrev');
-  const iRel   = col('rela');
-  const iSig   = col('signif');
-  const iPlat  = col('plataforma');
+  const iCampo = col('campo'), iDesc = col('descri'), iOpt = col('op');
+  const iAbr = col('abrev'), iRel = col('rela'), iSig = col('signif'), iPlat = col('plataforma');
 
   if(iCampo < 0 || iOpt < 0 || iSig < 0)
-    throw new Error(
-      'Colunas obrigatórias não encontradas.\nCabeçalho detectado: ' + header.join(' | ') +
-      '\n\nEsperado: Campo | Descrição | Opções | Abreviações | Relação | Significado | Plataforma'
-    );
+    throw new Error('Colunas obrigatórias não encontradas.\nCabeçalho: ' + header.join(' | '));
 
   const blocos = [];
   let campoAtual = null;
@@ -147,8 +166,7 @@ function lerAba(nomeAba) {
     }
   }
 
-  if(!blocos.length) throw new Error('Nenhum dado processado. Verifique se o IMPORTRANGE está carregado.');
-  Logger.log('  ' + blocos.length + ' campos lidos, ' + blocos.reduce((a,b) => a + b.items.length, 0) + ' opções no total.');
+  if(!blocos.length) throw new Error('Nenhum dado processado. Verifique se o IMPORTRANGE carregou.');
   return blocos;
 }
 
