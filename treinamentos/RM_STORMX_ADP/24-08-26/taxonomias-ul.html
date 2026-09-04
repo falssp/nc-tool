@@ -56,28 +56,22 @@
   .meta { font-size: 11px; color: var(--text3); white-space: nowrap; }
 
   /* LAYOUT */
-  .layout { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 0; min-height: calc(100vh - 64px); }
+  .layout { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 0; min-height: calc(100vh - 64px); align-items: start; }
 
   /* SIDEBAR */
-  aside { border-right: 1px solid var(--border); padding: 1.25rem 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; }
+  aside { border-right: 1px solid var(--border); padding: 1.25rem 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; align-self: flex-start; }
   .sidebar-label { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; padding: 0 1rem .5rem; }
   .nav-item { display: block; padding: 6px 1rem; font-size: 12.5px; color: var(--text2); cursor: pointer; border-radius: 0; transition: background .1s, color .1s; border-left: 2px solid transparent; }
   .nav-item:hover { background: var(--surface2); color: var(--text); }
-  .nav-item.active { background: var(--accent-bg); color: var(--accent-text); border-left-color: var(--accent-dark); font-weight: 500; }
+  .nav-item.on { background: var(--accent-bg); color: var(--accent-text); border-left-color: var(--accent-dark); font-weight: 500; }
+  .nav-item.on .nav-count { background: var(--accent-border); color: var(--accent-text); }
+  .nav-clear { font-size: 10px; color: var(--text3); cursor: pointer; padding: 2px 8px; margin: 4px 1rem 0; display: none; border-radius: 10px; background: var(--surface2); text-align: center; }
+  .nav-clear:hover { color: var(--accent-text); }
+  .nav-clear.visible { display: block; }
   .nav-item .nav-count { float: right; font-size: 11px; color: var(--text3); background: var(--surface2); padding: 1px 6px; border-radius: 10px; }
   .nav-item.active .nav-count { background: var(--accent-border); color: var(--accent-text); }
   .nav-all { font-weight: 500; }
 
-  /* FILTRO DE PLATAFORMA */
-  .plat-filter { background: var(--surface); border-bottom: 1px solid var(--border); padding: .6rem 1.5rem; display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
-  .plat-filter-label { font-size: 11px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; white-space: nowrap; }
-  .plat-chips { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; }
-  .plat-chip { font-size: 11.5px; padding: 3px 10px; border-radius: 20px; border: 1px solid var(--border-strong); background: var(--surface2); color: var(--text2); cursor: pointer; transition: all .12s; user-select: none; }
-  .plat-chip:hover { border-color: var(--accent); color: var(--accent-text); }
-  .plat-chip.on { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 500; }
-  .plat-clear { font-size: 11px; color: var(--text3); cursor: pointer; padding: 3px 8px; border-radius: 20px; border: 1px solid transparent; white-space: nowrap; }
-  .plat-clear:hover { color: var(--accent-text); border-color: var(--border); }
-  .plat-filter-wrap { position: sticky; top: 64px; z-index: 90; }
 
   /* MAIN */
   main { padding: 1.5rem; overflow-y: auto; }
@@ -142,13 +136,6 @@
   </div>
 </header>
 
-<div class="plat-filter-wrap">
-  <div class="plat-filter">
-    <span class="plat-filter-label">Plataforma</span>
-    <div class="plat-chips" id="plat-chips"></div>
-    <span class="plat-clear" id="plat-clear" onclick="clearPlats()" style="visibility:hidden">✕ limpar</span>
-  </div>
-</div>
 <div class="layout">
   <aside id="sidebar"></aside>
   <main>
@@ -603,10 +590,9 @@ const DATA = [
 ];
 
 // ---- state ----
-let activeField = null;
+let activeFields = new Set();  // multi-select de campos
 let openCards = new Set();
 let q = '';
-let activePlats = new Set();  // plataformas selecionadas (vazio = todas)
 
 function esc(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 
@@ -622,27 +608,15 @@ function render(){
   const term = q.trim().toLowerCase();
 
   DATA.forEach(block => {
-    if(activeField && block.id !== activeField) return;
+    if(activeFields.size > 0 && !activeFields.has(block.id)) return;
     const items = block.items.filter(it => {
-      // filtro de texto
-      if(term) {
-        const match = it.opt.toLowerCase().includes(term) ||
-               (it.abr && it.abr.toLowerCase().includes(term)) ||
-               it.sig.toLowerCase().includes(term) ||
-               block.field.toLowerCase().includes(term) ||
-               (it.plat && it.plat.toLowerCase().includes(term)) ||
-               (it.rel && it.rel.toLowerCase().includes(term));
-        if(!match) return false;
-      }
-      // filtro de plataforma
-      if(activePlats.size > 0) {
-        const platStr = (it.plat || '').toLowerCase();
-        // "Todas" cobre qualquer plataforma
-        if(platStr.includes('todas')) return true;
-        // verifica se alguma plat selecionada está no campo
-        return [...activePlats].some(p => platStr.includes(p.toLowerCase()));
-      }
-      return true;
+      if(!term) return true;
+      return it.opt.toLowerCase().includes(term) ||
+             (it.abr && it.abr.toLowerCase().includes(term)) ||
+             it.sig.toLowerCase().includes(term) ||
+             block.field.toLowerCase().includes(term) ||
+             (it.plat && it.plat.toLowerCase().includes(term)) ||
+             (it.rel && it.rel.toLowerCase().includes(term));
     });
     if(!items.length) return;
     total += items.length;
@@ -692,76 +666,73 @@ function render(){
   });
 }
 
-// Plataformas canônicas para os chips
-const PLATAFORMAS = [
-  'Meta','TikTok','YouTube','Pinterest','Twitter','Snapchat',
-  'Google Ads','Google Search','DV360','Amazon DSP','Criteo',
-  'Programática','Direto','DOOH'
-];
-
-function buildPlatChips(){
-  const wrap = document.getElementById('plat-chips');
-  PLATAFORMAS.forEach(p => {
-    const chip = document.createElement('span');
-    chip.className = 'plat-chip';
-    chip.textContent = p;
-    chip.dataset.plat = p;
-    chip.onclick = () => togglePlat(p, chip);
-    wrap.appendChild(chip);
-  });
-}
-
-function togglePlat(p, el){
-  if(activePlats.has(p)){
-    activePlats.delete(p);
-    el.classList.remove('on');
-  } else {
-    activePlats.add(p);
-    el.classList.add('on');
-  }
-  document.getElementById('plat-clear').style.visibility = activePlats.size ? 'visible' : 'hidden';
-  render();
-}
-
-function clearPlats(){
-  activePlats.clear();
-  document.querySelectorAll('.plat-chip').forEach(c => c.classList.remove('on'));
-  document.getElementById('plat-clear').style.visibility = 'hidden';
-  render();
-}
-
 function buildSidebar(){
   const sb = document.getElementById('sidebar');
+
   const lbl = document.createElement('div');
   lbl.className = 'sidebar-label';
   lbl.textContent = 'Campos';
   sb.appendChild(lbl);
 
+  // Botão Todos
   const all = document.createElement('a');
-  all.className = 'nav-item nav-all active';
-  all.textContent = 'Todos';
+  all.className = 'nav-item nav-all on';
   const tot = DATA.reduce((a,b) => a + b.items.length, 0);
-  all.innerHTML += `<span class="nav-count">${tot}</span>`;
+  all.innerHTML = 'Todos <span class="nav-count">' + tot + '</span>';
   all.href = '#';
-  all.onclick = e => { e.preventDefault(); activeField = null; setActive(all); render(); };
+  all.onclick = e => {
+    e.preventDefault();
+    activeFields.clear();
+    document.querySelectorAll('.nav-item[data-id]').forEach(x => x.classList.remove('on'));
+    all.classList.add('on');
+    clearBtn.classList.remove('visible');
+    render();
+  };
   sb.appendChild(all);
+
+  // Botão limpar seleção
+  const clearBtn = document.createElement('div');
+  clearBtn.className = 'nav-clear';
+  clearBtn.textContent = '✕ limpar seleção';
+  clearBtn.onclick = () => {
+    activeFields.clear();
+    document.querySelectorAll('.nav-item[data-id]').forEach(x => x.classList.remove('on'));
+    all.classList.add('on');
+    clearBtn.classList.remove('visible');
+    render();
+  };
+  sb.appendChild(clearBtn);
 
   DATA.forEach(block => {
     const a = document.createElement('a');
     a.className = 'nav-item';
+    a.dataset.id = block.id;
     a.href = '#sec-' + block.id;
-    a.innerHTML = esc(block.field) + `<span class="nav-count">${block.items.length}</span>`;
+    a.innerHTML = esc(block.field) + '<span class="nav-count">' + block.items.length + '</span>';
     a.onclick = e => {
-      if(activeField === block.id){ e.preventDefault(); setActive(a); activeField = block.id; render(); }
-      else { activeField = null; setActive(a); }
+      e.preventDefault();
+      if(activeFields.has(block.id)){
+        activeFields.delete(block.id);
+        a.classList.remove('on');
+      } else {
+        activeFields.add(block.id);
+        a.classList.add('on');
+        all.classList.remove('on');
+      }
+      if(activeFields.size === 0){
+        all.classList.add('on');
+        clearBtn.classList.remove('visible');
+      } else {
+        clearBtn.classList.add('visible');
+      }
+      render();
+      if(activeFields.has(block.id)){
+        const sec = document.getElementById('sec-' + block.id);
+        if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
+      }
     };
     sb.appendChild(a);
   });
-}
-
-function setActive(el){
-  document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-  el.classList.add('active');
 }
 
 document.getElementById('search').addEventListener('input', e => {
@@ -769,7 +740,6 @@ document.getElementById('search').addEventListener('input', e => {
   render();
 });
 
-buildPlatChips();
 buildSidebar();
 render();
 </script>
