@@ -2,39 +2,27 @@
  * DICIONÁRIO DE TAXONOMIAS UL — Atualizador v2
  * Cole este script em uma planilha PRIVADA @stormx.com.br
  *
- * Como funciona:
- *   1. A plan privada faz IMPORTRANGE das abas Galileo e Freetext
- *      da planilha original da UL (acessível por todos)
- *   2. Este script lê os dados importados, gera o HTML atualizado
- *   3. Faz commit via GitHub API nos dois repositórios
- *
  * SETUP (uma única vez):
  *   1. Crie uma planilha privada em sua conta @stormx.com.br
- *   2. Na aba "Galileo" da plan privada, cole na célula A1:
- *        =IMPORTRANGE("1qIJIAz8UnYxHsRk1I5eRl1S9oPbewJhi7l7PjDnvgs0","Galileo!A:G")
- *   3. Na aba "Freetext" da plan privada, cole na célula A1:
- *        =IMPORTRANGE("1qIJIAz8UnYxHsRk1I5eRl1S9oPbewJhi7l7PjDnvgs0","Freetext!A:G")
+ *   2. Crie uma aba chamada "Galileo e Freetext"
+ *   3. Na célula A1 cole:
+ *      =IMPORTRANGE("1qIJIAz8UnYxHsRk1I5eRl1S9oPbewJhi7l7PjDnvgs0","Galileo e Freetext!A:G")
  *   4. Autorize o IMPORTRANGE quando solicitado
- *   5. Vá em Extensões → Apps Script, cole este código
+ *   5. Cole este script em Extensões → Apps Script
  *   6. Preencha GITHUB_TOKEN abaixo
  *   7. Execute atualizarTaxonomias() para autorizar e testar
  */
 
-// ── CONFIGURAÇÃO ──────────────────────────────────────────────
 const GITHUB_TOKEN = 'COLE_SEU_TOKEN_AQUI';  // Gere em: github.com/settings/tokens (scope: repo)
 
-// Nomes das abas na plan PRIVADA (onde o IMPORTRANGE importa os dados)
-const ABA_GALILEO  = 'Galileo';
-const ABA_FREETEXT = 'Freetext';
+const ABA = 'Galileo e Freetext';  // nome da aba na plan privada
 
-// Destinos no GitHub
 const TARGETS = [
   { owner: 'falssp', repo: 'nc-tool',    path: 'treinamentos/RM_STORMX_ADP/24-08-26/taxonomias-ul.html' },
   { owner: 'falssp', repo: 'Projeto-NC', path: 'Treinamentos/RM_STORMX_ADP/24-08-26/taxonomias-ul.html' },
 ];
-// ─────────────────────────────────────────────────────────────
 
-// ── MENU ──────────────────────────────────────────────────────
+// ── MENU ─────────────────────────────────────────────────────
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('NC Tool')
@@ -43,21 +31,18 @@ function onOpen() {
     .addToUi();
 }
 
-// ── PONTO DE ENTRADA ──────────────────────────────────────────
+// ── PONTO DE ENTRADA ─────────────────────────────────────────
 function atualizarTaxonomias() {
   const ui = SpreadsheetApp.getUi();
   try {
-    Logger.log('▶ Lendo aba Galileo…');
-    const dataGalileo   = lerAba(ABA_GALILEO);
-    Logger.log('▶ Lendo aba Freetext…');
-    const dataFreetext  = lerAba(ABA_FREETEXT);
-    const todosDados    = [...dataGalileo, ...dataFreetext];
+    Logger.log('▶ Lendo aba "' + ABA + '"…');
+    const dados = lerAba(ABA);
 
-    Logger.log(`▶ ${todosDados.length} campos processados. Buscando HTML base…`);
-    const htmlBase      = buscarHTMLBase();
+    Logger.log('▶ ' + dados.length + ' campos. Buscando HTML base…');
+    const htmlBase = buscarHTMLBase();
 
     Logger.log('▶ Injetando dados…');
-    const htmlFinal     = injetarDATA(htmlBase, JSON.stringify(todosDados, null, 2));
+    const htmlFinal = injetarDATA(htmlBase, JSON.stringify(dados, null, 2));
 
     Logger.log('▶ Fazendo commit…');
     const erros = [];
@@ -73,7 +58,7 @@ function atualizarTaxonomias() {
 
     const msg = erros.length
       ? '⚠ Commit com erros:\n' + erros.join('\n')
-      : '✓ Dicionário atualizado nos dois repositórios!\n\nURL: https://falssp.github.io/nc-tool/treinamentos/RM_STORMX_ADP/24-08-26/taxonomias-ul.html';
+      : '✓ Dicionário atualizado!\n\nhttps://falssp.github.io/nc-tool/treinamentos/RM_STORMX_ADP/24-08-26/taxonomias-ul.html';
     ui.alert('NC Tool', msg, ui.ButtonSet.OK);
 
   } catch(e) {
@@ -104,10 +89,14 @@ function verificarGitHub() {
 function lerAba(nomeAba) {
   const ss  = SpreadsheetApp.getActiveSpreadsheet();
   const aba = ss.getSheetByName(nomeAba);
-  if(!aba) throw new Error('Aba "' + nomeAba + '" não encontrada. Crie-a com IMPORTRANGE.');
+  if(!aba) throw new Error(
+    'Aba "' + nomeAba + '" não encontrada.\n\n' +
+    'Crie a aba com esse nome exato e cole na A1:\n' +
+    '=IMPORTRANGE("1qIJIAz8UnYxHsRk1I5eRl1S9oPbewJhi7l7PjDnvgs0","Galileo e Freetext!A:G")'
+  );
 
-  const rows   = aba.getDataRange().getValues();
-  if(rows.length < 2) throw new Error('Aba "' + nomeAba + '" está vazia ou só tem cabeçalho. Verifique o IMPORTRANGE.');
+  const rows = aba.getDataRange().getValues();
+  if(rows.length < 2) throw new Error('Aba "' + nomeAba + '" vazia. Verifique o IMPORTRANGE.');
 
   const header = rows[0].map(h => h.toString().toLowerCase().trim());
 
@@ -125,30 +114,29 @@ function lerAba(nomeAba) {
   const iPlat  = col('plataforma');
 
   if(iCampo < 0 || iOpt < 0 || iSig < 0)
-    throw new Error('Colunas obrigatórias (Campo, Opções, Significado) não encontradas na aba "' + nomeAba + '".\nCabeçalho detectado: ' + header.join(' | '));
+    throw new Error(
+      'Colunas obrigatórias não encontradas.\nCabeçalho detectado: ' + header.join(' | ') +
+      '\n\nEsperado: Campo | Descrição | Opções | Abreviações | Relação | Significado | Plataforma'
+    );
 
   const blocos = [];
-  let campoAtual = null, descAtual = '';
+  let campoAtual = null;
 
   for(let i = 1; i < rows.length; i++) {
     const r     = rows[i];
-    const campo = iCampo >= 0 ? String(r[iCampo] || '').trim() : '';
-    const opt   = iOpt   >= 0 ? String(r[iOpt]   || '').trim() : '';
-    const sig   = iSig   >= 0 ? String(r[iSig]   || '').trim() : '';
-    const plat  = iPlat  >= 0 ? String(r[iPlat]  || '').trim() : '';
-    const abr   = iAbr   >= 0 ? String(r[iAbr]   || '').trim() : '';
-    const rel   = iRel   >= 0 ? String(r[iRel]   || '').trim() : '';
-    const desc  = iDesc  >= 0 ? String(r[iDesc]  || '').trim() : '';
+    const campo = String(r[iCampo] || '').trim();
+    const opt   = String(r[iOpt]   || '').trim();
+    const sig   = String(r[iSig]   || '').trim();
+    const plat  = iPlat >= 0 ? String(r[iPlat] || '').trim() : '';
+    const abr   = iAbr  >= 0 ? String(r[iAbr]  || '').trim() : '';
+    const rel   = iRel  >= 0 ? String(r[iRel]  || '').trim() : '';
+    const desc  = iDesc >= 0 ? String(r[iDesc]  || '').trim() : '';
 
     if(!opt && !sig) continue;
 
     if(campo && campo !== campoAtual) {
       campoAtual = campo;
-      descAtual  = desc || (blocos.length ? '' : '');
-      blocos.push({ id: slugify(campo), field: campo, desc: descAtual, items: [] });
-    } else if(!campoAtual && opt) {
-      // linha sem campo mas com opção — pula (dado sem contexto)
-      continue;
+      blocos.push({ id: slugify(campo), field: campo, desc: desc, items: [] });
     }
 
     if(blocos.length && opt) {
@@ -159,8 +147,8 @@ function lerAba(nomeAba) {
     }
   }
 
-  if(!blocos.length) throw new Error('Nenhum dado processado da aba "' + nomeAba + '".');
-  Logger.log('  ' + nomeAba + ': ' + blocos.length + ' campos');
+  if(!blocos.length) throw new Error('Nenhum dado processado. Verifique se o IMPORTRANGE está carregado.');
+  Logger.log('  ' + blocos.length + ' campos lidos, ' + blocos.reduce((a,b) => a + b.items.length, 0) + ' opções no total.');
   return blocos;
 }
 
@@ -170,7 +158,7 @@ function slugify(s) {
     .replace(/[^a-z0-9\s-]/g,'').trim().replace(/\s+/g,'-');
 }
 
-// ── HTML ──────────────────────────────────────────────────────
+// ── HTML ─────────────────────────────────────────────────────
 function buscarHTMLBase() {
   const t   = TARGETS[0];
   const url = 'https://api.github.com/repos/' + t.owner + '/' + t.repo + '/contents/' + t.path;
@@ -179,19 +167,18 @@ function buscarHTMLBase() {
     muteHttpExceptions: true
   });
   if(r.getResponseCode() !== 200)
-    throw new Error('HTML base não encontrado no GitHub (' + r.getResponseCode() + '). Faça o primeiro deploy manualmente.');
+    throw new Error('HTML base não encontrado no GitHub (' + r.getResponseCode() + ').');
   const json = JSON.parse(r.getContentText());
   return Utilities.newBlob(Utilities.base64Decode(json.content.replace(/\n/g,''))).getDataAsString();
 }
 
 function injetarDATA(html, dataJS) {
-  // Marca no HTML: const DATA = [...];
   const re = /const DATA\s*=\s*\[[\s\S]*?\];\s*\n/;
-  if(!re.test(html)) throw new Error('Marcador "const DATA = [...]" não encontrado no HTML. O arquivo base pode estar corrompido.');
+  if(!re.test(html)) throw new Error('"const DATA = [...]" não encontrado no HTML base.');
   return html.replace(re, 'const DATA = ' + dataJS + ';\n');
 }
 
-// ── GITHUB ────────────────────────────────────────────────────
+// ── GITHUB ───────────────────────────────────────────────────
 function commitGitHub(owner, repo, path, content) {
   const base    = 'https://api.github.com/repos/' + owner + '/' + repo + '/contents/' + path;
   const headers = {
