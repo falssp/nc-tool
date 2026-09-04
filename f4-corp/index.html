@@ -3031,16 +3031,19 @@ function ansParseFiles(){
     var rd=new FileReader();
     rd.onload=function(ev){
       try{
-        var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',cellFormula:false,cellHTML:false,raw:true});
+        var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',cellFormula:true,cellHTML:false,raw:false});
         wb.SheetNames.forEach(function(sn){
           var key=ansFindMapKey(sn);if(!key)return;
           var m=ANS_EXCEL_MAP[key],ws=wb.Sheets[sn];
-          var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
+          var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
           var seen={};
           rows.forEach(function(row,ri){
             var idv=String(row[m.id]||'').trim().toUpperCase().replace(/[\s]/g,'');
             var adv=String(row[m.ad]||'').trim();
-            if(!idv||!adv||!/^(SX|AMZ)/i.test(idv))return;
+            if(!idv||!adv||idv.length<3)return;
+            if(/^(123456789|0)$/.test(idv))return;
+            if(/PLACEMENT|STORMX|FLASHTALKING|PREENCHIMENTO/i.test(idv))return;
+            if(adv.startsWith('=')||adv==='#N/A'||adv==='#REF!'||adv==='Ad name'||adv==='Creative/Ad'||adv==='Ad Name')return;
             if(seen[idv])return;seen[idv]=true;
             if(!ansParsedData[sn])ansParsedData[sn]=[];
             ansParsedData[sn].push({id:idv,ad:adv,row:ri+1,platform:sn,file:f.name});
@@ -3319,8 +3322,6 @@ function ansShowSt(el,type,msg){el.className='ans-sbar '+type;el.innerHTML=msg;}
 
 /* ══ GERADOR DE IDs ══ */
 var GID_PROXY='https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec';
-var NC_TOKEN=(window.location.hostname==='falssp.github.io')?'9ba40c66efec04b4f348282400f98cdbeb8ece88a735ab67':'';
-function gidWarmUp(){fetch(GID_PROXY+'?action=ping&token='+NC_TOKEN).catch(function(){});}
 var F4_PROXY='https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec';
 var GID_PLATAFORMAS=[
   {cat:"🛒 E-commerce"},
@@ -3374,7 +3375,7 @@ function gidCarregarContadores(tentativa){
   tentativa=tentativa||1;
   var bar=document.getElementById('gid-counters-bar');
   if(tentativa===1)bar.innerHTML='⏳ Carregando contadores...';
-  fetch(GID_PROXY+'?action=contadores&token='+NC_TOKEN)
+  fetch(GID_PROXY+'?action=contadores')
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível');return r.json();})
     .then(function(d){
       if(!d.ok)throw new Error(d.error);
@@ -3399,7 +3400,6 @@ function gidInit(){
   _gidRenderTabs();
   _gidShowTabContent(null);
   gidCarregarContadores();
-  gidWarmUp();
   sbgInit();
 }
 function _gidAllPlats(){return GID_PLATAFORMAS.filter(function(p){return!p.cat;});}
@@ -3539,41 +3539,31 @@ function gidConfirmarGerar(){
   document.getElementById('gid-res-ids').innerHTML='';
   document.getElementById('gid-exp-wrap').style.display='none';
   var ewt2=document.getElementById('gid-exp-wrap-top');if(ewt2)ewt2.style.display='none';
-  (function gidFetchComRetry(tentativa){
-    if(tentativa>1) gidShowSt(document.getElementById('gid-st3'),'info','⏳ Tentativa '+tentativa+' de 3...');
-    fetch(GID_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:NC_TOKEN,itens:gidLote})})
-      .then(function(r){
-        var ct=r.headers.get('content-type')||'';
-        if(!ct.includes('json')){
-          if(tentativa<3){setTimeout(function(){gidFetchComRetry(tentativa+1);},2500);return null;}
-          throw new Error('Servidor não respondeu após 3 tentativas. Verifique a planilha antes de tentar novamente — os IDs podem ter sido gerados.');
+  fetch(GID_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({itens:gidLote})})
+    .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('O servidor de IDs está indisponível ou expirou. Nenhum ID foi criado. Tente novamente em instantes.');return r.json();})
+    .then(function(data){
+      clearInterval(progInt);fill.style.width='100%';
+      setTimeout(function(){
+        prog.classList.remove('show');
+        if(data.error){
+          gidShowSt(document.getElementById('gid-st3'),'err','❌ Erro: '+data.error);
+          return;
         }
-        return r.json();
-      })
-      .then(function(data){
-        if(!data)return;
-        clearInterval(progInt);fill.style.width='100%';
-        setTimeout(function(){
-          prog.classList.remove('show');
-          if(data.error){
-            gidShowSt(document.getElementById('gid-st3'),'err','❌ Erro: '+data.error);
-            return;
-          }
-          gidResultado=data.resultado||[];
-          gidRenderResultado(gidResultado);
-          if(gidResultado.length){
-            document.getElementById('gid-exp-wrap').style.display='';
-            var ewt=document.getElementById('gid-exp-wrap-top');if(ewt)ewt.style.display='';
-          }
-          gidShowSt(document.getElementById('gid-st3'),'ok',
-            '✅ '+data.linhasGeradas+' linhas criadas a partir da linha '+data.primeiraLinha+' nas duas planilhas.');
-        },300);
-      })
-      .catch(function(e){
-        clearInterval(progInt);prog.classList.remove('show');
-        gidShowSt(document.getElementById('gid-st3'),'err','❌ Erro: '+e.message);
-      });
-  })(1);
+        gidResultado=data.resultado||[];
+        gidRenderResultado(gidResultado);
+        // mostra Exportar sempre que houver resultado
+        if(gidResultado.length){
+          document.getElementById('gid-exp-wrap').style.display='';
+          var ewt=document.getElementById('gid-exp-wrap-top');if(ewt)ewt.style.display='';
+        }
+        gidShowSt(document.getElementById('gid-st3'),'ok',
+          '✅ '+data.linhasGeradas+' linhas criadas a partir da linha '+data.primeiraLinha+' nas duas planilhas.');
+      },300);
+    })
+    .catch(function(e){
+      clearInterval(progInt);prog.classList.remove('show');
+      gidShowSt(document.getElementById('gid-st3'),'err','❌ Erro: '+e.message);
+    });
 }
 
 function gidRenderResultado(resultado){
@@ -3732,7 +3722,7 @@ function gidEnviarAdNames(){
   gidShowSt(document.getElementById('gid-st4'),'ok','⏳ Salvando na planilha...');
   var _ctrl=new AbortController();
   var _tid=setTimeout(function(){_ctrl.abort();},38000);
-  fetch(GID_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:NC_TOKEN,action:'fillAdNames',itens:gidAdnamesParaEnviar}),signal:_ctrl.signal})
+  fetch(GID_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'fillAdNames',itens:gidAdnamesParaEnviar}),signal:_ctrl.signal})
     .then(function(r){
       clearTimeout(_tid);
       var ct=r.headers.get('content-type')||'';
@@ -4027,7 +4017,7 @@ function clIrDuplicatas(){
     });
     var nUnicos=itens.length;
     fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({token:NC_TOKEN,action:'checkDuplicatas',aba:aba,itens:itens})})
+      body:JSON.stringify({action:'checkDuplicatas',aba:aba,itens:itens})})
       .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Tente novamente.');return r.json();})
       .then(function(d){
         document.getElementById('cl-st3').className='ans-sbar';
@@ -4074,7 +4064,7 @@ function clIrDuplicatas(){
     _doCheck(aba);
   } else {
     fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({token:NC_TOKEN,action:'getCLSheets'})})
+      body:JSON.stringify({action:'getCLSheets'})})
       .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Tente novamente.');return r.json();})
       .then(function(d){
         var tabs=d.tabs&&d.tabs.length?d.tabs:['2026','2025'];
@@ -4111,7 +4101,7 @@ function clIrSalvar(){
   // Usar cache se disponível
   if(clTabsCache){_clRenderTabs(clTabsCache);return;}
   fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({token:NC_TOKEN,action:'getCLSheets'})})
+    body:JSON.stringify({action:'getCLSheets'})})
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Tente novamente.');return r.json();})
     .then(function(d){
       var tabs=d.tabs&&d.tabs.length?d.tabs:['2026','2025'];
@@ -4139,7 +4129,7 @@ function clSalvar(){
   document.getElementById('cl-btn-save').disabled=true;
   _clShowSt('cl-st4','ok','⏳ Salvando na aba "'+aba+'"...');
   fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({token:NC_TOKEN,action:'saveCampaignLocal',linhas:clResultado,aba:aba})})
+    body:JSON.stringify({action:'saveCampaignLocal',linhas:clResultado,aba:aba})})
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Dados não salvos. Tente novamente.');return r.json();})
     .then(function(d){
       document.getElementById('cl-btn-save').disabled=false;
@@ -4421,7 +4411,7 @@ function dicRmLinkLoad(){
   btn.disabled=true; btn.textContent='⟳ Carregando...';
   _clShowSt('dic-st1','ok','⏳ Lendo planilha...');
   fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({token:NC_TOKEN,action:'readRmSheet',sheetId:sheetId})})
+    body:JSON.stringify({action:'readRmSheet',sheetId:sheetId})})
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Tente novamente.');return r.json();})
     .then(function(d){
       btn.disabled=false; btn.textContent='Carregar →';
@@ -4575,7 +4565,7 @@ function dicIrDuplicatas(){
   _clShowSt('dic-st3','ok','⏳ Verificando duplicatas...');
   var itens=dicResultado.map(function(r){return{h:r.h||'',f:r.f||'',d:r.d||''};}).filter(function(x){return x.h||x.f;});
   fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({token:NC_TOKEN,action:'checkDicDuplicatas',itens:itens})})
+    body:JSON.stringify({action:'checkDicDuplicatas',itens:itens})})
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Tente novamente.');return r.json();})
     .then(function(d){
       if(!d.ok){_clShowSt('dic-st3','err','❌ '+(d.error||'Erro'));return;}
@@ -4606,7 +4596,7 @@ function dicSalvar(){
   // Enviar nome(A) e link(H) — B/C/D/E/F são fórmulas no Sheets, G é livre
   var linhas=dicResultado.map(function(r){return[r.a||'',r.h||''];});
   fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({token:NC_TOKEN,action:'saveDicionario',linhas:linhas})})
+    body:JSON.stringify({action:'saveDicionario',linhas:linhas})})
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Dicionário não salvo. Tente novamente.');return r.json();})
     .then(function(d){
       if(d.ok){
