@@ -1762,6 +1762,8 @@ https://www.tiktok.com/@perfil" style="width:100%;box-sizing:border-box;font-fam
     </div>
   </div>
 
+
+
   <!-- ══ INFLUENCER NAME TOOL ══ -->
   <div class="page" id="page-influ">
     <div class="tool-card">
@@ -1799,8 +1801,12 @@ https://www.tiktok.com/@perfil" style="width:100%;box-sizing:border-box;font-fam
             <label style="font-size:10px;font-weight:700;color:var(--g700);letter-spacing:.06em;text-transform:uppercase">Configurações</label>
             <span id="influ-sync-status" style="font-size:12px;color:var(--g500)"></span>
           </div>
-          <input id="influ-webapp-corp" type="hidden">
           <div style="display:grid;gap:8px;margin-bottom:8px">
+            <div style="display:flex;gap:8px;align-items:center">
+              <span style="font-size:10px;font-weight:700;color:var(--g700);min-width:90px;text-transform:uppercase">Pessoal</span>
+              <input id="influ-webapp-pessoal" type="text" placeholder="URL Web App pessoal (.../exec)" style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--g300);font-family:var(--mo);font-size:11px;outline:none;background:#fff;color:var(--g900)" oninput="influSaveWebAppUrls()">
+            </div>
+            <input id="influ-webapp-corp" type="hidden">
             <div style="display:flex;gap:8px;align-items:center">
               <span style="font-size:10px;font-weight:700;color:var(--g700);min-width:90px;text-transform:uppercase">Cloud Run <span style="font-weight:400;color:var(--g500);font-size:10px">(scraping)</span></span>
               <input id="influ-cloudrun-url" type="text" placeholder="URL Cloud Run (.../fetch-profile) — opcional" style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid var(--g300);font-family:var(--mo);font-size:11px;outline:none;background:#fff;color:var(--g900)" oninput="influSaveWebAppUrls()">
@@ -3031,16 +3037,19 @@ function ansParseFiles(){
     var rd=new FileReader();
     rd.onload=function(ev){
       try{
-        var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',cellFormula:false,cellHTML:false,raw:true});
+        var wb=XLSX.read(new Uint8Array(ev.target.result),{type:'array',cellFormula:true,cellHTML:false,raw:false});
         wb.SheetNames.forEach(function(sn){
           var key=ansFindMapKey(sn);if(!key)return;
           var m=ANS_EXCEL_MAP[key],ws=wb.Sheets[sn];
-          var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
+          var rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false});
           var seen={};
           rows.forEach(function(row,ri){
             var idv=String(row[m.id]||'').trim().toUpperCase().replace(/[\s]/g,'');
             var adv=String(row[m.ad]||'').trim();
-            if(!idv||!adv||!/^(SX|AMZ)/i.test(idv))return;
+            if(!idv||!adv||idv.length<3)return;
+            if(/^(123456789|0)$/.test(idv))return;
+            if(/PLACEMENT|STORMX|FLASHTALKING|PREENCHIMENTO/i.test(idv))return;
+            if(adv.startsWith('=')||adv==='#N/A'||adv==='#REF!'||adv==='Ad name'||adv==='Creative/Ad'||adv==='Ad Name')return;
             if(seen[idv])return;seen[idv]=true;
             if(!ansParsedData[sn])ansParsedData[sn]=[];
             ansParsedData[sn].push({id:idv,ad:adv,row:ri+1,platform:sn,file:f.name});
@@ -3318,10 +3327,8 @@ function ansShowSt(el,type,msg){el.className='ans-sbar '+type;el.innerHTML=msg;}
 
 
 /* ══ GERADOR DE IDs ══ */
-var GID_PROXY='https://script.google.com/macros/s/AKfycby6h6qvXqacFrf2TmcXYaflRQp7rvhklpnR27VWhIueh9pLxWvUCRYkFToJPxYezUN7cw/exec';
-var NC_TOKEN=(window.location.hostname==='falssp.github.io')?'3ac945c58610c4889b8e8c6c73af89adbb15af2738dbbae5':'';
-function gidWarmUp(){fetch(GID_PROXY+'?action=ping&token='+NC_TOKEN).catch(function(){});}
-var F4_PROXY='https://script.google.com/macros/s/AKfycby6h6qvXqacFrf2TmcXYaflRQp7rvhklpnR27VWhIueh9pLxWvUCRYkFToJPxYezUN7cw/exec';
+var GID_PROXY='https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec';
+var F4_PROXY='https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec';
 var GID_PLATAFORMAS=[
   {cat:"🛒 E-commerce"},
   {nome:"Amazon",tipo:"AMZ",bg:"#FF9900",font:"#000"},
@@ -3374,7 +3381,7 @@ function gidCarregarContadores(tentativa){
   tentativa=tentativa||1;
   var bar=document.getElementById('gid-counters-bar');
   if(tentativa===1)bar.innerHTML='⏳ Carregando contadores...';
-  fetch(GID_PROXY+'?action=contadores&token='+NC_TOKEN)
+  fetch(GID_PROXY+'?action=contadores')
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível');return r.json();})
     .then(function(d){
       if(!d.ok)throw new Error(d.error);
@@ -3399,7 +3406,6 @@ function gidInit(){
   _gidRenderTabs();
   _gidShowTabContent(null);
   gidCarregarContadores();
-  gidWarmUp();
   sbgInit();
 }
 function _gidAllPlats(){return GID_PLATAFORMAS.filter(function(p){return!p.cat;});}
@@ -3539,41 +3545,31 @@ function gidConfirmarGerar(){
   document.getElementById('gid-res-ids').innerHTML='';
   document.getElementById('gid-exp-wrap').style.display='none';
   var ewt2=document.getElementById('gid-exp-wrap-top');if(ewt2)ewt2.style.display='none';
-  (function gidFetchComRetry(tentativa){
-    if(tentativa>1) gidShowSt(document.getElementById('gid-st3'),'info','⏳ Tentativa '+tentativa+' de 3...');
-    fetch(GID_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:NC_TOKEN,itens:gidLote})})
-      .then(function(r){
-        var ct=r.headers.get('content-type')||'';
-        if(!ct.includes('json')){
-          if(tentativa<3){setTimeout(function(){gidFetchComRetry(tentativa+1);},2500);return null;}
-          throw new Error('Servidor não respondeu após 3 tentativas. Verifique a planilha antes de tentar novamente — os IDs podem ter sido gerados.');
+  fetch(GID_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({itens:gidLote})})
+    .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('O servidor de IDs está indisponível ou expirou. Nenhum ID foi criado. Tente novamente em instantes.');return r.json();})
+    .then(function(data){
+      clearInterval(progInt);fill.style.width='100%';
+      setTimeout(function(){
+        prog.classList.remove('show');
+        if(data.error){
+          gidShowSt(document.getElementById('gid-st3'),'err','❌ Erro: '+data.error);
+          return;
         }
-        return r.json();
-      })
-      .then(function(data){
-        if(!data)return;
-        clearInterval(progInt);fill.style.width='100%';
-        setTimeout(function(){
-          prog.classList.remove('show');
-          if(data.error){
-            gidShowSt(document.getElementById('gid-st3'),'err','❌ Erro: '+data.error);
-            return;
-          }
-          gidResultado=data.resultado||[];
-          gidRenderResultado(gidResultado);
-          if(gidResultado.length){
-            document.getElementById('gid-exp-wrap').style.display='';
-            var ewt=document.getElementById('gid-exp-wrap-top');if(ewt)ewt.style.display='';
-          }
-          gidShowSt(document.getElementById('gid-st3'),'ok',
-            '✅ '+data.linhasGeradas+' linhas criadas a partir da linha '+data.primeiraLinha+' nas duas planilhas.');
-        },300);
-      })
-      .catch(function(e){
-        clearInterval(progInt);prog.classList.remove('show');
-        gidShowSt(document.getElementById('gid-st3'),'err','❌ Erro: '+e.message);
-      });
-  })(1);
+        gidResultado=data.resultado||[];
+        gidRenderResultado(gidResultado);
+        // mostra Exportar sempre que houver resultado
+        if(gidResultado.length){
+          document.getElementById('gid-exp-wrap').style.display='';
+          var ewt=document.getElementById('gid-exp-wrap-top');if(ewt)ewt.style.display='';
+        }
+        gidShowSt(document.getElementById('gid-st3'),'ok',
+          '✅ '+data.linhasGeradas+' linhas criadas a partir da linha '+data.primeiraLinha+' nas duas planilhas.');
+      },300);
+    })
+    .catch(function(e){
+      clearInterval(progInt);prog.classList.remove('show');
+      gidShowSt(document.getElementById('gid-st3'),'err','❌ Erro: '+e.message);
+    });
 }
 
 function gidRenderResultado(resultado){
@@ -3732,7 +3728,7 @@ function gidEnviarAdNames(){
   gidShowSt(document.getElementById('gid-st4'),'ok','⏳ Salvando na planilha...');
   var _ctrl=new AbortController();
   var _tid=setTimeout(function(){_ctrl.abort();},38000);
-  fetch(GID_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({token:NC_TOKEN,action:'fillAdNames',itens:gidAdnamesParaEnviar}),signal:_ctrl.signal})
+  fetch(GID_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({action:'fillAdNames',itens:gidAdnamesParaEnviar}),signal:_ctrl.signal})
     .then(function(r){
       clearTimeout(_tid);
       var ct=r.headers.get('content-type')||'';
@@ -4027,7 +4023,7 @@ function clIrDuplicatas(){
     });
     var nUnicos=itens.length;
     fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({token:NC_TOKEN,action:'checkDuplicatas',aba:aba,itens:itens})})
+      body:JSON.stringify({action:'checkDuplicatas',aba:aba,itens:itens})})
       .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Tente novamente.');return r.json();})
       .then(function(d){
         document.getElementById('cl-st3').className='ans-sbar';
@@ -4074,7 +4070,7 @@ function clIrDuplicatas(){
     _doCheck(aba);
   } else {
     fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-      body:JSON.stringify({token:NC_TOKEN,action:'getCLSheets'})})
+      body:JSON.stringify({action:'getCLSheets'})})
       .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Tente novamente.');return r.json();})
       .then(function(d){
         var tabs=d.tabs&&d.tabs.length?d.tabs:['2026','2025'];
@@ -4111,7 +4107,7 @@ function clIrSalvar(){
   // Usar cache se disponível
   if(clTabsCache){_clRenderTabs(clTabsCache);return;}
   fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({token:NC_TOKEN,action:'getCLSheets'})})
+    body:JSON.stringify({action:'getCLSheets'})})
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Tente novamente.');return r.json();})
     .then(function(d){
       var tabs=d.tabs&&d.tabs.length?d.tabs:['2026','2025'];
@@ -4139,7 +4135,7 @@ function clSalvar(){
   document.getElementById('cl-btn-save').disabled=true;
   _clShowSt('cl-st4','ok','⏳ Salvando na aba "'+aba+'"...');
   fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({token:NC_TOKEN,action:'saveCampaignLocal',linhas:clResultado,aba:aba})})
+    body:JSON.stringify({action:'saveCampaignLocal',linhas:clResultado,aba:aba})})
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Dados não salvos. Tente novamente.');return r.json();})
     .then(function(d){
       document.getElementById('cl-btn-save').disabled=false;
@@ -4421,7 +4417,7 @@ function dicRmLinkLoad(){
   btn.disabled=true; btn.textContent='⟳ Carregando...';
   _clShowSt('dic-st1','ok','⏳ Lendo planilha...');
   fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({token:NC_TOKEN,action:'readRmSheet',sheetId:sheetId})})
+    body:JSON.stringify({action:'readRmSheet',sheetId:sheetId})})
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Tente novamente.');return r.json();})
     .then(function(d){
       btn.disabled=false; btn.textContent='Carregar →';
@@ -4575,7 +4571,7 @@ function dicIrDuplicatas(){
   _clShowSt('dic-st3','ok','⏳ Verificando duplicatas...');
   var itens=dicResultado.map(function(r){return{h:r.h||'',f:r.f||'',d:r.d||''};}).filter(function(x){return x.h||x.f;});
   fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({token:NC_TOKEN,action:'checkDicDuplicatas',itens:itens})})
+    body:JSON.stringify({action:'checkDicDuplicatas',itens:itens})})
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Tente novamente.');return r.json();})
     .then(function(d){
       if(!d.ok){_clShowSt('dic-st3','err','❌ '+(d.error||'Erro'));return;}
@@ -4606,7 +4602,7 @@ function dicSalvar(){
   // Enviar nome(A) e link(H) — B/C/D/E/F são fórmulas no Sheets, G é livre
   var linhas=dicResultado.map(function(r){return[r.a||'',r.h||''];});
   fetch(F4_PROXY,{method:'POST',headers:{'Content-Type':'text/plain'},
-    body:JSON.stringify({token:NC_TOKEN,action:'saveDicionario',linhas:linhas})})
+    body:JSON.stringify({action:'saveDicionario',linhas:linhas})})
     .then(function(r){var ct=r.headers.get('content-type')||'';if(!ct.includes('json'))throw new Error('Servidor indisponível. Dicionário não salvo. Tente novamente.');return r.json();})
     .then(function(d){
       if(d.ok){
@@ -4685,8 +4681,9 @@ function dicReset(){
   var rdInAdp=document.getElementById('dic-rmadp-input-adp');if(rdInAdp)rdInAdp.value='';
 }
 
-// ══ INFLUENCER NAME TOOL (CORP) ═══════════════════════════════
+// ══ INFLUENCER NAME TOOL (PESSOAL) ════════════════════════════
 var INFLU_STORAGE_KEY     = 'ul_influencer_links_storage';
+var INFLU_WEBAPP_PES_KEY  = 'ul_influencer_webapp_pessoal';
 var INFLU_WEBAPP_CORP_KEY = 'ul_influencer_webapp_corp';
 var INFLU_CLOUDRUN_KEY    = 'ul_influencer_cloudrun_url';
 
@@ -4718,18 +4715,23 @@ function influClearExisting(){document.getElementById('influ-existing-links').va
 function influUpdateBadge(){var el=document.getElementById('influ-existing-count');var n=influExistingLinks.size;if(n>0){el.textContent=n+' link(s) carregado(s)';el.style.display='inline';}else el.style.display='none';}
 function influSaveLinks(){try{localStorage.setItem(INFLU_STORAGE_KEY,JSON.stringify(Array.from(influExistingLinks)));}catch(e){}}
 function influLoadLinks(){try{var s=localStorage.getItem(INFLU_STORAGE_KEY);if(s)JSON.parse(s).forEach(function(u){influExistingLinks.add(u);});influUpdateBadge();}catch(e){}}
-function influSaveWebAppUrls(){try{localStorage.setItem(INFLU_WEBAPP_CORP_KEY,document.getElementById('influ-webapp-corp').value.trim());localStorage.setItem(INFLU_CLOUDRUN_KEY,document.getElementById('influ-cloudrun-url').value.trim());}catch(e){}}
-function influLoadWebAppUrls(){try{document.getElementById('influ-webapp-corp').value=localStorage.getItem(INFLU_WEBAPP_CORP_KEY)||'';document.getElementById('influ-cloudrun-url').value=localStorage.getItem(INFLU_CLOUDRUN_KEY)||'';}catch(e){}}
+function influSaveWebAppUrls(){try{localStorage.setItem(INFLU_WEBAPP_PES_KEY,document.getElementById('influ-webapp-pessoal').value.trim());localStorage.setItem(INFLU_WEBAPP_CORP_KEY,(document.getElementById('influ-webapp-corp')||{}).value||'');localStorage.setItem(INFLU_CLOUDRUN_KEY,document.getElementById('influ-cloudrun-url').value.trim());}catch(e){}}
+function influLoadWebAppUrls(){try{document.getElementById('influ-webapp-pessoal').value=localStorage.getItem(INFLU_WEBAPP_PES_KEY)||'';var corpEl=document.getElementById('influ-webapp-corp');if(corpEl)corpEl.value=localStorage.getItem(INFLU_WEBAPP_CORP_KEY)||'';document.getElementById('influ-cloudrun-url').value=localStorage.getItem(INFLU_CLOUDRUN_KEY)||'';}catch(e){}}
+function influGetUrlPes(){return document.getElementById('influ-webapp-pessoal').value.trim();}
 function influGetUrlCorp(){return F4_PROXY;}
 function influGetCloudRunBase(){var u=document.getElementById('influ-cloudrun-url').value.trim();return u?u.replace(/\/+$/,''):null;}
 
 async function influSyncFromWebApps(){
   var statusEl=document.getElementById('influ-sync-status');
-  var url=influGetUrlCorp();
-  if(!url){statusEl.innerHTML='<span style="color:var(--warn)">⚠ Configure a URL do Web App corporativo</span>';return;}
+  var urlPes=influGetUrlPes(),urlCorp=influGetUrlCorp();
+  if(!urlPes&&!urlCorp){statusEl.innerHTML='<span style="color:var(--warn)">⚠ Configure ao menos a URL Pessoal</span>';return;}
   statusEl.textContent='Sincronizando...';
-  try{var r=await influFetchTimeout(url+(url.indexOf('?')>=0?'&':'?')+'action=list',10000);if(!r.ok)throw new Error('Status '+r.status);var d=await r.json();if(d.links&&Array.isArray(d.links)){d.links.forEach(function(u){influExistingLinks.add(influNormalizeUrl(u));});influSaveLinks();influUpdateBadge();statusEl.innerHTML='<span style="color:var(--ok)">✓ Corp: '+d.links.length+' links carregados</span>';}
-  }catch(e){statusEl.innerHTML='<span style="color:var(--err)">✗ '+e.message+'</span>';}
+  var total=0;
+  async function syncOne(url,label){if(!url)return;try{var r=await influFetchTimeout(url+(url.indexOf('?')>=0?'&':'?')+'action=list',10000);if(!r.ok)throw new Error('Status '+r.status);var d=await r.json();if(d.links&&Array.isArray(d.links)){d.links.forEach(function(u){influExistingLinks.add(influNormalizeUrl(u));});total+=d.links.length;}statusEl.innerHTML='<span style="color:var(--ok)">✓ '+label+': '+d.links.length+' links</span>';}catch(e){statusEl.innerHTML='<span style="color:var(--err)">✗ '+label+': '+e.message+'</span>';}}
+  await syncOne(urlPes,'Pessoal');
+  await syncOne(urlCorp,'Corp (fallback)');
+  influSaveLinks();influUpdateBadge();
+  statusEl.innerHTML='<span style="color:var(--ok)">✓ '+influExistingLinks.size+' links únicos carregados</span>';
 }
 async function influTestCloudRun(){var statusEl=document.getElementById('influ-sync-status');var base=influGetCloudRunBase();if(!base){statusEl.innerHTML='<span style="color:var(--warn)">⚠ URL do Cloud Run não configurada</span>';return;}statusEl.textContent='Testando...';try{var r=await influFetchTimeout(base+'/health',8000);if(!r.ok)throw new Error('Status '+r.status);var d=await r.json();statusEl.innerHTML='<span style="color:var(--ok)">✓ Cloud Run OK: '+JSON.stringify(d)+'</span>';}catch(e){statusEl.innerHTML='<span style="color:var(--err)">✗ '+e.message+'</span>';}}
 async function influFetchTimeout(url,ms,opts){var ctrl=new AbortController();var timer=setTimeout(function(){ctrl.abort();},ms);try{var r=await fetch(url,Object.assign({},opts||{},{signal:ctrl.signal}));clearTimeout(timer);return r;}catch(e){clearTimeout(timer);throw e;}}
@@ -4751,7 +4753,7 @@ async function influRunAll(){if(!influQueue.length||influIsRunning)return;influI
 function influStopRun(){influCancelReq=true;var btn=document.getElementById('influ-btn-stop');btn.disabled=true;btn.textContent='Parando...';}
 function influSetBtns(on){document.getElementById('influ-btn-copy-top').disabled=!on;document.getElementById('influ-btn-copy-bottom').disabled=!on;['influ-btn-copydn-top','influ-btn-copydn-bottom','influ-btn-copysl-top','influ-btn-copysl-bottom'].forEach(function(id){var b=document.getElementById(id);if(b)b.disabled=!on;});}
 function influConfirmRow(){var val=document.getElementById('influ-row-input').value.trim();var msg=document.getElementById('influ-confirm-msg');if(!val||parseInt(val)<2){msg.innerHTML='<span style="color:var(--err)">⚠ Informe um número de linha válido (mínimo 2)</span>';influSetBtns(false);influRowConfirmed=false;return;}var n=influResults.length,end=parseInt(val)+n-1;msg.innerHTML='<span style="color:var(--ok)">✓ Confirmado: cole a partir da <strong>linha '+val+'</strong>'+(n>1?' (até '+end+')':'')+'. Verifique que essas linhas estão vazias.</span>';influRowConfirmed=true;influSetBtns(true);}
-function influCopyForExcel(){if(!influResults.length||!influRowConfirmed)return;var text=influResults.map(function(r){return[r.colA,r.colB,r.colC,r.colD,r.colE,r.colF,r.colG?r.colG.toString():'',r.colH].join('\t');}).join('\n');navigator.clipboard.writeText(text).then(function(){influResults.forEach(function(r){if(r.colH)influExistingLinks.add(influNormalizeUrl(r.colH));});influSaveLinks();influUpdateBadge();var url=influGetUrlCorp();if(url){var rows=influResults.map(function(r){return[r.colA,r.colB,r.colC,r.colD,r.colE,r.colF,r.colG?r.colG.toString():'',r.colH];});fetch(url,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({rows:rows})}).then(function(){console.log('[Influ/Corp] Gravação OK');}).catch(function(e){console.warn('[Influ/Corp] Falha:',e.message);});}['influ-btn-copy-top','influ-btn-copy-bottom'].forEach(function(id){var btn=document.getElementById(id);var orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(function(){btn.innerHTML=orig;},2500);});});}
+function influCopyForExcel(){if(!influResults.length||!influRowConfirmed)return;var text=influResults.map(function(r){return[r.colA,r.colB,r.colC,r.colD,r.colE,r.colF,r.colG?r.colG.toString():'',r.colH].join('\t');}).join('\n');navigator.clipboard.writeText(text).then(function(){influResults.forEach(function(r){if(r.colH)influExistingLinks.add(influNormalizeUrl(r.colH));});influSaveLinks();influUpdateBadge();var urlPes=influGetUrlPes();if(urlPes){var rows=influResults.map(function(r){return[r.colA,r.colB,r.colC,r.colD,r.colE,r.colF,r.colG?r.colG.toString():'',r.colH];});fetch(urlPes,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({rows:rows})}).then(function(){console.log('[Influ/Pes] Gravação OK');}).catch(function(e){console.warn('[Influ/Pes] Falha:',e.message);});}['influ-btn-copy-top','influ-btn-copy-bottom'].forEach(function(id){var btn=document.getElementById(id);var orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(function(){btn.innerHTML=orig;},2500);});});}
 function influCopyDataNome(){if(!influResults.length||!influRowConfirmed)return;var text=influResults.map(function(r){return[r.colData||'',r.colA].join('\t');}).join('\n');navigator.clipboard.writeText(text).then(function(){['influ-btn-copydn-top','influ-btn-copydn-bottom'].forEach(function(id){var btn=document.getElementById(id);if(!btn)return;var orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(function(){btn.innerHTML=orig;},2500);});});}
 function influCopySegLink(){if(!influResults.length||!influRowConfirmed)return;var text=influResults.map(function(r){return[r.colG?r.colG.toString():'',r.colH].join('\t');}).join('\n');navigator.clipboard.writeText(text).then(function(){influResults.forEach(function(r){if(r.colH)influExistingLinks.add(influNormalizeUrl(r.colH));});influSaveLinks();influUpdateBadge();['influ-btn-copysl-top','influ-btn-copysl-bottom'].forEach(function(id){var btn=document.getElementById(id);if(!btn)return;var orig=btn.innerHTML;btn.innerHTML='✓ Copiado!';setTimeout(function(){btn.innerHTML=orig;},2500);});});}
 function influClearResults(){if(influIsRunning)influCancelReq=true;influResults=[];influQueue=[];document.getElementById('influ-results-body').innerHTML='';document.getElementById('influ-results-section').style.display='none';document.getElementById('influ-status-msg').textContent='';document.getElementById('influ-confirm-msg').textContent='';document.getElementById('influ-row-input').value='';document.getElementById('influ-link-input').value='';document.getElementById('influ-queue-list').innerHTML='';document.getElementById('influ-queue-wrap').style.display='none';document.getElementById('influ-pb-wrap').classList.remove('active');document.getElementById('influ-pb-fill').style.width='0%';influRowConfirmed=false;influSetBtns(false);influUpdateCards();}
@@ -4759,7 +4761,7 @@ document.getElementById('influ-link-input').addEventListener('keydown',function(
 document.getElementById('influ-link-input').addEventListener('paste',function(e){var text=(e.clipboardData||window.clipboardData).getData('text');var lines=text.split(/[\n\r]+/).map(function(l){return l.trim();}).filter(Boolean);if(lines.length>1){e.preventDefault();influAddLinkFromText(text);}});
 influLoadLinks();
 influLoadWebAppUrls();
-// ══ FIM INFLUENCER NAME TOOL (CORP) ═══════════════════════════
+// ══ FIM INFLUENCER NAME TOOL (PESSOAL) ════════════════════════
 
 // ══ CONTADOR ADP ══════════════════════════════════════════════
 var CNT_ABA_CFG = {
