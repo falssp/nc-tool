@@ -6,7 +6,7 @@
  *   1. Crie uma planilha privada em sua conta @stormx.com.br
  *   2. Crie uma aba chamada "Galileo e Freetext"
  *   3. Na célula A1 cole:
- *      =IMPORTRANGE("1qIJIAz8UnYxHsRk1I5eRl1S9oPbewJhi7l7PjDnvgs0","Galileo e Freetext!A:G")
+ *      =IMPORTRANGE("1qIJIAz8UnYxHsRk1I5eRl1S9oPbewJhi7l7PjDnvgs0";"Galielo e Freetext!A:G")
  *   4. Autorize o IMPORTRANGE quando solicitado
  *   5. Cole este script em Extensões → Apps Script
  *   6. Preencha GITHUB_TOKEN abaixo
@@ -15,7 +15,7 @@
 
 const GITHUB_TOKEN = 'COLE_SEU_TOKEN_AQUI';  // Gere em: github.com/settings/tokens (scope: repo)
 
-const ABA = 'Galileo e Freetext';  // nome da aba na plan privada
+const ABA = 'Galielo e Freetext';  // nome da aba na plan privada
 
 const TARGETS = [
   { owner: 'falssp', repo: 'nc-tool',    path: 'treinamentos/RM_STORMX_ADP/24-08-26/taxonomias-ul.html' },
@@ -92,7 +92,7 @@ function lerAba(nomeAba) {
   if(!aba) throw new Error(
     'Aba "' + nomeAba + '" não encontrada.\n\n' +
     'Crie a aba com esse nome exato e cole na A1:\n' +
-    '=IMPORTRANGE("1qIJIAz8UnYxHsRk1I5eRl1S9oPbewJhi7l7PjDnvgs0","Galileo e Freetext!A:G")'
+    '=IMPORTRANGE("1qIJIAz8UnYxHsRk1I5eRl1S9oPbewJhi7l7PjDnvgs0";"Galielo e Freetext!A:G")'
   );
 
   const rows = aba.getDataRange().getValues();
