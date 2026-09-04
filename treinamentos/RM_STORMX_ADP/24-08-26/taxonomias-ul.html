@@ -5,36 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dicionário de Taxonomias — Unilever BR</title>
 <style>
+  /* Paleta Unilever */
   :root {
-    --bg: #f7f7f5;
+    --bg: #f5f6fa;
     --surface: #ffffff;
-    --surface2: #f2f1ef;
-    --border: #e2e0db;
-    --border-strong: #c8c5be;
-    --text: #1a1916;
-    --text2: #5c5a55;
-    --text3: #9b9890;
-    --accent: #1a56db;
-    --accent-bg: #eff4ff;
-    --accent-border: #bed3fb;
-    --accent-text: #1e40af;
+    --surface2: #eef0f7;
+    --border: #d6d9e8;
+    --border-strong: #b0b5d0;
+    --text: #0d1333;
+    --text2: #3d4466;
+    --text3: #7b82a8;
+    --accent: #1F36C7;
+    --accent-bg: #eef0fb;
+    --accent-border: #bcc4ef;
+    --accent-text: #1a2da8;
+    --accent-dark: #003087;
     --radius: 8px;
     --mono: 'Courier New', monospace;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #18181a;
-      --surface: #232325;
-      --surface2: #2c2c2f;
-      --border: #38383c;
-      --border-strong: #4f4f54;
-      --text: #f0efec;
-      --text2: #a8a6a0;
-      --text3: #68666e;
-      --accent: #6090f8;
-      --accent-bg: #1e2d52;
-      --accent-border: #2e4494;
-      --accent-text: #a5bef8;
+      --bg: #0d1120;
+      --surface: #141828;
+      --surface2: #1a2035;
+      --border: #252d4a;
+      --border-strong: #323d60;
+      --text: #e8eaf5;
+      --text2: #9ba5cc;
+      --text3: #5c6488;
+      --accent: #5c78f0;
+      --accent-bg: #141e45;
+      --accent-border: #2535a0;
+      --accent-text: #8fa3f5;
+      --accent-dark: #4060d0;
     }
   }
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -60,7 +63,7 @@
   .sidebar-label { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; padding: 0 1rem .5rem; }
   .nav-item { display: block; padding: 6px 1rem; font-size: 12.5px; color: var(--text2); cursor: pointer; border-radius: 0; transition: background .1s, color .1s; border-left: 2px solid transparent; }
   .nav-item:hover { background: var(--surface2); color: var(--text); }
-  .nav-item.active { background: var(--accent-bg); color: var(--accent-text); border-left-color: var(--accent); font-weight: 500; }
+  .nav-item.active { background: var(--accent-bg); color: var(--accent-text); border-left-color: var(--accent-dark); font-weight: 500; }
   .nav-item .nav-count { float: right; font-size: 11px; color: var(--text3); background: var(--surface2); padding: 1px 6px; border-radius: 10px; }
   .nav-item.active .nav-count { background: var(--accent-border); color: var(--accent-text); }
   .nav-all { font-weight: 500; }
@@ -80,7 +83,7 @@
   .cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 6px; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: .65rem .85rem; cursor: pointer; transition: border-color .12s; }
   .card:hover { border-color: var(--border-strong); }
-  .card.open { border-color: var(--accent); background: var(--accent-bg); }
+  .card.open { border-color: var(--accent-dark); background: var(--accent-bg); }
   .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
   .opt-name { font-size: 13px; font-weight: 500; color: var(--text); line-height: 1.35; }
   .abr { font-size: 11px; color: var(--accent-text); background: var(--accent-border); padding: 2px 6px; border-radius: 4px; white-space: nowrap; font-family: var(--mono); flex-shrink: 0; }
@@ -118,7 +121,7 @@
   <div class="header-inner">
     <div class="logo">
       <span class="logo-title">Dicionário de Taxonomias</span>
-      <span class="logo-sub">Unilever BR · NC Tool / Projeto NC</span>
+      <span class="logo-sub">Unilever BR · StormX Data & Tech</span>
     </div>
     <div class="search-wrap">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
