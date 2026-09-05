@@ -1,8 +1,6 @@
 /**
  * DICIONÁRIO DE TAXONOMIAS UL — Corp (StormX)
- * - Mantém IMPORTRANGE na aba automaticamente (recria se deletado)
- * - Lê dados e commita no GitHub
- * - Planilha fica com dados visíveis para uso humano
+ * Lê dados direto da planilha original via openById — planilha limpa.
  */
 
 const GITHUB_TOKEN = 'COLE_SEU_TOKEN_AQUI';
@@ -20,85 +18,12 @@ function onOpen() {
     .createMenu('NC Tool')
     .addItem('▶ Atualizar dicionário de taxonomias', 'atualizarTaxonomias')
     .addToUi();
-  // Garante que a aba existe e está protegida ao abrir
-  try { garantirImportRange(); } catch(e) { Logger.log('onOpen: ' + e.message); }
-}
-
-// ── GARANTIR IMPORTRANGE ──────────────────────────────────────
-// Cria ou recria a aba com IMPORTRANGE se estiver ausente ou vazia.
-// Chamada automaticamente antes de cada atualização.
-function garantirImportRange() {
-  const ss  = SpreadsheetApp.getActiveSpreadsheet();
-  let aba   = ss.getSheetByName(ABA);
-
-  // Cria a aba se não existir
-  if(!aba) {
-    aba = ss.insertSheet(ABA);
-    Logger.log('Aba "' + ABA + '" criada.');
-  }
-
-  // Verifica se A1 tem o IMPORTRANGE correto
-  const a1    = aba.getRange('A1');
-  const atual = a1.getFormula();
-  const esperada = '=IMPORTRANGE("' + SOURCE_ID + '";"' + ABA + '!A:G")';
-
-  if(atual.replace(/\s/g,'').toLowerCase() !== esperada.replace(/\s/g,'').toLowerCase()) {
-    a1.setFormula(esperada);
-    SpreadsheetApp.flush();
-    Logger.log('IMPORTRANGE configurado.');
-
-    // Aguarda carregar (pode precisar de autorização manual na primeira vez)
-    Utilities.sleep(3000);
-
-    // Tenta autorizar programaticamente
-    try {
-      const token = ScriptApp.getOAuthToken();
-      UrlFetchApp.fetch(
-        'https://docs.google.com/spreadsheets/d/' + ss.getId() +
-        '/externaldata/addimportrangepermissions?key=' + SOURCE_ID,
-        { method: 'POST', headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true }
-      );
-    } catch(e) { Logger.log('Autorização manual pode ser necessária: ' + e.message); }
-
-    SpreadsheetApp.flush();
-    Utilities.sleep(2000);
-  }
-
-  // Verifica se dados carregaram
-  const val = aba.getRange('A2').getDisplayValue();
-  if(!val || val === '#ERROR!' || val === 'Carregando…') {
-    throw new Error(
-      'IMPORTRANGE ainda não autorizado.\n\n' +
-      '1. Clique na célula A1 da aba "' + ABA + '"\n' +
-      '2. Clique em "Permitir acesso"\n' +
-      '3. Aguarde carregar e tente novamente.'
-    );
-  }
-
-  // Aba fica visível com os dados — a proteção impede que alguém
-  // clique nas células e veja/edite a fórmula IMPORTRANGE
-
-  // Protege a aba: bloqueia edição e deleção para todos exceto o dono do script
-  const protecoes = aba.getProtections(SpreadsheetApp.ProtectionType.SHEET);
-  if(protecoes.length === 0) {
-    const prot = aba.protect();
-    prot.setDescription('Dados de taxonomia — gerenciado pelo NC Tool');
-    // Remove todos os editores exceto o dono
-    const me = Session.getEffectiveUser();
-    prot.addEditor(me);
-    prot.removeEditors(prot.getEditors().filter(e => e.getEmail() !== me.getEmail()));
-    // Se for planilha de domínio, bloqueia edição para o domínio também
-    if(prot.canDomainEdit()) prot.setDomainEdit(false);
-    Logger.log('Aba protegida e oculta.');
-  }
-
-  return aba;
 }
 
 // ── WEBAPP ───────────────────────────────────────────────────
 function doGet() {
   try {
-    const dados     = lerAba(garantirImportRange());
+    const dados     = lerAba();
     const htmlBase  = buscarHTMLBase();
     const htmlFinal = injetarDATA(htmlBase, JSON.stringify(dados, null, 2));
     return HtmlService.createHtmlOutput(htmlFinal)
@@ -115,8 +40,7 @@ function doGet() {
 function atualizarTaxonomias() {
   const ui = SpreadsheetApp.getUi();
   try {
-    const aba       = garantirImportRange();
-    const dados     = lerAba(aba);
+    const dados     = lerAba();
     const htmlBase  = buscarHTMLBase();
     const htmlFinal = injetarDATA(htmlBase, JSON.stringify(dados, null, 2));
 
@@ -136,10 +60,24 @@ function atualizarTaxonomias() {
   }
 }
 
-// ── LER ABA ──────────────────────────────────────────────────
-function lerAba(aba) {
+// ── LER ABA DA PLANILHA ORIGINAL ─────────────────────────────
+function lerAba() {
+  let ss;
+  try {
+    ss = SpreadsheetApp.openById(SOURCE_ID);
+  } catch(e) {
+    throw new Error(
+      'Sem acesso à planilha original.\n' +
+      'Certifique-se que ' + Session.getActiveUser().getEmail() +
+      ' tem acesso a:\nhttps://docs.google.com/spreadsheets/d/' + SOURCE_ID
+    );
+  }
+
+  const aba = ss.getSheetByName(ABA);
+  if(!aba) throw new Error('Aba "' + ABA + '" não encontrada na planilha original.');
+
   const rows = aba.getDataRange().getValues();
-  if(rows.length < 2) throw new Error('Aba vazia. Verifique o IMPORTRANGE.');
+  if(rows.length < 2) throw new Error('Aba vazia.');
 
   const header = rows[0].map(h => h.toString().toLowerCase().trim());
   function col(kw) { return header.findIndex(h => h.includes(kw)); }
@@ -178,7 +116,7 @@ function lerAba(aba) {
     }
   }
 
-  if(!blocos.length) throw new Error('Nenhum dado processado. Verifique o IMPORTRANGE.');
+  if(!blocos.length) throw new Error('Nenhum dado processado.');
   Logger.log(blocos.length + ' campos, ' + blocos.reduce((a,b) => a + b.items.length, 0) + ' opções.');
   return blocos;
 }
