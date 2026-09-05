@@ -80,7 +80,7 @@
   .layout { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 0; min-height: calc(100vh - 64px); align-items: start; }
 
   /* SIDEBAR */
-  aside { border-right: 1px solid var(--border); padding: 1.25rem 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; align-self: flex-start; }
+  /* aside — ver nav-clear section acima */
   .sidebar-label { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; padding: 0 1rem .5rem; }
   .nav-item { display: block; padding: 6px 1rem; font-size: 12.5px; color: var(--text2); cursor: pointer; border-radius: 0; transition: background .1s, color .1s; border-left: 2px solid transparent; }
   .nav-item:hover { background: var(--surface2); color: var(--text); }
@@ -89,6 +89,13 @@
   .nav-clear { font-size: 10px; color: var(--text3); cursor: pointer; padding: 2px 8px; margin: 4px 1rem 0; display: none; border-radius: 10px; background: var(--surface2); text-align: center; }
   .nav-clear:hover { color: var(--accent-text); }
   .nav-clear.visible { display: block; }
+  /* Grupos sidebar */
+  .nav-group-label { font-size: 9px; font-weight: 700; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; padding: 10px 1rem 3px; margin-top: 4px; border-top: 1px solid var(--border); }
+  .nav-group-label:first-child { border-top: none; margin-top: 0; }
+  /* Sidebar sticky correto */
+  aside { border-right: 1px solid var(--border); padding: 1.25rem 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; align-self: flex-start; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+  aside::-webkit-scrollbar { width: 4px; }
+  aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
   .nav-item .nav-count { float: right; font-size: 11px; color: var(--text3); background: var(--surface2); padding: 1px 6px; border-radius: 10px; }
   .nav-item.active .nav-count { background: var(--accent-border); color: var(--accent-text); }
   .nav-all { font-weight: 500; }
@@ -327,8 +334,8 @@ const DATA = [
     field: "Audience Party GL",
     desc: "Define a origem dos dados utilizados para segmentação da audiência na campanha.",
     items: [
-      { opt: "1PD-DID", abr: "", sig: "Utiliza apenas dados próprios (First-Party Data) provenientes de Digital ID Data (DID) — base composta por identificadores digitais anônimos coletados nas propriedades digitais da Unilever.", plat: "Todas" },
-      { opt: "1PD-DAD", abr: "", sig: "Utiliza apenas dados próprios (First-Party Data) provenientes de Deterministic Audience Data (DAD) — base composta por consumidores identificados via CRM ou outras fontes determinísticas.", plat: "Todas" },
+      { opt: "1PD-DID", abr: "1pd-did", sig: "Utiliza apenas dados próprios (First-Party Data) provenientes de Digital ID Data (DID) — base composta por identificadores digitais anônimos coletados nas propriedades digitais da Unilever.", plat: "Todas" },
+      { opt: "1PD-DAD", abr: "1pd-dad", sig: "Utiliza apenas dados próprios (First-Party Data) provenientes de Deterministic Audience Data (DAD) — base composta por consumidores identificados via CRM ou outras fontes determinísticas.", plat: "Todas" },
       { opt: "1PD-DID+DAD", abr: "1pd-diddad", sig: "Utiliza uma combinação das bases DID e DAD para segmentação da audiência.", plat: "Todas" },
       { opt: "No-1PD", abr: "", sig: "Não utiliza dados próprios (First-Party Data) para segmentação da audiência.", plat: "Todas" },
     ]
@@ -338,11 +345,11 @@ const DATA = [
     field: "Audience Type FT",
     desc: "Define o tipo de audiência utilizado para segmentação da campanha, de acordo com a origem ou características dos dados.",
     items: [
-      { opt: "CRM", abr: "", sig: "Audiência composta por dados diretamente identificáveis, como e-mail, telefone ou informações provenientes do CRM da marca.", plat: "Todas", rel: "1PD-DAD" },
+      { opt: "CRM", abr: "1PD-DAD", sig: "Audiência composta por dados diretamente identificáveis, como e-mail, telefone ou informações provenientes do CRM da marca.", plat: "Todas", rel: "1PD-DAD" },
       { opt: "Behavioural", abr: "Behav", sig: "Audiência segmentada com base no comportamento do usuário — histórico de navegação, pesquisas realizadas, compras ou sites visitados.", plat: "Todas", rel: "No 1PD" },
       { opt: "Lookalike", abr: "LLike", sig: "Audiência semelhante a um público de origem (seed audience). Utilizada para ampliar o alcance mantendo características similares ao público existente.", plat: "Todas", rel: "1PD-DAD, 1PD-DID, 1PD-DID+DAD" },
       { opt: "CombinedAudiences", abr: "CombAud", sig: "Audiência composta pela combinação de dois ou mais segmentos de público, utilizada para ampliar alcance ou criar segmentações mais qualificadas.", plat: "Todas", rel: "1PD-DAD, 1PD-DID+DAD, No 1PD" },
-      { opt: "DMP", abr: "", sig: "Audiência criada em uma Data Management Platform (DMP), como o Adobe Audience Manager, utilizando dados próprios ou segmentos de remarketing.", plat: "Todas", rel: "1PD-DID" },
+      { opt: "DMP", abr: "1PD-DID", sig: "Audiência criada em uma Data Management Platform (DMP), como o Adobe Audience Manager, utilizando dados próprios ou segmentos de remarketing.", plat: "Todas", rel: "1PD-DID" },
       { opt: "Collected in-platform", abr: "CollPform", sig: "Audiência criada a partir de dados coletados diretamente pela plataforma de mídia, por meio de pixels, eventos ou ferramentas proprietárias.", plat: "Todas", rel: "1PD-DID" },
       { opt: "Custom", abr: "Cust", sig: "Audiência personalizada, criada especificamente para atender aos objetivos da campanha.", plat: "Todas", rel: "1PD-DID+DAD, No 1PD" },
       { opt: "Demographic", abr: "Demog", sig: "Audiência segmentada por características demográficas, como idade, gênero, renda ou localização.", plat: "Todas", rel: "No 1PD" },
@@ -381,15 +388,15 @@ const DATA = [
     desc: "Define o modelo de compra da mídia, indicando como o anunciante será cobrado. (Apenas Search)",
     items: [
       { opt: "First-Impression", abr: "", sig: "Modelo de compra em que o anunciante adquire a primeira impressão do anúncio para o usuário durante o período definido.", plat: "Google Ads / Search" },
-      { opt: "CPA", abr: "", sig: "Cost Per Acquisition. O anunciante é cobrado com base no número de aquisições (compras).", plat: "Google Ads / Search" },
-      { opt: "CPI", abr: "", sig: "Custo por Instalação. O anunciante é cobrado com base no número de usuários que instalaram um aplicativo.", plat: "Google Ads / Search" },
-      { opt: "CPL", abr: "", sig: "Custo por Lead. O anunciante é cobrado com base no número de leads gerados.", plat: "Google Ads / Search" },
-      { opt: "CPM", abr: "", sig: "Custo por Mil Impressões. O anunciante é cobrado com base na quantidade de impressões de anúncios entregues.", plat: "Google Ads / Search" },
-      { opt: "CPD", abr: "", sig: "Cost Per Day. Valor fixo por dia de veiculação, independente do volume de entrega.", plat: "Google Ads / Search" },
-      { opt: "CPC", abr: "", sig: "Custo por Clique. O anunciante é cobrado com base na quantidade de cliques recebidos pelo anúncio.", plat: "Google Ads / Search" },
-      { opt: "CPV", abr: "", sig: "Custo por Visualização. O anunciante é cobrado com base no número de visualizações de um anúncio em vídeo.", plat: "Google Ads / Search" },
+      { opt: "CPA", abr: "cpa", sig: "Cost Per Acquisition. O anunciante é cobrado com base no número de aquisições (compras).", plat: "Google Ads / Search" },
+      { opt: "CPI", abr: "cpi", sig: "Custo por Instalação. O anunciante é cobrado com base no número de usuários que instalaram um aplicativo.", plat: "Google Ads / Search" },
+      { opt: "CPL", abr: "cpl", sig: "Custo por Lead. O anunciante é cobrado com base no número de leads gerados.", plat: "Google Ads / Search" },
+      { opt: "CPM", abr: "cpm", sig: "Custo por Mil Impressões. O anunciante é cobrado com base na quantidade de impressões de anúncios entregues.", plat: "Google Ads / Search" },
+      { opt: "CPD", abr: "cpd", sig: "Cost Per Day. Valor fixo por dia de veiculação, independente do volume de entrega.", plat: "Google Ads / Search" },
+      { opt: "CPC", abr: "cpc", sig: "Custo por Clique. O anunciante é cobrado com base na quantidade de cliques recebidos pelo anúncio.", plat: "Google Ads / Search" },
+      { opt: "CPV", abr: "cpv", sig: "Custo por Visualização. O anunciante é cobrado com base no número de visualizações de um anúncio em vídeo.", plat: "Google Ads / Search" },
       { opt: "Flat-Fee/Time-Based", abr: "", sig: "Modelo de compra com valor fixo, definido de acordo com a duração da campanha (ex.: custo por dia, semana ou período contratado).", plat: "Google Ads / Search" },
-      { opt: "vCPM", abr: "", sig: "Custo por Mil Impressões Visíveis. O anunciante é cobrado apenas pelas impressões que atenderam aos critérios de visibilidade.", plat: "Google Ads / Search" },
+      { opt: "vCPM", abr: "vcpm", sig: "Custo por Mil Impressões Visíveis. O anunciante é cobrado apenas pelas impressões que atenderam aos critérios de visibilidade.", plat: "Google Ads / Search" },
       { opt: "Zero-cost", abr: "", sig: "Utilizado para bonificações ou entregas sem custo de mídia, nas quais a marca não realiza pagamento pela veiculação.", plat: "Google Ads / Search" },
     ]
   },
@@ -399,16 +406,16 @@ const DATA = [
     desc: "Define o modelo de compra da mídia para veiculação geral (não apenas Search).",
     items: [
       { opt: "First-Impression", abr: "", sig: "Modelo de compra em que o anunciante adquire a primeira impressão do anúncio para o usuário durante o período definido.", plat: "Todas" },
-      { opt: "CPA", abr: "", sig: "Cost Per Acquisition. O anunciante é cobrado com base no número de aquisições.", plat: "Todas" },
-      { opt: "CPI", abr: "", sig: "Custo por Instalação. O anunciante é cobrado com base no número de instalações de aplicativo.", plat: "Todas" },
-      { opt: "CPL", abr: "", sig: "Custo por Lead. O anunciante é cobrado com base no número de leads gerados.", plat: "Todas" },
-      { opt: "CPM", abr: "", sig: "Custo por Mil Impressões. O anunciante é cobrado com base na quantidade de impressões entregues.", plat: "Todas" },
-      { opt: "CPD", abr: "", sig: "Cost Per Day. Valor fixo por dia de veiculação.", plat: "Todas" },
-      { opt: "CPC", abr: "", sig: "Custo por Clique. O anunciante é cobrado com base na quantidade de cliques.", plat: "Todas" },
-      { opt: "CPH", abr: "", sig: "Cost Per Hour. O anunciante paga um valor fixo por hora de veiculação. Usado especificamente no YouTube Masthead. (Apenas no FT)", plat: "YouTube Masthead" },
-      { opt: "CPV", abr: "", sig: "Custo por Visualização. O anunciante é cobrado com base no número de visualizações de um anúncio em vídeo.", plat: "Todas" },
+      { opt: "CPA", abr: "cpa", sig: "Cost Per Acquisition. O anunciante é cobrado com base no número de aquisições.", plat: "Todas" },
+      { opt: "CPI", abr: "cpi", sig: "Custo por Instalação. O anunciante é cobrado com base no número de instalações de aplicativo.", plat: "Todas" },
+      { opt: "CPL", abr: "cpl", sig: "Custo por Lead. O anunciante é cobrado com base no número de leads gerados.", plat: "Todas" },
+      { opt: "CPM", abr: "cpm", sig: "Custo por Mil Impressões. O anunciante é cobrado com base na quantidade de impressões entregues.", plat: "Todas" },
+      { opt: "CPD", abr: "cpd", sig: "Cost Per Day. Valor fixo por dia de veiculação.", plat: "Todas" },
+      { opt: "CPC", abr: "cpc", sig: "Custo por Clique. O anunciante é cobrado com base na quantidade de cliques.", plat: "Todas" },
+      { opt: "CPH", abr: "cph", sig: "Cost Per Hour. O anunciante paga um valor fixo por hora de veiculação. Usado especificamente no YouTube Masthead. (Apenas no FT)", plat: "YouTube Masthead" },
+      { opt: "CPV", abr: "cpv", sig: "Custo por Visualização. O anunciante é cobrado com base no número de visualizações de um anúncio em vídeo.", plat: "Todas" },
       { opt: "Flat-Fee/Time-Based", abr: "", sig: "Modelo de compra com valor fixo, definido de acordo com a duração da campanha.", plat: "Todas" },
-      { opt: "vCPM", abr: "", sig: "Custo por Mil Impressões Visíveis. O anunciante é cobrado apenas pelas impressões que atenderam aos critérios de visibilidade.", plat: "Todas" },
+      { opt: "vCPM", abr: "vcpm", sig: "Custo por Mil Impressões Visíveis. O anunciante é cobrado apenas pelas impressões que atenderam aos critérios de visibilidade.", plat: "Todas" },
       { opt: "Zero-cost", abr: "", sig: "Utilizado para bonificações ou entregas sem custo de mídia.", plat: "Todas" },
     ]
   },
@@ -436,19 +443,19 @@ const DATA = [
     items: [
       { opt: "Non-shoppable", abr: "", sig: "A página não possui funcionalidade de compra ou redirecionamento para um varejista.", plat: "Todas", rel: "Brand, External, Category" },
       { opt: "na", abr: "", sig: "Não aplicável para o tipo de Landing Page selecionado.", plat: "Todas", rel: "None, Social" },
-      { opt: "Shoppable", abr: "", sig: "A página possui funcionalidade de compra ou redirecionamento para um varejista.", plat: "Todas", rel: "Brand, Category" },
+      { opt: "Shoppable", abr: "Shop", sig: "A página possui funcionalidade de compra ou redirecionamento para um varejista.", plat: "Todas", rel: "Brand, Category" },
       { opt: "D2C", abr: "D2C", sig: "Direciona o usuário para o canal de venda direta ao consumidor (Direct to Consumer).", plat: "Todas", rel: "D2C" },
-      { opt: "MikMak", abr: "", sig: "Plataforma de shoppable commerce que conecta campanhas digitais a varejistas parceiros.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
-      { opt: "Adimo", abr: "", sig: "Plataforma de shoppable commerce que conecta campanhas a varejistas para facilitar a compra dos produtos.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
-      { opt: "Cartwire", abr: "", sig: "Plataforma de shoppable commerce que direciona o consumidor para a jornada de compra.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
-      { opt: "Dotter", abr: "", sig: "Plataforma de shoppable commerce utilizada para conectar campanhas a varejistas.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
+      { opt: "MikMak", abr: "MikMak", sig: "Plataforma de shoppable commerce que conecta campanhas digitais a varejistas parceiros.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
+      { opt: "Adimo", abr: "Adimo", sig: "Plataforma de shoppable commerce que conecta campanhas a varejistas para facilitar a compra dos produtos.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
+      { opt: "Cartwire", abr: "Cartwire", sig: "Plataforma de shoppable commerce que direciona o consumidor para a jornada de compra.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
+      { opt: "Dotter", abr: "Dotter", sig: "Plataforma de shoppable commerce utilizada para conectar campanhas a varejistas.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
       { opt: "MikMak – Shoppable-Recipe", abr: "", sig: "Experiência de receita com funcionalidade de compra, utilizando a plataforma MikMak.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
       { opt: "Chicory – Shoppable-Recipe", abr: "", sig: "Experiência de receita com funcionalidade de compra, utilizando a plataforma Chicory.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
       { opt: "Northfork – Shoppable-Recipe", abr: "", sig: "Experiência de receita com funcionalidade de compra, utilizando a plataforma Northfork.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
       { opt: "FIU – Shoppable-Recipe", abr: "", sig: "Experiência de receita com funcionalidade de compra, utilizando a plataforma FIU.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
-      { opt: "PriceSpider", abr: "", sig: "Plataforma de shoppable commerce que direciona o consumidor para varejistas parceiros.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
-      { opt: "Shopalyst", abr: "", sig: "Plataforma de shoppable commerce que conecta campanhas à jornada de compra.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
-      { opt: "Whisk", abr: "", sig: "Plataforma de receitas e planejamento de refeições que permite a compra dos ingredientes em varejistas parceiros.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
+      { opt: "PriceSpider", abr: "PriceSpider", sig: "Plataforma de shoppable commerce que direciona o consumidor para varejistas parceiros.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
+      { opt: "Shopalyst", abr: "Shopalyst", sig: "Plataforma de shoppable commerce que conecta campanhas à jornada de compra.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
+      { opt: "Whisk", abr: "Whisk", sig: "Plataforma de receitas e planejamento de refeições que permite a compra dos ingredientes em varejistas parceiros.", plat: "Todas", rel: "Shoppable-Tool-Provider" },
       { opt: "Retailers cadastrados", abr: "", sig: "Representa os varejistas homologados disponíveis para direcionamento. O retailer deve ser selecionado conforme o parceiro definido no plano de mídia.", plat: "Todas", rel: "Retail, TikTok Shop" },
     ]
   },
@@ -684,7 +691,7 @@ const DATA = [
       { opt: "Display", abr: "Disp", sig: "Anúncio em formato de banner estático ou animado.", plat: "—" },
       { opt: "Audio", abr: "Aud", sig: "Anúncio em formato de áudio.", plat: "—" },
       { opt: "Texto", abr: "", sig: "Anúncio em formato de texto.", plat: "—" },
-      { opt: "GIF", abr: "", sig: "Anúncio em imagem animada em loop (GIF).", plat: "—" },
+      { opt: "GIF", abr: "Interesses", sig: "Anúncio em imagem animada em loop (GIF).", plat: "—" },
       { opt: "Carrossel", abr: "", sig: "Anúncio com múltiplas imagens ou cartões que o usuário pode deslizar lateralmente.", plat: "—" },
       { opt: "Cpas-Rmkt", abr: "", sig: "Campanha via CPAS (Meta Collaborative Ads), usando o catálogo do varejista parceiro, com foco em remarketing.", plat: "—" },
       { opt: "E-mail-Marketing", abr: "", sig: "Disparo de comunicação via e-mail marketing, fora da veiculação padrão em redes de anúncio.", plat: "—" },
@@ -968,7 +975,14 @@ function buildSidebar(){
   };
   sb.appendChild(clearBtn);
 
-  DATA.forEach(block => {
+  // Separar em grupos: Galileo (GL), Freetext (FT), Outros
+  const grupos = [
+    { label: 'Galileo', test: b => b.field.includes('GL') },
+    { label: 'Freetext', test: b => b.field.includes('FT') },
+    { label: 'Outros', test: b => !b.field.includes('GL') && !b.field.includes('FT') },
+  ];
+
+  function makeNavItem(block) {
     const a = document.createElement('a');
     a.className = 'nav-item';
     a.dataset.id = block.id;
@@ -996,7 +1010,17 @@ function buildSidebar(){
         if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
       }
     };
-    sb.appendChild(a);
+    return a;
+  }
+
+  grupos.forEach(grupo => {
+    const blocos = DATA.filter(grupo.test);
+    if(!blocos.length) return;
+    const grpLbl = document.createElement('div');
+    grpLbl.className = 'nav-group-label';
+    grpLbl.textContent = grupo.label;
+    sb.appendChild(grpLbl);
+    blocos.forEach(block => sb.appendChild(makeNavItem(block)));
   });
 }
 
