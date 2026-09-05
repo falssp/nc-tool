@@ -45,7 +45,7 @@
 
   /* HEADER */
   header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 1.25rem 1.5rem; position: sticky; top: 0; z-index: 100; }
-  .header-inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+  .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
   .logo { display: flex; flex-direction: column; gap: 1px; }
   .logo-title { font-size: 15px; font-weight: 600; color: var(--text); letter-spacing: -.01em; }
   .logo-sub { font-size: 11px; color: var(--text3); }
@@ -74,7 +74,7 @@
   .meta.hidden { opacity: 0; pointer-events: none; }
 
   /* LAYOUT */
-  .layout { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 0; min-height: calc(100vh - 64px); align-items: start; }
+  .layout { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 0; min-height: calc(100vh - 64px); align-items: start; }
 
   /* SIDEBAR */
   aside { border-right: 1px solid var(--border); padding: 1.25rem 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; align-self: flex-start; }
@@ -128,13 +128,134 @@
   /* BADGE */
   .rel-badge { display: inline-block; font-size: 10px; background: var(--surface2); color: var(--text3); border: 1px solid var(--border); border-radius: 4px; padding: 1px 6px; margin: 2px 2px 0 0; }
 
-  /* RESPONSIVE */
-  @media (max-width: 720px) {
+  /* ── TIPOGRAFIA FLUIDA ─────────────────────────────────── */
+  /* clamp(min, preferred, max) — escala suave entre breakpoints */
+  :root {
+    --fs-base:    clamp(12px, 1.1vw, 15px);
+    --fs-sm:      clamp(10px, 0.9vw, 13px);
+    --fs-xs:      clamp(9px,  0.8vw, 11px);
+    --fs-heading: clamp(13px, 1.2vw, 16px);
+    --fs-card:    clamp(11px, 1vw,   14px);
+    --space-card: clamp(.5rem, 1vw, .85rem);
+    --radius-lg:  clamp(8px, 1vw, 12px);
+  }
+
+  body { font-size: var(--fs-base); }
+
+  .logo-title  { font-size: clamp(13px, 1.2vw, 16px); }
+  .logo-sub    { font-size: clamp(9px, 0.8vw, 11px); }
+  #search      { font-size: var(--fs-sm); }
+  .plat-btn    { font-size: var(--fs-sm); }
+  .meta        { font-size: var(--fs-xs); }
+
+  .sidebar-label { font-size: var(--fs-xs); }
+  .nav-item      { font-size: clamp(11px, 0.95vw, 13px); }
+  .nav-item .nav-count { font-size: var(--fs-xs); }
+
+  .field-name  { font-size: clamp(12px, 1.05vw, 14px); }
+  .field-desc  { font-size: var(--fs-xs); }
+  .field-count { font-size: var(--fs-xs); }
+
+  .opt-name    { font-size: var(--fs-card); }
+  .abr         { font-size: var(--fs-xs); }
+  .card-sig    { font-size: clamp(11px, 0.9vw, 13px); }
+  .plat-label  { font-size: var(--fs-xs); }
+  .plat-val    { font-size: var(--fs-xs); }
+  .card        { padding: var(--space-card) calc(var(--space-card) * 1.2); border-radius: var(--radius-lg); }
+
+  .results-bar { font-size: var(--fs-xs); }
+
+  /* ── LAYOUT FLUIDO ──────────────────────────────────────── */
+
+  /* Telão (>1600px) — aproveita a largura toda */
+  @media (min-width: 1600px) {
+    .layout      { max-width: 100%; padding: 0 2vw; grid-template-columns: 260px 1fr; }
+    .header-inner{ max-width: 100%; padding: 0 2vw; }
+    main         { padding: 2rem 2vw; }
+    .cards       { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+  }
+
+  /* Desktop grande (1200–1600px) */
+  @media (min-width: 1200px) and (max-width: 1599px) {
+    .layout      { max-width: 1400px; grid-template-columns: 240px 1fr; }
+    .cards       { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  }
+
+  /* Desktop padrão (900–1199px) — estado atual, sem mudança */
+
+  /* Tablet (600–899px) */
+  @media (max-width: 899px) and (min-width: 600px) {
+    .layout      { grid-template-columns: 180px 1fr; }
+    aside        { padding: 1rem 0; }
+    .nav-item    { padding: 5px .75rem; font-size: 11px; }
+    .cards       { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 5px; }
+    main         { padding: 1rem; }
+    header       { padding: .9rem 1rem; }
+    .header-inner{ gap: .6rem; }
+  }
+
+  /* Celular (< 600px) */
+  @media (max-width: 599px) {
+    :root {
+      --fs-base:    13px;
+      --fs-sm:      11px;
+      --fs-xs:      10px;
+      --fs-card:    12px;
+      --space-card: .55rem;
+    }
+
+    header { padding: .7rem .9rem; position: sticky; top: 0; z-index: 100; }
+    .header-inner { flex-wrap: nowrap; gap: .5rem; }
+    .logo-sub { display: none; }
+    .search-wrap { min-width: 0; }
+    .plat-btn span:not(.plat-badge) { display: none; } /* esconde texto, mantém ícone+badge */
+    .plat-btn { padding: 0 8px; gap: 4px; }
+    .plat-dropdown { right: -8px; min-width: 180px; }
+
     .layout { grid-template-columns: 1fr; }
-    aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: .75rem 0; display: flex; flex-wrap: wrap; gap: 4px; padding: .75rem .75rem; }
+
+    /* Sidebar vira scroll horizontal no topo */
+    aside {
+      position: sticky;
+      top: 52px;
+      z-index: 90;
+      height: auto;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      padding: .5rem .75rem;
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 5px;
+      align-self: auto;
+      scrollbar-width: none;
+    }
+    aside::-webkit-scrollbar { display: none; }
     .sidebar-label { display: none; }
-    .nav-item { padding: 4px 10px; border-left: none; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; }
-    .nav-item.active { border-color: var(--accent); }
+    .nav-clear { display: none !important; }
+
+    .nav-item {
+      padding: 4px 10px;
+      border-left: none;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      font-size: 11px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .nav-item.on {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+      color: var(--accent-text);
+    }
+    .nav-item .nav-count { display: none; }
+
+    main { padding: .75rem; }
+    .cards { grid-template-columns: 1fr; gap: 5px; }
+    .field-header { flex-wrap: wrap; gap: .4rem; }
+    .field-desc { display: none; } /* muito texto em tela pequena */
   }
 </style>
 </head>
