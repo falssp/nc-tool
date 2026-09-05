@@ -158,7 +158,7 @@
     </button>
     <div class="plat-dropdown" id="plat-dropdown">
       <div class="plat-dropdown-header">
-        <span class="plat-dropdown-label">Filtrar por plataforma</span>
+        <span class="plat-dropdown-label">Plataformas</span>
         <span class="plat-dropdown-clear" onclick="clearPlats()">limpar</span>
       </div>
       <div id="plat-options"></div>
@@ -653,11 +653,14 @@ function render(){
           (it.rel && it.rel.toLowerCase().includes(term));
         if(!match) return false;
       }
-      // filtro plataforma (AND com campos)
+      // filtro plataforma (AND com campos) com aliases
       if(activePlats.size > 0) {
         const platStr = (it.plat || '').toLowerCase();
         if(platStr.includes('todas')) return true;
-        return [...activePlats].some(p => platStr.includes(p.toLowerCase()));
+        return [...activePlats].some(canon => {
+          const aliases = PLAT_ALIASES[canon] || [canon.toLowerCase()];
+          return aliases.some(a => platStr.includes(a));
+        });
       }
       return true;
     });
@@ -710,19 +713,47 @@ function render(){
 }
 
 
+// Plataformas canônicas exibidas no dropdown (ordem alfabética)
 const PLATAFORMAS = [
-  'Meta','TikTok','YouTube','Pinterest','Twitter','Snapchat',
-  'Google Ads','Google Search','DV360','Amazon DSP','Criteo',
-  'Programática','Direto','DOOH'
+  'Amazon DSP',
+  'Compra Direta',
+  'Criteo',
+  'DV360',
+  'Google Ads',
+  'Google Search',
+  'Meta',
+  'Pinterest',
+  'Programática',
+  'Snapchat',
+  'TikTok',
+  'Twitter/X',
+  'YouTube',
 ];
+
+// Aliases: como cada canônica aparece nos dados da planilha
+const PLAT_ALIASES = {
+  'Amazon DSP':    ['amazondsp','amazon dsp','amazon search'],
+  'Compra Direta': ['direto','compra direta'],
+  'Criteo':        ['criteo'],
+  'DV360':         ['dv360','dv360-programmatic','youtube via dv'],
+  'Google Ads':    ['google ads','google others','google video'],
+  'Google Search': ['google search','google ads / search','search'],
+  'Meta':          ['meta'],
+  'Pinterest':     ['pinterest'],
+  'Programática':  ['programática','programatica','programmatic','pmax'],
+  'Snapchat':      ['snapchat'],
+  'TikTok':        ['tiktok'],
+  'Twitter/X':     ['twitter','twitter/x','x ads'],
+  'YouTube':       ['youtube','youtube masthead','masthead/reserva','video'],
+};
 
 function buildPlatOptions(){
   const wrap = document.getElementById('plat-options');
   PLATAFORMAS.forEach(p => {
     const div = document.createElement('div');
     div.className = 'plat-option';
-    div.innerHTML = `<input type="checkbox" id="plat-${p}" data-plat="${p}">
-      <label for="plat-${p}">${p}</label>`;
+    const pid = p.replace(/[^a-z0-9]/gi,'-'); div.innerHTML = `<input type="checkbox" id="plat-${pid}" data-plat="${p}">
+      <label for="plat-${pid}">${p}</label>`;
     div.querySelector('input').onchange = e => {
       if(e.target.checked) activePlats.add(p);
       else activePlats.delete(p);
@@ -766,14 +797,14 @@ function buildSidebar(){
 
   const lbl = document.createElement('div');
   lbl.className = 'sidebar-label';
-  lbl.textContent = 'Campos';
+  lbl.textContent = 'Parâmetros';
   sb.appendChild(lbl);
 
   // Botão Todos
   const all = document.createElement('a');
   all.className = 'nav-item nav-all on';
   const tot = DATA.reduce((a,b) => a + b.items.length, 0);
-  all.innerHTML = 'Todos <span class="nav-count">' + tot + '</span>';
+  all.innerHTML = 'Todos os parâmetros <span class="nav-count">' + tot + '</span>';
   all.href = '#';
   all.onclick = e => {
     e.preventDefault();
