@@ -777,13 +777,8 @@ function render(){
   let html = '';
   const term = q.trim().toLowerCase();
 
-  // Ordenar: GL primeiro, FT depois, dentro de cada grupo alfabético
-  const sortedData = [
-    ...DATA.filter(b => b.field.includes('GL')).sort((a,b) => displayName(a.field).localeCompare(displayName(b.field),'pt-BR')),
-    ...DATA.filter(b => b.field.includes('FT')).sort((a,b) => displayName(a.field).localeCompare(displayName(b.field),'pt-BR')),
-    ...DATA.filter(b => !b.field.includes('GL') && !b.field.includes('FT')).sort((a,b) => displayName(a.field).localeCompare(displayName(b.field),'pt-BR')),
-  ];
-  sortedData.forEach(block => {
+  // Mantém ordem original da planilha
+  DATA.forEach(block => {
     if(activeFields.size > 0 && !activeFields.has(block.id)) return;
     const items = block.items.filter(it => {
       // filtro texto
