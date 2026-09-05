@@ -1,6 +1,13 @@
 /**
  * DICIONÁRIO DE TAXONOMIAS UL — Corp (StormX)
- * Lê dados direto da planilha original via openById — planilha limpa.
+ * - Sem menu visível — tudo via trigger mensal
+ * - Planilha protegida contra edição
+ * - Lê dados via openById e commita no GitHub
+ *
+ * SETUP (uma única vez no editor do Apps Script):
+ *   1. Cole este código
+ *   2. Execute: setup()
+ *   3. Pronto — trigger mensal e proteção configurados automaticamente
  */
 
 const GITHUB_TOKEN = 'COLE_SEU_TOKEN_AQUI';
@@ -12,12 +19,49 @@ const TARGETS = [
   { owner: 'falssp', repo: 'Projeto-NC', path: 'Treinamentos/RM_STORMX_ADP/24-08-26/taxonomias-ul.html' },
 ];
 
-// ── MENU ─────────────────────────────────────────────────────
-function onOpen() {
-  SpreadsheetApp.getUi()
-    .createMenu('NC Tool')
-    .addItem('▶ Atualizar dicionário de taxonomias', 'atualizarTaxonomias')
-    .addToUi();
+// ── SETUP (rodar uma única vez) ───────────────────────────────
+function setup() {
+  configurarTrigger();
+  protegerPlanilha();
+  Logger.log('✓ Setup concluído — trigger mensal e proteção ativos.');
+}
+
+// ── TRIGGER MENSAL ────────────────────────────────────────────
+function configurarTrigger() {
+  // Remove triggers existentes para evitar duplicatas
+  ScriptApp.getProjectTriggers()
+    .filter(t => t.getHandlerFunction() === 'atualizarTaxonomias')
+    .forEach(t => ScriptApp.deleteTrigger(t));
+
+  // Cria trigger: todo dia 1 do mês entre 08:00 e 09:00
+  ScriptApp.newTrigger('atualizarTaxonomias')
+    .timeBased()
+    .onMonthDay(1)
+    .atHour(8)
+    .create();
+
+  Logger.log('✓ Trigger mensal configurado — todo dia 1 às 08h.');
+}
+
+// ── PROTEGER PLANILHA ─────────────────────────────────────────
+function protegerPlanilha() {
+  const ss  = SpreadsheetApp.getActiveSpreadsheet();
+  const me  = Session.getEffectiveUser();
+
+  ss.getSheets().forEach(sheet => {
+    // Remove proteções existentes
+    sheet.getProtections(SpreadsheetApp.ProtectionType.SHEET)
+      .forEach(p => p.remove());
+
+    // Cria nova proteção
+    const prot = sheet.protect();
+    prot.setDescription('Protegido pelo NC Tool — não editar manualmente');
+    prot.removeEditors(prot.getEditors());
+    prot.addEditor(me);
+    if(prot.canDomainEdit()) prot.setDomainEdit(false);
+  });
+
+  Logger.log('✓ Todas as abas protegidas contra edição.');
 }
 
 // ── WEBAPP ───────────────────────────────────────────────────
@@ -36,27 +80,23 @@ function doGet() {
   }
 }
 
-// ── ATUALIZAR ─────────────────────────────────────────────────
+// ── ATUALIZAR (chamada pelo trigger ou manualmente) ───────────
 function atualizarTaxonomias() {
-  const ui = SpreadsheetApp.getUi();
   try {
     const dados     = lerAba();
     const htmlBase  = buscarHTMLBase();
     const htmlFinal = injetarDATA(htmlBase, JSON.stringify(dados, null, 2));
 
-    const erros = [];
-    TARGETS.forEach(t => {
-      try { commitGitHub(t.owner, t.repo, t.path, htmlFinal); }
-      catch(e) { erros.push(t.repo + ': ' + e.message); }
-    });
-
-    const msg = erros.length
-      ? '⚠ Erros:\n' + erros.join('\n')
-      : '✓ Dicionário atualizado!\n\nhttps://falssp.github.io/nc-tool/treinamentos/RM_STORMX_ADP/24-08-26/taxonomias-ul.html';
-    ui.alert('NC Tool', msg, ui.ButtonSet.OK);
+    TARGETS.forEach(t => commitGitHub(t.owner, t.repo, t.path, htmlFinal));
+    Logger.log('✓ Dicionário atualizado em ' + new Date().toISOString());
   } catch(e) {
-    ui.alert('Erro', e.message, ui.ButtonSet.OK);
     Logger.log('ERRO: ' + e.message + '\n' + e.stack);
+    // Envia email de erro para o dono do script
+    MailApp.sendEmail(
+      Session.getEffectiveUser().getEmail(),
+      '[NC Tool] Erro na atualização do dicionário',
+      'Erro em ' + new Date().toLocaleString('pt-BR') + ':\n\n' + e.message
+    );
   }
 }
 
@@ -66,15 +106,11 @@ function lerAba() {
   try {
     ss = SpreadsheetApp.openById(SOURCE_ID);
   } catch(e) {
-    throw new Error(
-      'Sem acesso à planilha original.\n' +
-      'Certifique-se que ' + Session.getActiveUser().getEmail() +
-      ' tem acesso a:\nhttps://docs.google.com/spreadsheets/d/' + SOURCE_ID
-    );
+    throw new Error('Sem acesso à planilha original: ' + e.message);
   }
 
   const aba = ss.getSheetByName(ABA);
-  if(!aba) throw new Error('Aba "' + ABA + '" não encontrada na planilha original.');
+  if(!aba) throw new Error('Aba "' + ABA + '" não encontrada.');
 
   const rows = aba.getDataRange().getValues();
   if(rows.length < 2) throw new Error('Aba vazia.');
@@ -86,7 +122,7 @@ function lerAba() {
   const iAbr = col('abrev'), iRel = col('rela'), iSig = col('signif'), iPlat = col('plataforma');
 
   if(iCampo < 0 || iOpt < 0 || iSig < 0)
-    throw new Error('Colunas obrigatórias não encontradas.\nCabeçalho: ' + header.join(' | '));
+    throw new Error('Colunas obrigatórias não encontradas. Cabeçalho: ' + header.join(' | '));
 
   const blocos = [];
   let campoAtual = null;
@@ -117,7 +153,6 @@ function lerAba() {
   }
 
   if(!blocos.length) throw new Error('Nenhum dado processado.');
-  Logger.log(blocos.length + ' campos, ' + blocos.reduce((a,b) => a + b.items.length, 0) + ' opções.');
   return blocos;
 }
 
@@ -166,7 +201,7 @@ function commitGitHub(owner, repo, path, content) {
   };
   if(sha) body.sha = sha;
 
-  const put  = UrlFetchApp.fetch(base, {
+  const put = UrlFetchApp.fetch(base, {
     method: 'PUT', headers, payload: JSON.stringify(body), muteHttpExceptions: true
   });
   const code = put.getResponseCode();
