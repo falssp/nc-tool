@@ -182,8 +182,7 @@ function injetarDATA(html, dataJS) {
   const startIdx = html.indexOf(startMarker);
   if(startIdx === -1) throw new Error('"const DATA = [...]" não encontrado no HTML base. Tamanho: ' + html.length);
 
-  // Procura o fechamento do array (];
- após o início)
+  // Procura o fechamento do array
   let depth = 0, endIdx = -1;
   for(let i = startIdx + startMarker.length; i < html.length; i++) {
     if(html[i] === '[') depth++;
@@ -195,7 +194,7 @@ function injetarDATA(html, dataJS) {
   if(endIdx === -1) throw new Error('Fim do bloco DATA não encontrado.');
 
   // Pula o ; e possível \n
-  while(endIdx < html.length && (html[endIdx] === ';' || html[endIdx] === '\n')) endIdx++;
+  while(endIdx < html.length && (html[endIdx] === ';' || html[endIdx] === '\n' || html[endIdx] === '\r')) endIdx++;
 
   return html.substring(0, startIdx) + 'const DATA = ' + dataJS + ';\n' + html.substring(endIdx);
 }
