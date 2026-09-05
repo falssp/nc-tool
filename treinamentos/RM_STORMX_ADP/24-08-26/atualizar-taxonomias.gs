@@ -1,7 +1,8 @@
 /**
  * DICIONÁRIO DE TAXONOMIAS UL — Corp (StormX)
- * Lê dados direto da planilha original via openById — sem IMPORTRANGE.
- * A planilha onde este script está vinculado fica completamente limpa.
+ * - Mantém IMPORTRANGE na aba automaticamente (recria se deletado)
+ * - Lê dados e commita no GitHub
+ * - Planilha fica com dados visíveis para uso humano
  */
 
 const GITHUB_TOKEN = 'COLE_SEU_TOKEN_AQUI';
@@ -21,11 +22,65 @@ function onOpen() {
     .addToUi();
 }
 
+// ── GARANTIR IMPORTRANGE ──────────────────────────────────────
+// Cria ou recria a aba com IMPORTRANGE se estiver ausente ou vazia.
+// Chamada automaticamente antes de cada atualização.
+function garantirImportRange() {
+  const ss  = SpreadsheetApp.getActiveSpreadsheet();
+  let aba   = ss.getSheetByName(ABA);
+
+  // Cria a aba se não existir
+  if(!aba) {
+    aba = ss.insertSheet(ABA);
+    Logger.log('Aba "' + ABA + '" criada.');
+  }
+
+  // Verifica se A1 tem o IMPORTRANGE correto
+  const a1    = aba.getRange('A1');
+  const atual = a1.getFormula();
+  const esperada = '=IMPORTRANGE("' + SOURCE_ID + '";"' + ABA + '!A:G")';
+
+  if(atual.replace(/\s/g,'').toLowerCase() !== esperada.replace(/\s/g,'').toLowerCase()) {
+    a1.setFormula(esperada);
+    SpreadsheetApp.flush();
+    Logger.log('IMPORTRANGE configurado.');
+
+    // Aguarda carregar (pode precisar de autorização manual na primeira vez)
+    Utilities.sleep(3000);
+
+    // Tenta autorizar programaticamente
+    try {
+      const token = ScriptApp.getOAuthToken();
+      UrlFetchApp.fetch(
+        'https://docs.google.com/spreadsheets/d/' + ss.getId() +
+        '/externaldata/addimportrangepermissions?key=' + SOURCE_ID,
+        { method: 'POST', headers: { Authorization: 'Bearer ' + token }, muteHttpExceptions: true }
+      );
+    } catch(e) { Logger.log('Autorização manual pode ser necessária: ' + e.message); }
+
+    SpreadsheetApp.flush();
+    Utilities.sleep(2000);
+  }
+
+  // Verifica se dados carregaram
+  const val = aba.getRange('A2').getDisplayValue();
+  if(!val || val === '#ERROR!' || val === 'Carregando…') {
+    throw new Error(
+      'IMPORTRANGE ainda não autorizado.\n\n' +
+      '1. Clique na célula A1 da aba "' + ABA + '"\n' +
+      '2. Clique em "Permitir acesso"\n' +
+      '3. Aguarde carregar e tente novamente.'
+    );
+  }
+
+  return aba;
+}
+
 // ── WEBAPP ───────────────────────────────────────────────────
 function doGet() {
   try {
+    const dados     = lerAba(garantirImportRange());
     const htmlBase  = buscarHTMLBase();
-    const dados     = lerAba();
     const htmlFinal = injetarDATA(htmlBase, JSON.stringify(dados, null, 2));
     return HtmlService.createHtmlOutput(htmlFinal)
       .setTitle('Dicionário de Taxonomias UL')
@@ -41,7 +96,8 @@ function doGet() {
 function atualizarTaxonomias() {
   const ui = SpreadsheetApp.getUi();
   try {
-    const dados     = lerAba();
+    const aba       = garantirImportRange();
+    const dados     = lerAba(aba);
     const htmlBase  = buscarHTMLBase();
     const htmlFinal = injetarDATA(htmlBase, JSON.stringify(dados, null, 2));
 
@@ -61,29 +117,12 @@ function atualizarTaxonomias() {
   }
 }
 
-// ── LER ABA DA PLANILHA ORIGINAL (sem IMPORTRANGE) ───────────
-function lerAba() {
-  // Abre a planilha original direto pelo ID
-  // A conta que roda o script precisa ter acesso à planilha original
-  let ss;
-  try {
-    ss = SpreadsheetApp.openById(SOURCE_ID);
-  } catch(e) {
-    throw new Error(
-      'Sem acesso à planilha original.\n' +
-      'Certifique-se que a conta ' + Session.getActiveUser().getEmail() +
-      ' tem acesso à planilha: https://docs.google.com/spreadsheets/d/' + SOURCE_ID
-    );
-  }
-
-  const aba = ss.getSheetByName(ABA);
-  if(!aba) throw new Error('Aba "' + ABA + '" não encontrada na planilha original.');
-
+// ── LER ABA ──────────────────────────────────────────────────
+function lerAba(aba) {
   const rows = aba.getDataRange().getValues();
-  if(rows.length < 2) throw new Error('Aba vazia.');
+  if(rows.length < 2) throw new Error('Aba vazia. Verifique o IMPORTRANGE.');
 
   const header = rows[0].map(h => h.toString().toLowerCase().trim());
-
   function col(kw) { return header.findIndex(h => h.includes(kw)); }
 
   const iCampo = col('campo'), iDesc = col('descri'), iOpt = col('op');
@@ -120,7 +159,7 @@ function lerAba() {
     }
   }
 
-  if(!blocos.length) throw new Error('Nenhum dado processado.');
+  if(!blocos.length) throw new Error('Nenhum dado processado. Verifique o IMPORTRANGE.');
   Logger.log(blocos.length + ' campos, ' + blocos.reduce((a,b) => a + b.items.length, 0) + ' opções.');
   return blocos;
 }
