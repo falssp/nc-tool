@@ -53,6 +53,23 @@
   .search-wrap svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text3); pointer-events: none; }
   #search { width: 100%; padding: 7px 12px 7px 34px; font-size: 13px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--bg); color: var(--text); outline: none; }
   #search:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+
+  /* DROPDOWN PLATAFORMA */
+  .plat-wrap { position: relative; }
+  .plat-btn { height: 36px; padding: 0 12px; font-size: 13px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface2); color: var(--text2); cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: border-color .12s; }
+  .plat-btn:hover { border-color: var(--accent); }
+  .plat-btn.active { border-color: var(--accent); background: var(--accent-bg); color: var(--accent-text); }
+  .plat-badge { background: var(--accent); color: #fff; font-size: 10px; font-weight: 700; border-radius: 10px; padding: 1px 6px; min-width: 18px; text-align: center; }
+  .plat-dropdown { position: absolute; top: calc(100% + 6px); right: 0; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.12); padding: .5rem; min-width: 200px; z-index: 200; display: none; }
+  .plat-dropdown.open { display: block; }
+  .plat-dropdown-header { display: flex; justify-content: space-between; align-items: center; padding: 2px 6px 6px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+  .plat-dropdown-label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .05em; }
+  .plat-dropdown-clear { font-size: 11px; color: var(--accent-text); cursor: pointer; }
+  .plat-dropdown-clear:hover { text-decoration: underline; }
+  .plat-option { display: flex; align-items: center; gap: 8px; padding: 5px 6px; border-radius: 6px; cursor: pointer; transition: background .1s; }
+  .plat-option:hover { background: var(--surface2); }
+  .plat-option input { accent-color: var(--accent); width: 14px; height: 14px; cursor: pointer; flex-shrink: 0; }
+  .plat-option label { font-size: 12.5px; color: var(--text2); cursor: pointer; line-height: 1.3; }
   .meta { font-size: 11px; color: var(--text3); white-space: nowrap; }
 
   /* LAYOUT */
@@ -132,7 +149,22 @@
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
       <input type="text" id="search" placeholder="Buscar campo, opção, abreviação ou significado…" autocomplete="off">
     </div>
-    <span class="meta" id="meta">— opções</span>
+    <div class="plat-wrap" id="plat-wrap">
+    <button class="plat-btn" id="plat-btn" onclick="togglePlatDropdown()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M7 12h10M11 18h2"/></svg>
+      Plataforma
+      <span class="plat-badge" id="plat-badge" style="display:none">0</span>
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6 9 6 6 6-6"/></svg>
+    </button>
+    <div class="plat-dropdown" id="plat-dropdown">
+      <div class="plat-dropdown-header">
+        <span class="plat-dropdown-label">Filtrar por plataforma</span>
+        <span class="plat-dropdown-clear" onclick="clearPlats()">limpar</span>
+      </div>
+      <div id="plat-options"></div>
+    </div>
+  </div>
+  <span class="meta" id="meta">— opções</span>
   </div>
 </header>
 
@@ -591,6 +623,7 @@ const DATA = [
 
 // ---- state ----
 let activeFields = new Set();  // multi-select de campos
+let activePlats  = new Set();  // multi-select de plataformas
 let openCards = new Set();
 let q = '';
 
@@ -610,13 +643,23 @@ function render(){
   DATA.forEach(block => {
     if(activeFields.size > 0 && !activeFields.has(block.id)) return;
     const items = block.items.filter(it => {
-      if(!term) return true;
-      return it.opt.toLowerCase().includes(term) ||
-             (it.abr && it.abr.toLowerCase().includes(term)) ||
-             it.sig.toLowerCase().includes(term) ||
-             block.field.toLowerCase().includes(term) ||
-             (it.plat && it.plat.toLowerCase().includes(term)) ||
-             (it.rel && it.rel.toLowerCase().includes(term));
+      // filtro texto
+      if(term) {
+        const match = it.opt.toLowerCase().includes(term) ||
+          (it.abr && it.abr.toLowerCase().includes(term)) ||
+          it.sig.toLowerCase().includes(term) ||
+          block.field.toLowerCase().includes(term) ||
+          (it.plat && it.plat.toLowerCase().includes(term)) ||
+          (it.rel && it.rel.toLowerCase().includes(term));
+        if(!match) return false;
+      }
+      // filtro plataforma (AND com campos)
+      if(activePlats.size > 0) {
+        const platStr = (it.plat || '').toLowerCase();
+        if(platStr.includes('todas')) return true;
+        return [...activePlats].some(p => platStr.includes(p.toLowerCase()));
+      }
+      return true;
     });
     if(!items.length) return;
     total += items.length;
@@ -665,6 +708,58 @@ function render(){
     });
   });
 }
+
+
+const PLATAFORMAS = [
+  'Meta','TikTok','YouTube','Pinterest','Twitter','Snapchat',
+  'Google Ads','Google Search','DV360','Amazon DSP','Criteo',
+  'Programática','Direto','DOOH'
+];
+
+function buildPlatOptions(){
+  const wrap = document.getElementById('plat-options');
+  PLATAFORMAS.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'plat-option';
+    div.innerHTML = `<input type="checkbox" id="plat-${p}" data-plat="${p}">
+      <label for="plat-${p}">${p}</label>`;
+    div.querySelector('input').onchange = e => {
+      if(e.target.checked) activePlats.add(p);
+      else activePlats.delete(p);
+      updatePlatBtn();
+      render();
+    };
+    wrap.appendChild(div);
+  });
+}
+
+function togglePlatDropdown(){
+  document.getElementById('plat-dropdown').classList.toggle('open');
+}
+
+function clearPlats(){
+  activePlats.clear();
+  document.querySelectorAll('.plat-option input').forEach(i => i.checked = false);
+  updatePlatBtn();
+  render();
+}
+
+function updatePlatBtn(){
+  const n = activePlats.size;
+  const btn   = document.getElementById('plat-btn');
+  const badge = document.getElementById('plat-badge');
+  btn.classList.toggle('active', n > 0);
+  badge.style.display = n > 0 ? 'inline-block' : 'none';
+  badge.textContent = n;
+}
+
+// Fecha dropdown ao clicar fora
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('plat-wrap');
+  if(wrap && !wrap.contains(e.target)){
+    document.getElementById('plat-dropdown').classList.remove('open');
+  }
+});
 
 function buildSidebar(){
   const sb = document.getElementById('sidebar');
@@ -740,6 +835,7 @@ document.getElementById('search').addEventListener('input', e => {
   render();
 });
 
+buildPlatOptions();
 buildSidebar();
 render();
 </script>
