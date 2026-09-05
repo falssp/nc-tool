@@ -773,7 +773,13 @@ function render(){
   let html = '';
   const term = q.trim().toLowerCase();
 
-  DATA.forEach(block => {
+  // Ordenar: GL primeiro, FT depois, dentro de cada grupo alfabético
+  const sortedData = [
+    ...DATA.filter(b => b.field.includes('GL')).sort((a,b) => displayName(a.field).localeCompare(displayName(b.field),'pt-BR')),
+    ...DATA.filter(b => b.field.includes('FT')).sort((a,b) => displayName(a.field).localeCompare(displayName(b.field),'pt-BR')),
+    ...DATA.filter(b => !b.field.includes('GL') && !b.field.includes('FT')).sort((a,b) => displayName(a.field).localeCompare(displayName(b.field),'pt-BR')),
+  ];
+  sortedData.forEach(block => {
     if(activeFields.size > 0 && !activeFields.has(block.id)) return;
     const items = block.items.filter(it => {
       // filtro texto
@@ -802,7 +808,7 @@ function render(){
 
     html += `<section class="field-block" id="sec-${block.id}">
       <div class="field-header">
-        <span class="field-name">${highlight(block.field, term)}</span>
+        <span class="field-name">${highlight(displayName(block.field), term)}</span>
         <span class="field-desc">${esc(block.desc)}</span>
         </div>
       <div class="cards">`;
@@ -977,12 +983,16 @@ function buildSidebar(){
     { label: 'Outros', test: b => !b.field.includes('GL') && !b.field.includes('FT') },
   ];
 
+  function displayName(field) {
+    return field.replace(/ GL$/, '').replace(/ FT$/, '').replace(/-/g, ' ');
+  }
+
   function makeNavItem(block) {
     const a = document.createElement('a');
     a.className = 'nav-item';
     a.dataset.id = block.id;
     a.href = '#sec-' + block.id;
-    a.innerHTML = esc(block.field) + '<span class="nav-count">' + block.items.length + '</span>';
+    a.innerHTML = esc(displayName(block.field)) + '<span class="nav-count">' + block.items.length + '</span>';
     a.onclick = e => {
       e.preventDefault();
       if(activeFields.has(block.id)){
@@ -1009,7 +1019,9 @@ function buildSidebar(){
   }
 
   grupos.forEach(grupo => {
-    const blocos = DATA.filter(grupo.test);
+    const blocos = DATA.filter(grupo.test)
+      .slice()
+      .sort((a, b) => displayName(a.field).localeCompare(displayName(b.field), 'pt-BR'));
     if(!blocos.length) return;
     const grpLbl = document.createElement('div');
     grpLbl.className = 'nav-group-label';
