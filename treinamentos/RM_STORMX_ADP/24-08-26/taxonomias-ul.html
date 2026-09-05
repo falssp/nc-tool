@@ -768,6 +768,10 @@ function highlight(text, term){
   return esc(text).replace(re,'<mark>$1</mark>');
 }
 
+function displayName(field) {
+    return field.replace(/ GL$/, '').replace(/ FT$/, '').replace(/-/g, ' ');
+  }
+
 function render(){
   let total = 0;
   let html = '';
@@ -982,10 +986,6 @@ function buildSidebar(){
     { label: 'Freetext', test: b => b.field.includes('FT') },
     { label: 'Outros', test: b => !b.field.includes('GL') && !b.field.includes('FT') },
   ];
-
-  function displayName(field) {
-    return field.replace(/ GL$/, '').replace(/ FT$/, '').replace(/-/g, ' ');
-  }
 
   function makeNavItem(block) {
     const a = document.createElement('a');
