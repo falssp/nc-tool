@@ -165,15 +165,17 @@
   .faq-btn:hover { background: var(--accent-bg); border-color: var(--accent); color: var(--accent-text); }
   .faq-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); z-index: 500; align-items: center; justify-content: center; }
   .faq-overlay.open { display: flex; }
-  .faq-modal { background: var(--surface); border-radius: 14px; padding: 1.25rem 1.5rem; max-width: 520px; width: 90%; max-height: 92vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
+  .faq-modal { background: var(--surface); border-radius: 14px; padding: 1.75rem 2rem; max-width: 680px; width: 92%; max-height: 88vh; overflow-y: auto; position: relative; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
   .faq-close { position: absolute; top: 1rem; right: 1rem; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); background: var(--surface2); color: var(--text2); font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
   .faq-close:hover { background: var(--surface2); color: var(--text); }
-  .faq-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: .9rem; }
-  .faq-section { margin-bottom: .9rem; }
-  .faq-section h3 { font-size: 10px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .35rem; }
-  .faq-section p, .faq-section li { font-size: 12px; color: var(--text2); line-height: 1.6; }
-  .faq-section ul { padding-left: 1.1rem; }
-  .faq-section li { margin-bottom: .15rem; }
+  .faq-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 1.25rem; }
+  .faq-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2rem; }
+  .faq-section { margin-bottom: 1.1rem; }
+  .faq-section.full { grid-column: 1 / -1; }
+  .faq-section h3 { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: .45rem; padding-bottom: .3rem; border-bottom: 1px solid var(--border); }
+  .faq-section p, .faq-section li { font-size: 13px; color: var(--text2); line-height: 1.65; }
+  .faq-section ul { padding-left: 1rem; }
+  .faq-section li { margin-bottom: .2rem; }
   .faq-kbd { display: inline-block; background: var(--surface2); border: 1px solid var(--border-strong); border-radius: 4px; padding: 1px 6px; font-size: 11px; font-family: var(--mono); color: var(--text); margin: 0 2px; }
 
   .logo-title  { font-size: clamp(13px, 1.2vw, 16px); }
@@ -331,48 +333,51 @@
   <div class="faq-modal">
     <button class="faq-close" onclick="document.getElementById('faq-overlay').classList.remove('open')">×</button>
     <div class="faq-title">Como usar o Dicionário de Taxonomias</div>
+    <div class="faq-grid">
 
-    <div class="faq-section">
-      <h3>Navegar</h3>
-      <ul>
-        <li>Use a <strong>barra lateral</strong> para filtrar por parâmetro — clique em um ou mais para combinar</li>
-        <li>Use o menu <strong>Plataforma / Formato</strong> para filtrar por plataforma de mídia</li>
-        <li>Use a <strong>busca</strong> para encontrar qualquer campo, opção, sigla ou descrição</li>
-        <li>Clique em qualquer <strong>card</strong> para ver a descrição completa e a plataforma</li>
-      </ul>
-    </div>
+      <div class="faq-section">
+        <h3>Navegar</h3>
+        <ul>
+          <li>Use a <strong>barra lateral</strong> para filtrar por parâmetro — clique em um ou mais para combinar</li>
+          <li>Use o menu <strong>Plataforma / Formato</strong> para filtrar por plataforma de mídia</li>
+          <li>Use a <strong>busca</strong> para encontrar qualquer campo, opção, sigla ou descrição</li>
+          <li>Clique em qualquer <strong>card</strong> para ver a descrição e a plataforma</li>
+        </ul>
+      </div>
 
-    <div class="faq-section">
-      <h3>Atalhos de teclado</h3>
-      <ul>
-        <li><span class="faq-kbd">/</span> ou <span class="faq-kbd">Ctrl</span>+<span class="faq-kbd">K</span> — focar na busca</li>
-        <li><span class="faq-kbd">Esc</span> — limpar busca / fechar modal</li>
-        <li><span class="faq-kbd">↑</span> <span class="faq-kbd">↓</span> — navegar entre cards abertos</li>
-        <li><span class="faq-kbd">Enter</span> — expandir / recolher card selecionado</li>
-      </ul>
-    </div>
+      <div class="faq-section">
+        <h3>Atalhos de teclado</h3>
+        <ul>
+          <li><span class="faq-kbd">/</span> ou <span class="faq-kbd">Ctrl</span>+<span class="faq-kbd">K</span> — focar na busca</li>
+          <li><span class="faq-kbd">Esc</span> — limpar busca / fechar modal</li>
+          <li><span class="faq-kbd">↑</span> <span class="faq-kbd">↓</span> — navegar entre cards</li>
+          <li><span class="faq-kbd">Enter</span> — expandir / recolher card</li>
+        </ul>
+      </div>
 
-    <div class="faq-section">
-      <h3>Expandir e recolher</h3>
-      <ul>
-        <li>Botão <strong>⊞ Expandir</strong> — abre todos os cards visíveis de uma vez</li>
-        <li>Botão <strong>⊟ Recolher</strong> — fecha todos os cards</li>
-        <li>Os botões respeitam os filtros ativos — expandem só o que está visível</li>
-      </ul>
-    </div>
+      <div class="faq-section">
+        <h3>Expandir e recolher</h3>
+        <ul>
+          <li>Botão <strong>⊞ Expandir</strong> — abre todos os cards visíveis</li>
+          <li>Botão <strong>⊟ Recolher</strong> — fecha todos os cards</li>
+          <li>Respeitam os filtros ativos</li>
+        </ul>
+      </div>
 
-    <div class="faq-section">
-      <h3>Estrutura</h3>
-      <ul>
-        <li><strong>Galileo</strong> — parâmetros globais da taxonomia (sufixo GL)</li>
-        <li><strong>Freetext</strong> — parâmetros de texto livre por plataforma (sufixo FT)</li>
-        <li>Cada card mostra o nome completo, a <strong>sigla</strong> usada no naming, a descrição e a plataforma</li>
-      </ul>
-    </div>
+      <div class="faq-section">
+        <h3>Estrutura</h3>
+        <ul>
+          <li><strong>Galileo</strong> — parâmetros globais (sufixo GL)</li>
+          <li><strong>Freetext</strong> — parâmetros por plataforma (sufixo FT)</li>
+          <li>Cada card mostra nome, <strong>sigla</strong>, descrição e plataforma</li>
+        </ul>
+      </div>
 
-    <div class="faq-section">
-      <h3>Atualização</h3>
-      <p>O dicionário é atualizado automaticamente todo dia 1 do mês a partir da planilha oficial de taxonomias da Unilever BR.</p>
+      <div class="faq-section full">
+        <h3>Atualização</h3>
+        <p>Atualizado automaticamente todo dia 1 do mês a partir da planilha oficial de taxonomias da Unilever BR.</p>
+      </div>
+
     </div>
   </div>
 </div>
