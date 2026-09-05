@@ -79,10 +79,10 @@
   .expand-btn:hover { background: var(--accent-bg); border-color: var(--accent); color: var(--accent-text); }
 
   /* LAYOUT */
-  .layout { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 0; min-height: calc(100vh - 64px); align-items: start; }
+  .layout { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 220px 1fr; gap: 0; min-height: calc(100vh - 64px); }
 
   /* SIDEBAR */
-  /* aside — ver nav-clear section acima */
+
   .sidebar-label { font-size: 10px; font-weight: 600; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; padding: 0 1rem .5rem; }
   .nav-item { display: block; padding: 6px 1rem; font-size: 12.5px; color: var(--text2); cursor: pointer; border-radius: 0; transition: background .1s, color .1s; border-left: 2px solid transparent; }
   .nav-item:hover { background: var(--surface2); color: var(--text); }
@@ -95,7 +95,7 @@
   .nav-group-label { font-size: 9px; font-weight: 700; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; padding: 10px 1rem 3px; margin-top: 4px; border-top: 1px solid var(--border); }
   .nav-group-label:first-child { border-top: none; margin-top: 0; }
   /* Sidebar sticky correto */
-  aside { border-right: 1px solid var(--border); padding: 1.25rem 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; align-self: flex-start; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+  aside { border-right: 1px solid var(--border); padding: 1.25rem 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
   aside::-webkit-scrollbar { width: 4px; }
   aside::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
   .nav-item .nav-count { float: right; font-size: 11px; color: var(--text3); background: var(--surface2); padding: 1px 6px; border-radius: 10px; }
