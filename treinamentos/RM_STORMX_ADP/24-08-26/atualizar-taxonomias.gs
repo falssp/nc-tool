@@ -177,9 +177,27 @@ function buscarHTMLBase() {
 }
 
 function injetarDATA(html, dataJS) {
-  const re = /const DATA\s*=\s*\[[\s\S]*?\];\s*\n/;
-  if(!re.test(html)) throw new Error('"const DATA = [...]" não encontrado no HTML base.');
-  return html.replace(re, 'const DATA = ' + dataJS + ';\n');
+  // Procura o início do bloco DATA
+  const startMarker = 'const DATA = ';
+  const startIdx = html.indexOf(startMarker);
+  if(startIdx === -1) throw new Error('"const DATA = [...]" não encontrado no HTML base. Tamanho: ' + html.length);
+
+  // Procura o fechamento do array (];
+ após o início)
+  let depth = 0, endIdx = -1;
+  for(let i = startIdx + startMarker.length; i < html.length; i++) {
+    if(html[i] === '[') depth++;
+    else if(html[i] === ']') {
+      depth--;
+      if(depth === 0) { endIdx = i + 1; break; }
+    }
+  }
+  if(endIdx === -1) throw new Error('Fim do bloco DATA não encontrado.');
+
+  // Pula o ; e possível \n
+  while(endIdx < html.length && (html[endIdx] === ';' || html[endIdx] === '\n')) endIdx++;
+
+  return html.substring(0, startIdx) + 'const DATA = ' + dataJS + ';\n' + html.substring(endIdx);
 }
 
 // ── GITHUB ───────────────────────────────────────────────────
