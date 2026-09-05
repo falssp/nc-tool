@@ -75,27 +75,8 @@ function garantirImportRange() {
     );
   }
 
-  // Garante que existe ao menos uma aba visível antes de ocultar
-  // Cria aba "NC Tool" se não existir (fica como aba padrão visível)
-  const ss2 = SpreadsheetApp.getActiveSpreadsheet();
-  let abaInicio = ss2.getSheetByName('NC Tool');
-  if(!abaInicio) {
-    abaInicio = ss2.insertSheet('NC Tool', 0);
-    abaInicio.getRange('A1').setValue('Dicionário de Taxonomias UL');
-    abaInicio.getRange('A2').setValue('Use o menu NC Tool → Atualizar dicionário de taxonomias');
-    abaInicio.setTabColor('#1F36C7');
-    // Protege também para ninguém editar
-    const pInit = abaInicio.protect();
-    pInit.setDescription('Aba de boas-vindas — NC Tool');
-    const me2 = Session.getEffectiveUser();
-    pInit.addEditor(me2);
-    pInit.removeEditors(pInit.getEditors().filter(e => e.getEmail() !== me2.getEmail()));
-    if(pInit.canDomainEdit()) pInit.setDomainEdit(false);
-    Logger.log('Aba "NC Tool" criada.');
-  }
-
-  // Agora oculta a aba de dados (tem ao menos "NC Tool" visível)
-  aba.hideSheet();
+  // Aba fica visível com os dados — a proteção impede que alguém
+  // clique nas células e veja/edite a fórmula IMPORTRANGE
 
   // Protege a aba: bloqueia edição e deleção para todos exceto o dono do script
   const protecoes = aba.getProtections(SpreadsheetApp.ProtectionType.SHEET);
