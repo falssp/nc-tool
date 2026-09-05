@@ -1,7 +1,7 @@
 /**
  * DICIONÁRIO DE TAXONOMIAS UL — Corp (StormX)
- * Commit silencioso no GitHub. Sem referência ao Git no menu.
- * IMPORTRANGE configurado automaticamente via setupImportRange().
+ * Lê dados direto da planilha original via openById — sem IMPORTRANGE.
+ * A planilha onde este script está vinculado fica completamente limpa.
  */
 
 const GITHUB_TOKEN = 'COLE_SEU_TOKEN_AQUI';
@@ -18,72 +18,14 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('NC Tool')
     .addItem('▶ Atualizar dicionário de taxonomias', 'atualizarTaxonomias')
-    .addItem('⚙ Configurar importação de dados', 'setupImportRange')
     .addToUi();
-}
-
-// ── SETUP AUTOMÁTICO DO IMPORTRANGE ──────────────────────────
-// Roda uma única vez para criar a aba e configurar o IMPORTRANGE.
-// Depois que rodar, a aba "Galielo e Freetext" fica limpa e alimentada.
-function setupImportRange() {
-  const ui = SpreadsheetApp.getUi();
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-
-  // Cria a aba se não existir
-  let aba = ss.getSheetByName(ABA);
-  if(!aba) {
-    aba = ss.insertSheet(ABA);
-    Logger.log('Aba "' + ABA + '" criada.');
-  } else {
-    aba.clearContents();
-    Logger.log('Aba "' + ABA + '" limpa.');
-  }
-
-  // Cola o IMPORTRANGE na A1
-  const formula = '=IMPORTRANGE("' + SOURCE_ID + '";"' + ABA + '!A:G")';
-  aba.getRange('A1').setFormula(formula);
-
-  // Aguarda o Sheets processar (necessário para autorizar)
-  SpreadsheetApp.flush();
-  Utilities.sleep(3000);
-
-  // Tenta autorizar o IMPORTRANGE programaticamente
-  try {
-    const token = ScriptApp.getOAuthToken();
-    const url = 'https://docs.google.com/spreadsheets/d/' + ss.getId() +
-                '/externaldata/addimportrangepermissions?key=' + SOURCE_ID;
-    UrlFetchApp.fetch(url, {
-      method: 'POST',
-      headers: { Authorization: 'Bearer ' + token },
-      muteHttpExceptions: true
-    });
-    Logger.log('Autorização do IMPORTRANGE solicitada.');
-  } catch(e) {
-    Logger.log('Autorização manual necessária: ' + e.message);
-  }
-
-  SpreadsheetApp.flush();
-  Utilities.sleep(2000);
-
-  // Verifica se carregou
-  const val = aba.getRange('A1').getDisplayValue();
-  if(val && val !== '#ERROR!' && val !== 'Carregando…') {
-    ui.alert('NC Tool', '✓ Importação configurada!\nAba "' + ABA + '" pronta com os dados.', ui.ButtonSet.OK);
-  } else {
-    ui.alert('NC Tool',
-      'Aba criada com a fórmula, mas pode precisar de autorização manual.\n\n' +
-      '1. Clique na célula A1 da aba "' + ABA + '"\n' +
-      '2. Se aparecer "Permitir acesso", clique\n' +
-      '3. Aguarde carregar e rode novamente "Atualizar dicionário"',
-      ui.ButtonSet.OK);
-  }
 }
 
 // ── WEBAPP ───────────────────────────────────────────────────
 function doGet() {
   try {
     const htmlBase  = buscarHTMLBase();
-    const dados     = lerAba(ABA);
+    const dados     = lerAba();
     const htmlFinal = injetarDATA(htmlBase, JSON.stringify(dados, null, 2));
     return HtmlService.createHtmlOutput(htmlFinal)
       .setTitle('Dicionário de Taxonomias UL')
@@ -95,11 +37,11 @@ function doGet() {
   }
 }
 
-// ── ATUALIZAR GITHUB ─────────────────────────────────────────
+// ── ATUALIZAR ─────────────────────────────────────────────────
 function atualizarTaxonomias() {
   const ui = SpreadsheetApp.getUi();
   try {
-    const dados     = lerAba(ABA);
+    const dados     = lerAba();
     const htmlBase  = buscarHTMLBase();
     const htmlFinal = injetarDATA(htmlBase, JSON.stringify(dados, null, 2));
 
@@ -110,26 +52,38 @@ function atualizarTaxonomias() {
     });
 
     const msg = erros.length
-      ? '⚠ Alguns erros:\n' + erros.join('\n')
-      : '✓ Dicionário atualizado com sucesso!';
+      ? '⚠ Erros:\n' + erros.join('\n')
+      : '✓ Dicionário atualizado!\n\nhttps://falssp.github.io/nc-tool/treinamentos/RM_STORMX_ADP/24-08-26/taxonomias-ul.html';
     ui.alert('NC Tool', msg, ui.ButtonSet.OK);
   } catch(e) {
     ui.alert('Erro', e.message, ui.ButtonSet.OK);
+    Logger.log('ERRO: ' + e.message + '\n' + e.stack);
   }
 }
 
-// ── LER ABA ──────────────────────────────────────────────────
-function lerAba(nomeAba) {
-  const ss  = SpreadsheetApp.getActiveSpreadsheet();
-  const aba = ss.getSheetByName(nomeAba);
-  if(!aba) throw new Error(
-    'Aba "' + nomeAba + '" não encontrada.\nRode: NC Tool → Configurar importação de dados'
-  );
+// ── LER ABA DA PLANILHA ORIGINAL (sem IMPORTRANGE) ───────────
+function lerAba() {
+  // Abre a planilha original direto pelo ID
+  // A conta que roda o script precisa ter acesso à planilha original
+  let ss;
+  try {
+    ss = SpreadsheetApp.openById(SOURCE_ID);
+  } catch(e) {
+    throw new Error(
+      'Sem acesso à planilha original.\n' +
+      'Certifique-se que a conta ' + Session.getActiveUser().getEmail() +
+      ' tem acesso à planilha: https://docs.google.com/spreadsheets/d/' + SOURCE_ID
+    );
+  }
+
+  const aba = ss.getSheetByName(ABA);
+  if(!aba) throw new Error('Aba "' + ABA + '" não encontrada na planilha original.');
 
   const rows = aba.getDataRange().getValues();
-  if(rows.length < 2) throw new Error('Aba vazia. Rode: NC Tool → Configurar importação de dados');
+  if(rows.length < 2) throw new Error('Aba vazia.');
 
   const header = rows[0].map(h => h.toString().toLowerCase().trim());
+
   function col(kw) { return header.findIndex(h => h.includes(kw)); }
 
   const iCampo = col('campo'), iDesc = col('descri'), iOpt = col('op');
@@ -166,7 +120,8 @@ function lerAba(nomeAba) {
     }
   }
 
-  if(!blocos.length) throw new Error('Nenhum dado processado. Verifique se o IMPORTRANGE carregou.');
+  if(!blocos.length) throw new Error('Nenhum dado processado.');
+  Logger.log(blocos.length + ' campos, ' + blocos.reduce((a,b) => a + b.items.length, 0) + ' opções.');
   return blocos;
 }
 
