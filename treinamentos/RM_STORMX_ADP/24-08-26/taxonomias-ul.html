@@ -4811,7 +4811,16 @@ function buildSidebar(){
       render();
       // Location FT: mostrar/esconder subitems
       const subs = document.getElementById('nav-location-subs');
-      if(subs) subs.style.display = activeFields.has(block.id) ? 'block' : 'none';
+      if(subs) {
+        if(block.field === 'Location FT') {
+          subs.style.display = activeFields.has(block.id) ? 'block' : 'none';
+        } else {
+          // Outro campo clicado — esconde subs se Location não está ativo
+          if(!activeFields.has('location-ft')) {
+            subs.style.display = 'none';
+          }
+        }
+      }
     };
     return a;
   }
