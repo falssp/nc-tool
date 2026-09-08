@@ -4776,7 +4776,11 @@ function aplicarFiltroSubgrupo(grupo) {
   // Scroll para o label
   requestAnimationFrame(() => {
     const label = secLocation.querySelector('.subgroup-label:not([style*="none"])');
-    if(label) label.scrollIntoView({behavior: 'smooth', block: 'start'});
+    if(label) {
+      const headerH = document.querySelector('header')?.offsetHeight || 64;
+      const y = label.getBoundingClientRect().top + window.scrollY - headerH - 16;
+      window.scrollTo({top: y, behavior: 'smooth'});
+    }
   });
 }
 
