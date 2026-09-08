@@ -302,6 +302,20 @@
     .field-desc { display: none; } /* muito texto em tela pequena */
   }
 </style>
+  <script>
+    // Força o Chrome a não restaurar scroll — redireciona com timestamp único
+    (function() {
+      var url = window.location.href;
+      var isRedirected = url.indexOf('?r=') !== -1;
+      if(!isRedirected) {
+        var clean = url.split('?')[0].split('#')[0];
+        window.location.replace(clean + '?r=' + Date.now());
+      } else {
+        // Remove o parâmetro da URL sem reload
+        history.replaceState(null, '', window.location.pathname);
+      }
+    })();
+  </script>
 </head>
 <body>
 
