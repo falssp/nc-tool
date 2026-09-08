@@ -94,6 +94,10 @@
   .nav-item.on { background: var(--accent-bg); color: var(--accent-text); border-left-color: var(--accent-dark); font-weight: 500; }
   .nav-item.on .nav-count { background: var(--accent-border); color: var(--accent-text); }
   .nav-clear { font-size: 10px; color: var(--text3); cursor: pointer; padding: 2px 8px; margin: 4px 1rem 0; display: none; border-radius: 10px; background: var(--surface2); text-align: center; }
+  .nav-sub { display: flex; align-items: center; justify-content: space-between; padding: 3px 1rem 3px 1.75rem; font-size: 11px; color: var(--text3); cursor: pointer; transition: color .12s; }
+  .nav-sub:hover { color: var(--accent-text); }
+  .nav-sub-count { font-size: 10px; }
+  .nav-subs { display: none; }
   .nav-clear:hover { color: var(--accent-text); }
   .nav-clear.visible { display: block; }
   /* Grupos sidebar */
@@ -4773,6 +4777,8 @@ function buildSidebar(){
     document.querySelectorAll('.nav-item[data-id]').forEach(x => x.classList.remove('on'));
     all.classList.add('on');
     clearBtn.classList.remove('visible');
+    const s = document.getElementById('nav-location-subs');
+    if(s) s.style.display = 'none';
     render();
   };
   sb.appendChild(all);
@@ -4813,6 +4819,9 @@ function buildSidebar(){
         clearBtn.classList.add('visible');
       }
       render();
+      // Location FT: mostrar/esconder subitems
+      const subs = document.getElementById('nav-location-subs');
+      if(subs) subs.style.display = activeFields.has(block.id) ? 'block' : 'none';
     };
     return a;
   }
@@ -4832,7 +4841,39 @@ function buildSidebar(){
     grpLbl.className = 'nav-group-label';
     grpLbl.textContent = grupo.label;
     sb.appendChild(grpLbl);
-    blocos.forEach(block => sb.appendChild(makeNavItem(block)));
+    blocos.forEach(block => {
+      sb.appendChild(makeNavItem(block));
+      // Location FT: adicionar subitems de navegação
+      if(block.field === 'Location FT') {
+        const subsWrap = document.createElement('div');
+        subsWrap.className = 'nav-subs';
+        subsWrap.id = 'nav-location-subs';
+        const order = ['Nacional','Região','Estado','Cidade'];
+        const counts = {};
+        block.items.forEach(it => { if(it.group) counts[it.group] = (counts[it.group]||0)+1; });
+        order.forEach(g => {
+          if(!counts[g]) return;
+          const sub = document.createElement('div');
+          sub.className = 'nav-sub';
+          sub.innerHTML = esc(g) + '<span class="nav-sub-count">' + counts[g] + '</span>';
+          sub.onclick = e => {
+            e.stopPropagation();
+            // Scroll para o label do grupo no conteúdo
+            const secLoc = document.getElementById('sec-location-ft');
+            if(!secLoc) return;
+            const label = [...secLoc.querySelectorAll('.subgroup-label')]
+              .find(el => el.textContent.trim() === g);
+            if(label) {
+              const headerH = document.querySelector('header')?.offsetHeight || 64;
+              const y = label.getBoundingClientRect().top + window.scrollY - headerH - 12;
+              window.scrollTo({top: y, behavior: 'smooth'});
+            }
+          };
+          subsWrap.appendChild(sub);
+        });
+        sb.appendChild(subsWrap);
+      }
+    });
   });
 }
 
