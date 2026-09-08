@@ -4792,7 +4792,10 @@ function buildSidebar(){
     document.querySelectorAll('.nav-item[data-id]').forEach(x => x.classList.remove('on'));
     all.classList.add('on');
     clearBtn.classList.remove('visible');
+    const ls = document.getElementById('nav-location-subs');
+    if(ls) ls.style.display = 'none';
     render();
+    window.scrollTo({top: 0, behavior: 'smooth'});
   };
   sb.appendChild(clearBtn);
 
