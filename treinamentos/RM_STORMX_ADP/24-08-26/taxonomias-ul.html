@@ -457,22 +457,26 @@ const DATA = [
       {
         "opt": "1PD-DID",
         "sig": "Utiliza apenas dados próprios (First-Party Data) provenientes de Digital ID Data (DID), base composta por identificadores digitais anônimos coletados nas propriedades digitais da Unilever.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "1pd-did"
       },
       {
         "opt": "1PD-DAD",
         "sig": "Utiliza apenas dados próprios (First-Party Data) provenientes de Deterministic Audience Data (DAD), base composta por consumidores identificados por meio de cadastros, CRM ou outras fontes determinísticas.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "1pd-dad"
       },
       {
         "opt": "1PD-DID+DAD",
         "sig": "Utiliza uma combinação das bases DID e DAD para segmentação da audiência",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "1pd-diddad"
       },
       {
         "opt": "No-1PD",
         "sig": "Não utiliza dados próprios (First-Party Data) para segmentação da audiência.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "No-1PD"
       }
     ]
   },
@@ -485,73 +489,85 @@ const DATA = [
         "opt": "CRM",
         "sig": "Audiência composta por dados diretamente identificáveis, como e-mail, telefone ou informações provenientes do CRM da marca.",
         "plat": "Todas",
-        "rel": "1PD-DAD"
+        "rel": "1PD-DAD",
+        "abr": "CRM"
       },
       {
         "opt": "Behavioural",
         "sig": "Audiência segmentada com base no comportamento do usuário, como histórico de navegação, pesquisas realizadas, compras ou sites visitados.",
         "plat": "Todas",
-        "rel": "No 1PD"
+        "rel": "No 1PD",
+        "abr": "Behav"
       },
       {
         "opt": "Lookalike",
         "sig": "Audiência semelhante a um público de origem (seed audience). Utilizada para ampliar o alcance mantendo características semelhantes ao público existente.",
         "plat": "Todas",
-        "rel": "1PD-DAD\r\n1PD-DID\r\n1PD-DID+DAD"
+        "rel": "1PD-DAD\r\n1PD-DID\r\n1PD-DID+DAD",
+        "abr": "LLike"
       },
       {
         "opt": "CombinedAudiences",
         "sig": "Audiência composta pela combinação de dois ou mais segmentos de público, utilizada para ampliar alcance ou criar segmentações mais qualificadas.",
         "plat": "Todas",
-        "rel": "1PD-DAD\r\n1PD-DID+DAD\r\nNo 1PD"
+        "rel": "1PD-DAD\r\n1PD-DID+DAD\r\nNo 1PD",
+        "abr": "CombAud"
       },
       {
         "opt": "DMP",
         "sig": "Audiência criada em uma Data Management Platform (DMP), como o Adobe Audience Manager, utilizando dados próprios (1PD) ou segmentos de remarketing.",
         "plat": "Todas",
-        "rel": "1PD-DID"
+        "rel": "1PD-DID",
+        "abr": "DMP"
       },
       {
         "opt": "Collected in-platform",
         "sig": "Audiência criada a partir de dados coletados diretamente pela plataforma de mídia, por meio de pixels, eventos ou ferramentas proprietárias.",
         "plat": "Todas",
-        "rel": "1PD-DID"
+        "rel": "1PD-DID",
+        "abr": "CollPform"
       },
       {
         "opt": "Custom",
         "sig": "Audiência personalizada, criada especificamente para atender aos objetivos da campanha.",
         "plat": "Todas",
-        "rel": "1PD-DID+DAD\nNo 1PD"
+        "rel": "1PD-DID+DAD\nNo 1PD",
+        "abr": "Cust"
       },
       {
         "opt": "Demographic",
         "sig": "Audiência segmentada por características demográficas, como idade, gênero, renda ou localização.",
         "plat": "Todas",
-        "rel": "No 1PD"
+        "rel": "No 1PD",
+        "abr": "Demog"
       },
       {
         "opt": "In-Market",
         "sig": "Audiência composta por usuários que demonstraram intenção de compra ou interesse ativo em determinada categoria de produtos. Indicada principalmente para campanhas de prospecção.",
         "plat": "Todas",
-        "rel": "No 1PD"
+        "rel": "No 1PD",
+        "abr": "InMark"
       },
       {
         "opt": "Interest/Affinity",
         "sig": "Audiência segmentada com base em interesses, hobbies ou afinidades dos usuários, como esportes, fitness, culinária ou sustentabilidade.",
         "plat": "Todas",
-        "rel": "No 1PD"
+        "rel": "No 1PD",
+        "abr": "IntAff"
       },
       {
         "opt": "In-Market & Lifestyle",
         "sig": "Audiência que combina intenção de compra (In-Market) com características de estilo de vida (Lifestyle), permitindo uma segmentação mais qualificada.",
         "plat": "Todas",
-        "rel": "No 1PD"
+        "rel": "No 1PD",
+        "abr": "InmLst"
       },
       {
         "opt": "Lifestyle/Life Events",
         "sig": "Audiência segmentada por estilo de vida ou eventos importantes da vida, como novos pais, mudança de residência, casamento ou formatura.",
         "plat": "Todas",
-        "rel": "No 1PD"
+        "rel": "No 1PD",
+        "abr": "Lstyle"
       }
     ]
   },
@@ -564,82 +580,98 @@ const DATA = [
         "opt": "OMP",
         "sig": "Open Marketplace (Open Exchange). Compra via leilão aberto no ad exchange, com acesso ao inventário disponível publicamente, sem acordo direto com o publisher.",
         "plat": "AmazonDSP, DV360-Programmatic, Google Ads",
-        "rel": "-"
+        "rel": "-",
+        "abr": "OMP"
       },
       {
         "opt": "OMPPMP",
         "sig": "Combinação de Open Marketplace e Private Marketplace na mesma linha de compra, disputando tanto no leilão aberto quanto no leilão privado.",
-        "plat": "AmazonDSP, DV360-Programmatic, Google Ads"
+        "plat": "AmazonDSP, DV360-Programmatic, Google Ads",
+        "abr": "OMPPMP"
       },
       {
         "opt": "PMP",
         "sig": "Private Marketplace. Leilão fechado, por convite, com inventário selecionado e preço mínimo (floor) negociado com publishers específicos.",
-        "plat": "DV360-Programmatic, Google Ads"
+        "plat": "DV360-Programmatic, Google Ads",
+        "abr": "PMP"
       },
       {
         "opt": "Prefer",
         "sig": "Preferred Deal. Acordo com preço fixo negociado diretamente com o publisher, sem exclusividade nem garantia de volume, com prioridade de compra antes do leilão aberto.",
-        "plat": "AmazonDSP, DV360-Programmatic, Google Ads, Criteo"
+        "plat": "AmazonDSP, DV360-Programmatic, Google Ads, Criteo",
+        "abr": "Prefer"
       },
       {
         "opt": "ProgGuar",
         "sig": "Programmatic Guaranteed. Compra direta automatizada, com volume e preço garantidos entre anunciante e publisher (equivalente a uma IO tradicional, transacionada via plataforma programática).",
-        "plat": "AmazonDSP, DV360-Programmatic, Google Ads"
+        "plat": "AmazonDSP, DV360-Programmatic, Google Ads",
+        "abr": "ProgGuar"
       },
       {
         "opt": "GooglePref",
         "sig": "Google Preferred. Pacote premium do YouTube com acesso ao conteúdo mais assistido e melhor qualificado da plataforma (top canais/criadores).",
-        "plat": "Youtube"
+        "plat": "Youtube",
+        "abr": "GooglePref"
       },
       {
         "opt": "TrVAction",
         "sig": "TrueView for Action. Formato de campanha do YouTube otimizado para gerar conversão/ação direta do usuário.",
-        "plat": "Youtube"
+        "plat": "Youtube",
+        "abr": "TrVAction"
       },
       {
         "opt": "TrVAuc",
         "sig": "TrueView em leilão padrão, comprado no modelo CPV (custo por visualização).",
-        "plat": "Youtube"
+        "plat": "Youtube",
+        "abr": "TrVAuc"
       },
       {
         "opt": "TrVReach",
         "sig": "TrueView for Reach. Campanha otimizada para maximizar alcance, comprada no modelo CPM.",
-        "plat": "Youtube"
+        "plat": "Youtube",
+        "abr": "TrVReach"
       },
       {
         "opt": "TrVInsRes",
         "sig": "TrueView In-Stream com reserva. Compra de vídeo in-stream do YouTube com volume garantido antecipadamente, fora do leilão padrão.",
-        "plat": "Youtube"
+        "plat": "Youtube",
+        "abr": "TrVInsRes"
       },
       {
         "opt": "OpAuc",
         "sig": "Open Auction. Leilão aberto padrão da própria plataforma, self-serve, sem acordo prévio de volume ou preço.",
-        "plat": "Twitter, Snapchat, Meta, Criteo"
+        "plat": "Twitter, Snapchat, Meta, Criteo",
+        "abr": "OpAuc"
       },
       {
         "opt": "ReaFreq",
         "sig": "Reach & Frequency. Compra por reserva (fora do leilão), com controle garantido de alcance de pessoas únicas e frequência de exibição.",
-        "plat": "Twitter, Snapchat, Meta, TikTok"
+        "plat": "Twitter, Snapchat, Meta, TikTok",
+        "abr": "ReaFreq"
       },
       {
         "opt": "Reserv",
         "sig": "Reserva. Compra de espaço/formato premium com volume garantido antecipadamente (ex: Takeover).",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "Reserv"
       },
       {
         "opt": "ResBuy",
         "sig": "Reserved Buy. Mesmo conceito de Reserv, aplicado ao Snapchat: compra com volume garantido antecipadamente.",
-        "plat": "Snapchat"
+        "plat": "Snapchat",
+        "abr": "ResBuy"
       },
       {
         "opt": "Auc",
         "sig": "Auction. Leilão padrão da plataforma.",
-        "plat": "Pinterest, TikTok"
+        "plat": "Pinterest, TikTok",
+        "abr": "Auc"
       },
       {
         "opt": "Spn",
         "sig": "Sponsorship. Patrocínio de uma posição ou espaço específico dentro do inventário do Criteo.",
-        "plat": "Criteo"
+        "plat": "Criteo",
+        "abr": "Spn"
       }
     ]
   },
@@ -652,57 +684,68 @@ const DATA = [
         "opt": "First-Impression",
         "sig": "Modelo de compra em que o anunciante adquire a primeira impressão do anúncio para o usuário durante o período definido (ex.: primeira impressão do dia).",
         "plat": "Google Ads/ Google Search",
-        "rel": "-"
+        "rel": "-",
+        "abr": "First-Impression"
       },
       {
         "opt": "CPA",
         "sig": "Cost Per Acquisition. O anunciante é cobrado com base no número de vezes que um cliente comprou um produto.",
-        "plat": "Google Ads/ Google Search"
+        "plat": "Google Ads/ Google Search",
+        "abr": "CPA"
       },
       {
         "opt": "CPI",
         "sig": "Custo por Instalação. O anunciante é cobrado com base no número de usuários que instalaram um aplicativo em seus dispositivos.",
-        "plat": "Google Ads/ Google Search"
+        "plat": "Google Ads/ Google Search",
+        "abr": "CPI"
       },
       {
         "opt": "CPL",
         "sig": "Custo por Lead. O anunciante é cobrado com base no número de leads gerados, como inscrições em newsletters, cadastros ou preenchimento de formulários.",
-        "plat": "Google Ads/ Google Search"
+        "plat": "Google Ads/ Google Search",
+        "abr": "CPL"
       },
       {
         "opt": "CPM",
         "sig": "Custo por Mil Impressões. O anunciante é cobrado com base na quantidade de impressões de anúncios entregues.",
-        "plat": "Google Ads/ Google Search"
+        "plat": "Google Ads/ Google Search",
+        "abr": "CPM"
       },
       {
         "opt": "CPD",
         "sig": "Cost Per Day. Modelo de compra em que o anunciante paga um valor fixo por dia de veiculação, independente do volume de entrega.",
-        "plat": "Google Ads/ Google Search"
+        "plat": "Google Ads/ Google Search",
+        "abr": "CPD"
       },
       {
         "opt": "CPC",
         "sig": "Custo por Clique. O anunciante é cobrado com base na quantidade de cliques recebidos pelo anúncio.",
-        "plat": "Google Ads/ Google Search"
+        "plat": "Google Ads/ Google Search",
+        "abr": "CPC"
       },
       {
         "opt": "CPV",
         "sig": "Custo por Visualização. O anunciante é cobrado com base no número de visualizações de um anúncio em vídeo.",
-        "plat": "Google Ads/ Google Search"
+        "plat": "Google Ads/ Google Search",
+        "abr": "CPV"
       },
       {
         "opt": "Flat-Fee/Time-Based",
         "sig": "Modelo de compra com valor fixo, definido de acordo com a duração da campanha (ex.: custo por dia, semana ou período contratado).",
-        "plat": "Google Ads/ Google Search"
+        "plat": "Google Ads/ Google Search",
+        "abr": "Flat-Fee/Time-Based"
       },
       {
         "opt": "vCPM",
         "sig": "Custo por Mil Impressões Visíveis. O anunciante é cobrado apenas pelas impressões que atenderam aos critérios de visibilidade.",
-        "plat": "Google Ads/ Google Search"
+        "plat": "Google Ads/ Google Search",
+        "abr": "vCPM"
       },
       {
         "opt": "Zero-cost",
         "sig": "Utilizado para bonificações ou entregas sem custo de mídia, nas quais a marca não realiza pagamento pela veiculação.",
-        "plat": "Google Ads/ Google Search"
+        "plat": "Google Ads/ Google Search",
+        "abr": "Zero-cost"
       }
     ]
   },
@@ -715,62 +758,74 @@ const DATA = [
         "opt": "First-Impression",
         "sig": "Modelo de compra em que o anunciante adquire a primeira impressão do anúncio para o usuário durante o período definido (ex.: primeira impressão do dia).",
         "plat": "Todas",
-        "rel": "-"
+        "rel": "-",
+        "abr": "First-Impression"
       },
       {
         "opt": "CPA",
         "sig": "Cost Per Acquisition. O anunciante é cobrado com base no número de vezes que um cliente comprou um produto.",
-        "plat": ""
+        "plat": "",
+        "abr": "CPA"
       },
       {
         "opt": "CPI",
         "sig": "Custo por Instalação. O anunciante é cobrado com base no número de usuários que instalaram um aplicativo em seus dispositivos.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "CPI"
       },
       {
         "opt": "CPL",
         "sig": "Custo por Lead. O anunciante é cobrado com base no número de leads gerados, como inscrições em newsletters, cadastros ou preenchimento de formulários.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "CPL"
       },
       {
         "opt": "CPM",
         "sig": "Custo por Mil Impressões. O anunciante é cobrado com base na quantidade de impressões de anúncios entregues.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "CPM"
       },
       {
         "opt": "CPD",
         "sig": "Cost Per Day. Modelo de compra em que o anunciante paga um valor fixo por dia de veiculação, independente do volume de entrega.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "CPD"
       },
       {
         "opt": "CPC",
         "sig": "Custo por Clique. O anunciante é cobrado com base na quantidade de cliques recebidos pelo anúncio.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "CPC"
       },
       {
         "opt": "CPH",
         "sig": "Cost Per Hour. O anunciante paga um valor fixo por hora de veiculação, usado especificamente no YouTube Masthead. (APENAS NO FT)",
-        "plat": ""
+        "plat": "",
+        "abr": "CPH"
       },
       {
         "opt": "CPV",
         "sig": "Custo por Visualização. O anunciante é cobrado com base no número de visualizações de um anúncio em vídeo.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "CPV"
       },
       {
         "opt": "Flat-Fee/Time-Based",
         "sig": "Modelo de compra com valor fixo, definido de acordo com a duração da campanha (ex.: custo por dia, semana ou período contratado).",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "Flat-Fee/Time-Based"
       },
       {
         "opt": "vCPM",
         "sig": "Custo por Mil Impressões Visíveis. O anunciante é cobrado apenas pelas impressões que atenderam aos critérios de visibilidade.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "vCPM"
       },
       {
         "opt": "Zero-cost",
         "sig": "Utilizado para bonificações ou entregas sem custo de mídia, nas quais a marca não realiza pagamento pela veiculação.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "Zero-cost"
       }
     ]
   },
@@ -783,52 +838,62 @@ const DATA = [
         "opt": "Brand",
         "sig": "Direciona o usuário para o site oficial da marca. Ex.: dove.com.br.",
         "plat": "Todas",
-        "rel": "-"
+        "rel": "-",
+        "abr": "Brand"
       },
       {
         "opt": "Retailer(via-MikMak)",
         "sig": "Direciona o usuário para um varejista por meio da plataforma MikMak, permitindo a seleção do varejista ou a jornada de compra integrada.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "RetMM"
       },
       {
         "opt": "D2C",
         "sig": "Direct to Consumer. Direciona o usuário para um canal de venda direta ao consumidor, operado pela própria marca.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "D2C"
       },
       {
         "opt": "External",
         "sig": "Direciona o usuário para um site externo que não se enquadra nas demais categorias.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "Ext"
       },
       {
         "opt": "None",
         "sig": "Utilizado quando a campanha não possui página de destino ou quando nenhuma das opções disponíveis se aplica.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "None"
       },
       {
         "opt": "Retail",
         "sig": "Direciona o usuário para um site de varejo. Ex.: Amazon, Mercado Livre, Carrefour, entre outros",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "restaurant-week"
       },
       {
         "opt": "Shoppable-Tool-Provider",
         "sig": "Direciona o usuário para uma plataforma ou ferramenta de compra (shoppable), que permite localizar ou adquirir produtos.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "STP"
       },
       {
         "opt": "Social",
         "sig": "Direciona o usuário para uma rede social ou perfil oficial da marca. Ex.: Instagram, Facebook, TikTok, LinkedIn.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "teads"
       },
       {
         "opt": "Category",
         "sig": "Direciona o usuário para um site ou página de uma categoria de produtos. Ex.: allthingshair.com.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "Cat"
       },
       {
         "opt": "TikTok-Shop",
         "sig": "Direciona o usuário para a loja da marca dentro do TikTok Shop, permitindo a compra diretamente na plataforma.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "TikTok-Shop"
       }
     ]
   },
@@ -841,97 +906,113 @@ const DATA = [
         "opt": "Non-shoppable",
         "sig": "A página não possui funcionalidade de compra ou redirecionamento para um varejista.",
         "plat": "Todas",
-        "rel": "Brand, External e Category"
+        "rel": "Brand, External e Category",
+        "abr": "Non-shoppable"
       },
       {
         "opt": "na",
         "sig": "Não aplicável para o tipo de Landing Page selecionado.",
         "plat": "Todas",
-        "rel": "None e Social"
+        "rel": "None e Social",
+        "abr": "na"
       },
       {
         "opt": "Shoppable",
         "sig": "A página possui funcionalidade de compra ou redirecionamento para um varejista.",
         "plat": "Todas",
-        "rel": "Brand e Category"
+        "rel": "Brand e Category",
+        "abr": "Shoppable"
       },
       {
         "opt": "D2C",
         "sig": "Direciona o usuário para o canal de venda direta ao consumidor (Direct to Consumer).",
         "plat": "Todas",
-        "rel": "D2C"
+        "rel": "D2C",
+        "abr": "D2C"
       },
       {
         "opt": "Adimo",
         "sig": "Plataforma de shoppable commerce que conecta campanhas a varejistas para facilitar a compra dos produtos.",
         "plat": "Todas",
-        "rel": "Shoppable-Tool-Provider"
+        "rel": "Shoppable-Tool-Provider",
+        "abr": "Adimo"
       },
       {
         "opt": "Cartwire",
         "sig": "Plataforma de shoppable commerce que direciona o consumidor para a jornada de compra.",
         "plat": "Todas",
-        "rel": "Shoppable-Tool-Provider"
+        "rel": "Shoppable-Tool-Provider",
+        "abr": "Cartwire"
       },
       {
         "opt": "Dotter",
         "sig": "Plataforma de shoppable commerce utilizada para conectar campanhas a varejistas.",
         "plat": "Todas",
-        "rel": "Shoppable-Tool-Provider"
+        "rel": "Shoppable-Tool-Provider",
+        "abr": "Dotter"
       },
       {
         "opt": "MikMak-–-Shoppable-Recipe",
         "sig": "Experiência de receita com funcionalidade de compra, utilizando a plataforma MikMak.",
         "plat": "Todas",
-        "rel": "Shoppable-Tool-Provider"
+        "rel": "Shoppable-Tool-Provider",
+        "abr": "MMRec"
       },
       {
         "opt": "Chicory-–-Shoppable-Recipe",
         "sig": "Experiência de receita com funcionalidade de compra, utilizando a plataforma Chicory.",
         "plat": "Todas",
-        "rel": "Shoppable-Tool-Provider"
+        "rel": "Shoppable-Tool-Provider",
+        "abr": "ChicRec"
       },
       {
         "opt": "Northfork-–-Shoppable-Recipe",
         "sig": "Experiência de receita com funcionalidade de compra, utilizando a plataforma Northfork.",
         "plat": "Todas",
-        "rel": "Shoppable-Tool-Provider"
+        "rel": "Shoppable-Tool-Provider",
+        "abr": "NfrkRec"
       },
       {
         "opt": "FIU-–-Shoppable-Recipe",
         "sig": "Experiência de receita com funcionalidade de compra, utilizando a plataforma FIU.",
         "plat": "Todas",
-        "rel": "Shoppable-Tool-Provider"
+        "rel": "Shoppable-Tool-Provider",
+        "abr": "FIURec"
       },
       {
         "opt": "MikMak",
         "sig": "Plataforma de shoppable commerce que conecta campanhas digitais a varejistas parceiros.",
         "plat": "Todas",
-        "rel": "Shoppable-Tool-Provider"
+        "rel": "Shoppable-Tool-Provider",
+        "abr": "MikMak"
       },
       {
         "opt": "PriceSpider",
         "sig": "Plataforma de shoppable commerce que direciona o consumidor para varejistas parceiros.",
         "plat": "Todas",
-        "rel": "Shoppable-Tool-Provider"
+        "rel": "Shoppable-Tool-Provider",
+        "abr": "PriceSpider"
       },
       {
         "opt": "Shopalyst",
         "sig": "Plataforma de shoppable commerce que conecta campanhas à jornada de compra.",
         "plat": "Todas",
-        "rel": "Shoppable-Tool-Provider"
+        "rel": "Shoppable-Tool-Provider",
+        "abr": "shopalyst"
       },
       {
         "opt": "Whisk",
         "sig": "Plataforma de receitas e planejamento de refeições que permite a compra dos ingredientes em varejistas parceiros.",
         "plat": "Todas",
-        "rel": "Shoppable-Tool-Provider"
+        "rel": "Shoppable-Tool-Provider",
+        "abr": "Whisk"
       },
       {
         "opt": "Retailers cadastrados",
         "sig": "Representa os varejistas homologados disponíveis para direcionamento da campanha. O retailer deve ser selecionado de acordo com o parceiro definido no plano de mídia ou na estratégia da campanha.",
         "plat": "Todas",
-        "rel": "Retail e Tiktok Shop"
+        "rel": "Retail e Tiktok Shop",
+        "abr": "Retail"
       }
     ]
   },
@@ -944,232 +1025,278 @@ const DATA = [
         "opt": "All",
         "sig": "Usado nos placements do Pinterest que abrangem tanto Browse quanto Search ao mesmo tempo: o anúncio pode ser exibido tanto navegando o feed/conteúdo (Browse) quanto quando o usuário pesquisa na barra de busca própria do Pinterest e o anúncio aparece nos resultados (Search).",
         "plat": "Pinterest",
-        "rel": "-"
+        "rel": "-",
+        "abr": "All"
       },
       {
         "opt": "Branded Effect",
         "sig": "Formato interativo de marca, como filtros, efeitos ou experiências personalizadas.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "BranEffect"
       },
       {
         "opt": "Bumper",
         "sig": "Vídeo curto de até 6 segundos, não pulável.",
-        "plat": "Google Ads, Compra Direta e Youtube via DV"
+        "plat": "Google Ads, Compra Direta e Youtube via DV",
+        "abr": "Bump"
       },
       {
         "opt": "Browse",
         "sig": "Formato de vídeo premium em tela ampla, com reserva exclusiva por 24h, ocupando cerca de 50% da tela do celular no feed inicial ou na busca do Pinterest (ex: Premiere Spotlight).",
-        "plat": "Pinterest"
+        "plat": "Pinterest",
+        "abr": "Browse"
       },
       {
         "opt": "Companion Banner",
         "sig": "Banner exibido em conjunto com anúncios de vídeo Instream no YouTube.",
-        "plat": "Google Ads, Compra Direta e Youtube via DV"
+        "plat": "Google Ads, Compra Direta e Youtube via DV",
+        "abr": "CompBan"
       },
       {
         "opt": "Content-Suggestion",
         "sig": "Anúncio exibido como sugestão de conteúdo ao usuário.",
-        "plat": "DV, Amazon DSP e Tiktok"
+        "plat": "DV, Amazon DSP e Tiktok",
+        "abr": "Content-Suggestion"
       },
       {
         "opt": "DCO - Display",
         "sig": "Anúncio de Display com Dynamic Creative Optimization (DCO).",
-        "plat": "Google Ads, Compra Direta, DV, Amazon DSP e Youtube via DV"
+        "plat": "Google Ads, Compra Direta, DV, Amazon DSP e Youtube via DV",
+        "abr": "DCODisp"
       },
       {
         "opt": "DCO-Video",
         "sig": "Anúncio em vídeo com Dynamic Creative Optimization (DCO).",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "DCO-Video"
       },
       {
         "opt": "Discovery",
         "sig": "Anúncio em formato de imagem exibido nos resultados de pesquisa ou recomendações do YouTube.",
-        "plat": "Google Ads e Compra Direta e Youtube via DV"
+        "plat": "Google Ads e Compra Direta e Youtube via DV",
+        "abr": "Disc"
       },
       {
         "opt": "DOOH-Display",
         "sig": "Display em mídia Digital Out of Home (DOOH).",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "DOOH-Display"
       },
       {
         "opt": "DOOH-Video",
         "sig": "Vídeo em mídia Digital Out of Home (DOOH).",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "DOOH-Video"
       },
       {
         "opt": "eCommerce-Responsive",
         "sig": "Formato responsivo voltado para campanhas de e-commerce.",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "eCommerce-Responsive"
       },
       {
         "opt": "Efficient Reach",
         "sig": "Formato otimizado para maximizar alcance com eficiência.",
-        "plat": "Google Ads, Compra Direta e Youtube via DV"
+        "plat": "Google Ads, Compra Direta e Youtube via DV",
+        "abr": "EfReach"
       },
       {
         "opt": "First View",
         "sig": "Primeiro anúncio exibido ao usuário durante um período determinado.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "1stView"
       },
       {
         "opt": "Hashtag Challenge",
         "sig": "Desafio patrocinado por hashtag, comum no TikTok.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "TagChal"
       },
       {
         "opt": "In-Banner Video",
         "sig": "Vídeo exibido dentro de um banner de display.",
-        "plat": "Google Ads, Compra Direta, DV, Amazon DSP, Youtube via DV e Tiktok"
+        "plat": "Google Ads, Compra Direta, DV, Amazon DSP, Youtube via DV e Tiktok",
+        "abr": "InBanVid"
       },
       {
         "opt": "In-Feed",
         "sig": "Anúncio exibido no feed de conteúdo.",
-        "plat": "Google Ads, Compra Direta, DV, Amazon DSP, Youtube via DV, Tiktok e Twitter"
+        "plat": "Google Ads, Compra Direta, DV, Amazon DSP, Youtube via DV, Tiktok e Twitter",
+        "abr": "InFeed"
       },
       {
         "opt": "In-Feed Video",
         "sig": "Vídeo exibido no feed de conteúdo.",
-        "plat": "Google Ads, Compra Direta e Youtube via DV"
+        "plat": "Google Ads, Compra Direta e Youtube via DV",
+        "abr": "InFeedVid"
       },
       {
         "opt": "In-Read",
         "sig": "Anúncio inserido entre blocos de conteúdo de uma página.",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "InRead"
       },
       {
         "opt": "Instream",
         "sig": "Anúncio de vídeo exibido antes, durante ou após outro vídeo. No YouTube, pode ser pulado após 5 segundos, dependendo do formato.",
-        "plat": "Google Ads, Compra Direta, DV, Amazon DSP, Youtube via DV e Tiktok"
+        "plat": "Google Ads, Compra Direta, DV, Amazon DSP, Youtube via DV e Tiktok",
+        "abr": "InStr"
       },
       {
         "opt": "Interstitial",
         "sig": "Anúncio em tela cheia exibido durante a navegação ou entre conteúdos.",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "Interstit"
       },
       {
         "opt": "Masthead",
         "sig": "Formato premium da página inicial do YouTube, com banner e/ou vídeo em destaque.",
-        "plat": "Google Ads, Compra Direta e Youtube via DV"
+        "plat": "Google Ads, Compra Direta e Youtube via DV",
+        "abr": "Mhead"
       },
       {
         "opt": "Mixed Outstream",
         "sig": "Combinação de diferentes formatos de anúncios Outstream.",
-        "plat": "Google Ads, Compra Direta, e DV, Amazon DSP, Youtube via DV, Tiktok e Twitter"
+        "plat": "Google Ads, Compra Direta, e DV, Amazon DSP, Youtube via DV, Tiktok e Twitter",
+        "abr": "MixOut"
       },
       {
         "opt": "Multiple",
         "sig": "Campanha composta por mais de um Placement Type.",
-        "plat": "Google Ads, Compra Direta, DV, Amazon DSP, Youtube via DV e Tiktok"
+        "plat": "Google Ads, Compra Direta, DV, Amazon DSP, Youtube via DV e Tiktok",
+        "abr": "Multi"
       },
       {
         "opt": "News Feed App Series Placement",
         "sig": "Anúncio exibido no feed de notícias de aplicativos compatíveis.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "NewsFeed"
       },
       {
         "opt": "Non-Skippable In-Stream",
         "sig": "Vídeo In-Stream que não pode ser pulado pelo usuário.",
-        "plat": "Google Ads, Compra Direta e Youtube via DV"
+        "plat": "Google Ads, Compra Direta e Youtube via DV",
+        "abr": "NonSkipInStr"
       },
       {
         "opt": "NonSkip",
         "sig": "Anúncio em vídeo não pulável.",
-        "plat": "Google Ads, Compra Direta e Youtube via DV"
+        "plat": "Google Ads, Compra Direta e Youtube via DV",
+        "abr": "NSkip"
       },
       {
         "opt": "Outstream",
         "sig": "Vídeo exibido fora de players de vídeo tradicionais, normalmente em páginas ou aplicativos.",
-        "plat": "Google Ads, Compra Direta e Youtube via DV"
+        "plat": "Google Ads, Compra Direta e Youtube via DV",
+        "abr": "OutSt"
       },
       {
         "opt": "Pangle Placement",
         "sig": "Posicionamento de anúncios na rede Pangle, permitindo a veiculação de campanhas em aplicativos de terceiros por meio de formatos publicitários imersivos.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "Pangle"
       },
       {
         "opt": "Promoted Spotlight",
         "sig": "Conteúdo promovido em destaque na plataforma.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "PromSpot"
       },
       {
         "opt": "Promoted Trend",
         "sig": "Tendência patrocinada, geralmente utilizada em plataformas sociais.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "PromTrend"
       },
       {
         "opt": "Pulse",
         "sig": "Formato TikTok Pulse, que posiciona anúncios próximos aos conteúdos mais populares da plataforma.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "Pulse"
       },
       {
         "opt": "Rewarded-Display",
         "sig": "Anúncio de display exibido mediante recompensa ao usuário.",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "Rewarded-Display"
       },
       {
         "opt": "Rewarded-Video",
         "sig": "Vídeo exibido mediante recompensa ao usuário, comum em aplicativos e jogos.",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "Rewarded-Video"
       },
       {
         "opt": "Rich-Media-Display",
         "sig": "Banner interativo com recursos avançados, como animações ou vídeos.",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "Rich-Media-Display"
       },
       {
         "opt": "Roadblock/Takeover",
         "sig": "Formato de alto impacto que ocupa múltiplos espaços publicitários simultaneamente.",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "RbkTkover"
       },
       {
         "opt": "Search",
         "sig": "Categoria que agrupa qualquer anúncio exibido como resultado pago de uma busca, dentro de um mecanismo de pesquisa ou de um marketplace (ex: Google Search, Amazon Search).",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "revista-hoteis"
       },
       {
         "opt": "Shorts Video Ads",
         "sig": "Anúncios exibidos no feed do YouTube Shorts.",
-        "plat": "Google Ads, Compra Direta e Youtube via DV"
+        "plat": "Google Ads, Compra Direta e Youtube via DV",
+        "abr": "ShortsVid"
       },
       {
         "opt": "Skippable In-Stream",
         "sig": "Vídeo In-Stream que pode ser pulado após alguns segundos.",
-        "plat": "Google Ads, Compra Direta e Youtube via DV"
+        "plat": "Google Ads, Compra Direta e Youtube via DV",
+        "abr": "SkipInStr"
       },
       {
         "opt": "Sponsorship",
         "sig": "Formato patrocinado vinculado a uma marca, evento ou conteúdo.",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "Spons"
       },
       {
         "opt": "Standard-Display",
         "sig": "Banner de display em formato padrão.",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "Standard-Display"
       },
       {
         "opt": "Static Banner",
         "sig": "Banner estático, sem animações ou interações.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "SttBan"
       },
       {
         "opt": "TikTok Placement",
         "sig": "Posicionamento padrão disponível na plataforma TikTok.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "TikTok"
       },
       {
         "opt": "TopFeed",
         "sig": "Anúncio exibido no topo do feed da plataforma.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "TopFeed"
       },
       {
         "opt": "TopView",
         "sig": "Primeiro vídeo exibido ao abrir o TikTok, ocupando destaque na tela inicial.",
-        "plat": "Google Ads, Compra Direta, DV, Amazon DSP, Youtube via DV e Tiktok"
+        "plat": "Google Ads, Compra Direta, DV, Amazon DSP, Youtube via DV e Tiktok",
+        "abr": "TopView"
       },
       {
         "opt": "Tracking-Placements",
         "sig": "Utilizado para campanhas de rastreamento, mensuração ou monitoramento de anúncios.",
-        "plat": "DV, Amazon DSP"
+        "plat": "DV, Amazon DSP",
+        "abr": "Tracking-Placements"
       }
     ]
   },
@@ -1182,673 +1309,785 @@ const DATA = [
         "opt": "App-Campaign",
         "sig": "Posicionamento usado em campanhas do tipo App Campaign (Google Ads), otimizadas para gerar instalações ou engajamento em aplicativos.",
         "plat": "Masthead/Reserva, Youtube",
-        "rel": "DCO - Display"
+        "rel": "DCO - Display",
+        "abr": "appcamp"
       },
       {
         "opt": "Audio-NonSkippable",
         "sig": "Anúncio em áudio não pulável na Amazon DSP.",
         "plat": "AmazonDSP",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "audnoskp"
       },
       {
         "opt": "Audio-Skippable",
         "sig": "Anúncio em áudio pulável na Amazon DSP.",
         "plat": "AmazonDSP",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "audskp"
       },
       {
         "opt": "AudioEverywhere-NonSkippable",
         "sig": "Anúncio de áudio não pulável exibido na rede Audio Everywhere (Spotify).",
         "plat": "Direto, Programática",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "audevrynoskp"
       },
       {
         "opt": "AudioEverywhere-Skippable",
         "sig": "Anúncio de áudio pulável exibido na rede Audio Everywhere (Spotify).",
         "plat": "Direto, Programática",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "audevryskp"
       },
       {
         "opt": "Binge-Ads-Display",
         "sig": "Banner de display exibido durante sessões contínuas de consumo de conteúdo (binge watching). Definição por dedução do nome, sem fonte oficial confirmada.",
         "plat": "Direto",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "bngead"
       },
       {
         "opt": "Branded-Buzz",
         "sig": "Variação do formato Hashtag Challenge do TikTok, possivelmente com camada de shopping (Hashtag Challenge Plus). Nome não confirmado em fonte oficial.",
         "plat": "Tiktok",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "bbuzz"
       },
       {
         "opt": "Branded-Effect",
         "sig": "Filtro ou efeito de realidade aumentada patrocinado pela marca, aplicado pelo usuário ao próprio conteúdo.",
         "plat": "Tiktok",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "beffect"
       },
       {
         "opt": "Branded-Mission",
         "sig": "Formato em que a marca convoca criadores a produzir conteúdo (UGC) sobre um briefing; os melhores vídeos são promovidos como anúncios.",
         "plat": "Tiktok",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "bmission"
       },
       {
         "opt": "Bumper-NonSkippable",
         "sig": "Vídeo bumper de até 6 segundos, exibido antes do conteúdo, não pulável.",
         "plat": "Masthead/Reserva, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "bump"
       },
       {
         "opt": "Bumper-TargetFrequency-NonSkippable",
         "sig": "Bumper não pulável entregue com estratégia de lance por frequência-alvo (controle de quantas vezes o mesmo usuário vê o anúncio).",
         "plat": "Masthead/Reserva, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "bumptfnonskip"
       },
       {
         "opt": "Bumper-TargetFrequency-Skippable",
         "sig": "Anúncio in-stream pulável entregue com estratégia de lance por frequência-alvo.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "bumptfskip"
       },
       {
         "opt": "Carousel",
         "sig": "Anúncio com múltiplas imagens ou cartões que o usuário desliza lateralmente.",
         "plat": "Pinterest",
-        "rel": "all"
+        "rel": "all",
+        "abr": "carousel"
       },
       {
         "opt": "Collection",
         "sig": "Formato que permite aos usuários descobrir, navegar e comprar produtos e serviços dentro do anúncio.",
         "plat": "Pinterest",
-        "rel": "all"
+        "rel": "all",
+        "abr": "collect"
       },
       {
         "opt": "Collection",
         "sig": "Formato que permite aos usuários descobrir, navegar e comprar produtos e serviços dentro do anúncio.",
         "plat": "Meta",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "collect"
       },
       {
         "opt": "Conversational Card",
         "sig": "Projetado para impulsionar a conversa e o alcance conquistado em torno de um Tweet.",
         "plat": "Twitter",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "concard"
       },
       {
         "opt": "CuttingEdge-Display",
         "sig": "Formato premium de display com alto impacto visual. Nome não localizado em documentação pública, recomendo validar a plataforma de origem.",
         "plat": "Direto, Programática",
-        "rel": "Roadblock/Takeover"
+        "rel": "Roadblock/Takeover",
+        "abr": "cuttedge"
       },
       {
         "opt": "Demand Gen",
         "sig": "Campanha Demand Gen (Google Ads), formato multi-canal que serve anúncios em Feed do YouTube, Shorts, Discover e Gmail a partir de uma única campanha.",
         "plat": "Others",
-        "rel": "Companion Banner"
+        "rel": "Companion Banner",
+        "abr": "dgen"
       },
       {
         "opt": "Demand Gen",
         "sig": "Campanha Demand Gen (Google Ads), formato multi-canal que serve anúncios em Feed do YouTube, Shorts, Discover e Gmail a partir de uma única campanha.",
         "plat": "Video, Masthead/Reserva, Youtube",
-        "rel": "DCO - Display"
+        "rel": "DCO - Display",
+        "abr": "dgen"
       },
       {
         "opt": "Destaque-Premium-Globoplay-Display",
         "sig": "Banner premium em posição de destaque no Globoplay. Mecânica exata não confirmada em fonte pública.",
         "plat": "Direto, Programática",
-        "rel": "Standard Display"
+        "rel": "Standard Display",
+        "abr": "dstqprgplay"
       },
       {
         "opt": "Diaria-Display",
         "sig": "Banner contratado por período diário, com veiculação renovada a cada dia.",
         "plat": "Direto, Programática",
-        "rel": "Standard Display"
+        "rel": "Standard Display",
+        "abr": "diariadsply"
       },
       {
         "opt": "Display-Card",
         "sig": "Complemento que mostra o produto ou a marca com um cartão de imagem personalizável, direcionando clique para site ou app.",
         "plat": "Twitter",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "dispcard"
       },
       {
         "opt": "Dynamic Product Ads",
         "sig": "Anúncio que mostra produtos específicos do catálogo para cada usuário, de forma dinâmica, com base em comportamento.",
         "plat": "Meta",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "dyprod"
       },
       {
         "opt": "EyeMax-Skippable",
         "sig": "Formato de vídeo pulável associado ao produto EyeMax. Não localizei documentação pública que explique a mecânica do formato; recomendo confirmar a plataforma de origem.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "eymx"
       },
       {
         "opt": "Feed",
         "sig": "Vídeo padrão exibido no feed For You (In-Feed Ads).",
         "plat": "Tiktok",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "feed"
       },
       {
         "opt": "Feed-Display",
         "sig": "Banner estático exibido no feed principal da plataforma.",
         "plat": "Meta, Twitter",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "fed-dply"
       },
       {
         "opt": "Feed-NonSkippable",
         "sig": "Vídeo exibido no feed For You sem opção de pular.",
         "plat": "Tiktok",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "Feed-NonSkippable"
       },
       {
         "opt": "Feed-Stories",
         "sig": "Anúncio servido automaticamente entre Feed e Stories a partir de uma única criação.",
         "plat": "Meta",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "fed-stor"
       },
       {
         "opt": "Feed-Stories-Reels",
         "sig": "Anúncio servido automaticamente entre Feed, Stories e Reels a partir de uma única criação.",
         "plat": "Meta",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "fed-stor-reel"
       },
       {
         "opt": "Feed-Video-NonSkippable",
         "sig": "Vídeo no feed que não pode ser pulado (interrompido apenas ao rolar a tela).",
         "plat": "Meta, Twitter",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "feednskp"
       },
       {
         "opt": "Feed-Video-NonSkippable",
         "sig": "Vídeo no feed que não pode ser pulado (interrompido apenas ao rolar a tela).",
         "plat": "Programática",
-        "rel": "InStream"
+        "rel": "InStream",
+        "abr": "feednskp"
       },
       {
         "opt": "Feed-Video-Skippable",
         "sig": "Vídeo no feed que pode ser pulado ou ignorado ao rolar a tela.",
         "plat": "Meta, Twitter",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "feedskp"
       },
       {
         "opt": "Feed-Video-Skippable",
         "sig": "Vídeo no feed que pode ser pulado ou ignorado ao rolar a tela.",
         "plat": "Programática",
-        "rel": "InStream"
+        "rel": "InStream",
+        "abr": "feedskp"
       },
       {
         "opt": "FirstScreenAdTile-Dynamic",
         "sig": "Bloco dinâmico de anúncio exibido na home screen de Smart TV, entre os cards de conteúdo recomendado.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "In-Banner Video"
+        "rel": "In-Banner Video",
+        "abr": "fstscradtl"
       },
       {
         "opt": "FirstScreenImmersivePlus-Dynamic",
         "sig": "Formato expandido/imersivo de anúncio exibido na home screen de Smart TV, com criativo dinâmico.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "In-Banner Video"
+        "rel": "In-Banner Video",
+        "abr": "fstscrimmplus"
       },
       {
         "opt": "FirstScreenImmesiveMasthead-Dynamic",
         "sig": "Masthead imersivo da home screen de Smart TV, que se expande para vídeo em tela cheia ao ser acionado.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "In-Banner Video"
+        "rel": "In-Banner Video",
+        "abr": "fstscrimmmast"
       },
       {
         "opt": "FrameAds-Globoplay-Display",
         "sig": "Banner exibido como moldura (frame) ao redor do player de vídeo no Globoplay.",
         "plat": "Direto",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "framegplay"
       },
       {
         "opt": "Idea Ads",
         "sig": "Anúncio que promove um Idea Pin (vídeos, imagens, listas e texto personalizado publicado organicamente), transformando-o em anúncio pago.",
         "plat": "Pinterest",
-        "rel": "all"
+        "rel": "all",
+        "abr": "idea"
       },
       {
         "opt": "Instant Experience",
         "sig": "Formato de tela cheia mobile que abre após o toque no anúncio, combinando imagens, vídeo e elementos interativos.",
         "plat": "Meta",
-        "rel": "Standard Display"
+        "rel": "Standard Display",
+        "abr": "instexp"
       },
       {
         "opt": "InStream-NonSkippable",
         "sig": "Vídeo exibido antes, durante ou depois do conteúdo (in-stream), não pulável.",
         "plat": "Programática",
-        "rel": "InStream"
+        "rel": "InStream",
+        "abr": "instm-nskipyt"
       },
       {
         "opt": "InStream-NonSkippable",
         "sig": "Vídeo exibido antes, durante ou depois do conteúdo (in-stream), não pulável.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "Non-Skippable In-Stream"
+        "rel": "Non-Skippable In-Stream",
+        "abr": "instm-nskipyt"
       },
       {
         "opt": "InStream-OutStream-NonSkippable",
         "sig": "Vídeo que pode ser servido tanto em in-stream quanto em outstream, não pulável.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "inoutnoskp"
       },
       {
         "opt": "InStream-OutStream-Skippable",
         "sig": "Vídeo que pode ser servido tanto em in-stream quanto em outstream, pulável.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "inoutskp"
       },
       {
         "opt": "InStream-Skippable",
         "sig": "Vídeo exibido antes, durante ou depois do conteúdo (in-stream), pulável após alguns segundos.",
         "plat": "Programática",
-        "rel": "InStream"
+        "rel": "InStream",
+        "abr": "instm-skipyt"
       },
       {
         "opt": "InStream-Skippable",
         "sig": "Vídeo exibido antes, durante ou depois do conteúdo (in-stream), pulável após alguns segundos.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "Skippable In-Stream"
+        "rel": "Skippable In-Stream",
+        "abr": "instm-skipyt"
       },
       {
         "opt": "Lead Ads",
         "sig": "Projetado para coletar dados do usuário via formulário nativo dentro da plataforma.",
         "plat": "Meta",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "lead-ads"
       },
       {
         "opt": "Max Width Video",
         "sig": "Vídeo que se expande por toda a largura do feed em dispositivos móveis.",
         "plat": "Pinterest",
-        "rel": "all"
+        "rel": "all",
+        "abr": "maxvid"
       },
       {
         "opt": "Messenger Ads",
         "sig": "Anúncio exibido dentro do Messenger, na aba de conversas ou stories do app.",
         "plat": "Meta",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "msg-ads"
       },
       {
         "opt": "Mosaico-Globoplay-Display",
         "sig": "Banner exibido em formato de grade/mosaico no Globoplay. Mecânica exata não confirmada em fonte pública.",
         "plat": "Direto",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "mscogplay"
       },
       {
         "opt": "Multiple",
         "sig": "Indica que a campanha ou linha abrange mais de uma posição/formato simultaneamente.",
         "plat": "Pinterest",
-        "rel": "all"
+        "rel": "all",
+        "abr": "Multi"
       },
       {
         "opt": "Multiple",
         "sig": "Indica que a campanha ou linha abrange mais de uma posição/formato simultaneamente.",
         "plat": "Direto, Masthead/Reserva, Programática, Twitter, Video, Youtube",
-        "rel": "Mixed Outstream"
+        "rel": "Mixed Outstream",
+        "abr": "Multi"
       },
       {
         "opt": "Native-Display",
         "sig": "Anúncio estático que se adapta visualmente ao layout do conteúdo em que é exibido.",
         "plat": "Direto, Programática",
-        "rel": "Content Suggestion"
+        "rel": "Content Suggestion",
+        "abr": "ntvdsply"
       },
       {
         "opt": "Native-Video-NonSkippable",
         "sig": "Vídeo nativo, adaptado ao layout do conteúdo, não pulável.",
         "plat": "Direto, Programática",
-        "rel": "Content Suggestion"
+        "rel": "Content Suggestion",
+        "abr": "ntvnoskp"
       },
       {
         "opt": "Native-Video-Skippable",
         "sig": "Vídeo nativo, adaptado ao layout do conteúdo, pulável.",
         "plat": "Direto, Programática",
-        "rel": "Content Suggestion"
+        "rel": "Content Suggestion",
+        "abr": "ntvskp"
       },
       {
         "opt": "PauseAds-Globoplay-Display",
         "sig": "Banner exibido quando o usuário pausa a reprodução do vídeo no Globoplay.",
         "plat": "Direto",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "pseadsgplay"
       },
       {
         "opt": "PauseAds-Skippable",
         "sig": "Vídeo exibido no momento em que o usuário pausa o conteúdo, com opção de pular.",
         "plat": "Direto",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "psadskp"
       },
       {
         "opt": "Pmax",
         "sig": "Campanha Performance Max (Google Ads), formato automatizado que distribui anúncios em todos os canais do Google a partir de uma única campanha.",
         "plat": "Pmax",
-        "rel": "Companion Banner"
+        "rel": "Companion Banner",
+        "abr": "pmax"
       },
       {
         "opt": "Pmax",
         "sig": "Campanha Performance Max (Google Ads), formato automatizado que distribui anúncios em todos os canais do Google a partir de uma única campanha.",
         "plat": "Masthead/Reserva",
-        "rel": "DCO - Display"
+        "rel": "DCO - Display",
+        "abr": "pmax"
       },
       {
         "opt": "Premiere Spotlight",
         "sig": "Formato de vídeo premium em tela ampla, com reserva exclusiva por 24h, ocupando cerca de 50% da tela do celular no feed inicial ou na busca do Pinterest.",
         "plat": "Pinterest",
-        "rel": "Browse"
+        "rel": "Browse",
+        "abr": "premsptght"
       },
       {
         "opt": "Primeirissima-Globoplay-Skippable",
         "sig": "Primeira posição do anúncio no intervalo comercial (ad pod) do Globoplay, pulável. Mecânica exata não confirmada em fonte pública, recomendo validar com o Rique.",
         "plat": "Direto",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "primgplay"
       },
       {
         "opt": "Product-Spotlight",
         "sig": "Provável cartão nativo em destaque de um produto específico, dentro de sugestão de conteúdo. Sem fonte confirmada.",
         "plat": "Direto",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "prodspot"
       },
       {
         "opt": "Promoted Poll",
         "sig": "Projetado para obter insights sobre os pensamentos do consumidor via enquete promovida.",
         "plat": "Twitter",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "prompoll"
       },
       {
         "opt": "Promoted-Video-NonSkippable",
         "sig": "Vídeo promovido no feed, sem opção de pular.",
         "plat": "Twitter",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "promvidnonskip"
       },
       {
         "opt": "Promoted-Video-Skippable",
         "sig": "Vídeo promovido no feed, com opção de pular.",
         "plat": "Twitter",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "promvidskip"
       },
       {
         "opt": "Push-Notification",
         "sig": "Provável notificação push com mensagem patrocinada. Recomendo confirmar plataforma/parceiro de origem.",
         "plat": "Direto, Programática",
-        "rel": "Standard Display"
+        "rel": "Standard Display",
+        "abr": "pushntf"
       },
       {
         "opt": "Quiz Ads",
         "sig": "Anúncio interativo em formato de quiz, no qual o usuário responde perguntas dentro do próprio anúncio.",
         "plat": "Pinterest",
-        "rel": "all"
+        "rel": "all",
+        "abr": "quis-ads"
       },
       {
         "opt": "Reels",
         "sig": "Anúncio nativo exibido no formato Reels (vídeo curto vertical).",
         "plat": "Meta",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "reel"
       },
       {
         "opt": "Reels-Stories",
         "sig": "Anúncio servido automaticamente entre Reels e Stories a partir de uma única criação.",
         "plat": "Meta",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "reels-stor"
       },
       {
         "opt": "Rewarded-Video-NonSkippable",
         "sig": "Vídeo dentro de app que o usuário deve assistir até o fim para receber uma recompensa.",
         "plat": "Direto, Programática",
-        "rel": "Rewarded Video"
+        "rel": "Rewarded Video",
+        "abr": "rwdnoskip"
       },
       {
         "opt": "Rewarded-Video-Skippable",
         "sig": "Vídeo dentro de app, opcional para recompensa, com possibilidade de pular.",
         "plat": "Direto, Programática",
-        "rel": "Rewarded Video"
+        "rel": "Rewarded Video",
+        "abr": "rwrdskp"
       },
       {
         "opt": "RichMedia-Display",
         "sig": "Banner com elementos interativos, animação ou expansão, além do formato estático padrão.",
         "plat": "Direto, Programática",
-        "rel": "Rich Media Display"
+        "rel": "Rich Media Display",
+        "abr": "richdsply"
       },
       {
         "opt": "Search",
         "sig": "Anúncio exibido como resultado pago de busca dentro do marketplace, cobrindo os formatos Sponsored Brands, Sponsored Display, Sponsored Products etc.",
         "plat": "Amazon Search, Search",
-        "rel": "Search"
+        "rel": "Search",
+        "abr": "revista-hoteis"
       },
       {
         "opt": "Segundissima-Globoplay-Skippable",
         "sig": "Segunda posição do anúncio no intervalo comercial (ad pod) do Globoplay, pulável. Mecânica exata não confirmada em fonte pública, recomendo validar com o Rique.",
         "plat": "Direto",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "segungplay"
       },
       {
         "opt": "Shopping",
         "sig": "Apresenta uma imagem por vez e permite que as pessoas comprem os produtos que encontram no Pinterest.",
         "plat": "Pinterest",
-        "rel": "all"
+        "rel": "all",
+        "abr": "shop"
       },
       {
         "opt": "Sidebar-Contextual",
         "sig": "Provável banner lateral (sidebar) segmentado por contexto da página. Sem fonte confirmada.",
         "plat": "Direto",
-        "rel": "Standard Display"
+        "rel": "Standard Display",
+        "abr": "sbarcont"
       },
       {
         "opt": "Sponsored-Answer-Card",
         "sig": "Provável cartão nativo sugerido como \"resposta\" dentro de um widget de sugestão de conteúdo. Sem fonte confirmada.",
         "plat": "Direto",
-        "rel": "Content Suggestion"
+        "rel": "Content Suggestion",
+        "abr": "spscard"
       },
       {
         "opt": "Standard Image",
         "sig": "Destaca apenas uma imagem, projetado para exibir um produto ou serviço.",
         "plat": "Pinterest",
-        "rel": "all"
+        "rel": "all",
+        "abr": "standimg"
       },
       {
         "opt": "Standard Width Video",
         "sig": "Anúncio em vídeo de largura padrão, do mesmo tamanho de um Pin normal.",
         "plat": "Pinterest",
-        "rel": "all"
+        "rel": "all",
+        "abr": "standvid"
       },
       {
         "opt": "Standard-Display-IAB",
         "sig": "Banner em tamanho padrão definido pelo IAB (Interactive Advertising Bureau).",
         "plat": "Direto, Programática",
-        "rel": "Standard Display"
+        "rel": "Standard Display",
+        "abr": "standdisply"
       },
       {
         "opt": "Standard-Display-IAB",
         "sig": "Banner em tamanho padrão definido pelo IAB (Interactive Advertising Bureau).",
         "plat": "Tiktok",
-        "rel": "Static Banner"
+        "rel": "Static Banner",
+        "abr": "standdisply"
       },
       {
         "opt": "Stories",
         "sig": "Anúncio em formato vertical de tela cheia, exibido no espaço de Stories da plataforma.",
         "plat": "Meta",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "stor"
       },
       {
         "opt": "Takeover-NonSkippable",
         "sig": "Vídeo em formato de takeover (alto impacto/tela cheia), sem opção de pular.",
         "plat": "Twitter",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "tkovernonskpi"
       },
       {
         "opt": "TikTok-Pulse-Skippable",
         "sig": "Anúncio posicionado ao lado de conteúdo editorial de publishers parceiros de alta relevância no TikTok, pulável.",
         "plat": "Tiktok",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "tkpulsesk"
       },
       {
         "opt": "TikTok-Shop-Skippable",
         "sig": "Anúncio em vídeo vinculado ao TikTok Shop, direcionando para páginas de produto compráveis dentro do app.",
         "plat": "Tiktok",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "tkshopsk"
       },
       {
         "opt": "Top-Feed",
         "sig": "Anúncio que ocupa a primeira posição no feed For You, reserva premium com entrega garantida.",
         "plat": "Tiktok",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "tfeed"
       },
       {
         "opt": "Top-Feed-Skippable",
         "sig": "Anúncio que ocupa a primeira posição no feed For You do TikTok (Top Feed), reserva premium com entrega garantida.",
         "plat": "Twitter",
-        "rel": "First View"
+        "rel": "First View",
+        "abr": "tfeed"
       },
       {
         "opt": "Top-View-Skippable",
         "sig": "Anúncio do TikTok TopView, exibido em tela cheia ao abrir o app, iniciando não pulável por 3 segundos e depois transicionando ao feed.",
         "plat": "Tiktok",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "tview"
       },
       {
         "opt": "Trend-Takeover",
         "sig": "Formato \"Trend Takeover\" do X Ads: posição premium reservada no topo da lista de trending topics por 24h.",
         "plat": "Twitter",
-        "rel": "in-Feed"
+        "rel": "in-Feed",
+        "abr": "trendtkover"
       },
       {
         "opt": "Video-Instream-NonSkippable",
         "sig": "Vídeo exibido antes, durante ou depois do conteúdo (in-stream), não pulável, via compra programática.",
         "plat": "Programática",
-        "rel": "InStream"
+        "rel": "InStream",
+        "abr": "vid-instm-nskipyt"
       },
       {
         "opt": "Video-Instream-Skippable",
         "sig": "Vídeo exibido antes, durante ou depois do conteúdo (in-stream), pulável, via compra programática.",
         "plat": "Programática",
-        "rel": "InStream"
+        "rel": "InStream",
+        "abr": "vid-instm-skipyt"
       },
       {
         "opt": "Video-NonSkippable",
         "sig": "Anúncio em vídeo padrão, não pulável.",
         "plat": "Pinterest",
-        "rel": "all"
+        "rel": "all",
+        "abr": "vidnonskip"
       },
       {
         "opt": "Video-NonSkippable",
         "sig": "Anúncio em vídeo padrão, não pulável.",
         "plat": "AmazonDSP, Direto, Masthead/Reserva, Video, Youtube e Programática",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "vidnonskip"
       },
       {
         "opt": "Video-Outstream-NonSkippable",
         "sig": "Vídeo inserido dentro de conteúdo não-vídeo (ex: artigo), não pulável.",
         "plat": "Direto, Masthead/Reserva, Programática, Video, Youtube",
-        "rel": "Mixed Outstream"
+        "rel": "Mixed Outstream",
+        "abr": "outsnsk"
       },
       {
         "opt": "Video-Outstream-Skippable",
         "sig": "Vídeo inserido dentro de conteúdo não-vídeo (ex: artigo), pulável.",
         "plat": "Direto, Masthead/Reserva, Programática, Video, Youtube",
-        "rel": "Mixed Outstream"
+        "rel": "Mixed Outstream",
+        "abr": "outssk"
       },
       {
         "opt": "Video-PartnershipAds-NonSkippable",
         "sig": "Vídeo veiculado via programa de parceria oficial com criadores/publishers, não pulável. Nomenclatura exata da plataforma não confirmada.",
         "plat": "Masthead/Reserva, Meta, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "prtnradsnskip"
       },
       {
         "opt": "Video-PartnershipAds-Skippable",
         "sig": "Vídeo veiculado via programa de parceria oficial com criadores/publishers, pulável. Nomenclatura exata da plataforma não confirmada.",
         "plat": "Masthead/Reserva, Meta, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "prtnradsskip"
       },
       {
         "opt": "Video-Skippable",
         "sig": "Anúncio em vídeo padrão, pulável.",
         "plat": "Pinterest",
-        "rel": "all"
+        "rel": "all",
+        "abr": "vidskip"
       },
       {
         "opt": "Video-Skippable",
         "sig": "Anúncio em vídeo padrão, pulável.",
         "plat": "AmazonDSP, Direto, Masthead/Reserva, Video, Youtube, Programática",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "vidskip"
       },
       {
         "opt": "Video-SponsorshipAds-NonSkippable",
         "sig": "Vídeo em que a marca patrocina um conteúdo ou segmento específico, não pulável.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "spnsradsnskip"
       },
       {
         "opt": "Video-SponsorshipAds-Skippable",
         "sig": "Vídeo em que a marca patrocina um conteúdo ou segmento específico, pulável.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "spnsradsskip"
       },
       {
         "opt": "VRC-NonSkippable",
         "sig": "Anúncio não pulável entregue em campanha VRC (Video Reach Campaign) do YouTube, otimizada para máximo alcance único.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "vrcnskip"
       },
       {
         "opt": "VRC-Shorts-NonSkippable",
         "sig": "Anúncio não pulável no formato Shorts entregue em campanha VRC.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "vrcshtnskip"
       },
       {
         "opt": "VRC-Shorts-Skippable",
         "sig": "Anúncio pulável no formato Shorts entregue em campanha VRC.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "vrcshtskip"
       },
       {
         "opt": "VRC-Skippable",
         "sig": "Anúncio pulável entregue em campanha VRC (Video Reach Campaign) do YouTube.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "vrcskip"
       },
       {
         "opt": "VVC-NonSkippable",
         "sig": "Anúncio não pulável entregue em campanha VVC (Video View Campaign) do YouTube, otimizada para maximizar visualizações.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "vvcnskip"
       },
       {
         "opt": "VVC-Shorts-NonSkippable",
         "sig": "Anúncio não pulável no formato Shorts entregue em campanha VVC.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "vvcshtnskip"
       },
       {
         "opt": "VVC-Shorts-Skippable",
         "sig": "Anúncio pulável no formato Shorts entregue em campanha VVC.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "vvcshtskip"
       },
       {
         "opt": "VVC-Skippable",
         "sig": "Anúncio pulável entregue em campanha VVC (Video View Campaign) do YouTube.",
         "plat": "Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "vvcskip"
       },
       {
         "opt": "YouTube-Masthead-CPH",
         "sig": "Masthead do YouTube vendido no modelo de compra CPH (Cost Per Hour), reserva premium cobrada por hora de exibição.",
         "plat": "Masthead/Reserva",
-        "rel": "In-Banner Video"
+        "rel": "In-Banner Video",
+        "abr": "mstdyt-cph"
       },
       {
         "opt": "YouTube-Masthead-Skippable",
         "sig": "Anúncio Masthead do YouTube, formato premium reservado que aparece no topo da Home do YouTube.",
         "plat": "Masthead/Reserva, Video",
-        "rel": "In-Banner Video"
+        "rel": "In-Banner Video",
+        "abr": "mstdyt"
       },
       {
         "opt": "YT-Shorts-NonSkippable",
         "sig": "Anúncio não pulável exibido entre os vídeos do YouTube Shorts.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "ytshortsnskip"
       },
       {
         "opt": "YT-Shorts-Skippable",
         "sig": "Anúncio pulável exibido entre os vídeos do YouTube Shorts.",
         "plat": "Masthead/Reserva, Video, Youtube",
-        "rel": "in-Stream"
+        "rel": "in-Stream",
+        "abr": "ytshorts"
       }
     ]
   },
@@ -1861,282 +2100,338 @@ const DATA = [
         "opt": "Texto",
         "sig": "Anúncio de pesquisa paga baseado em texto, no Google ou em outro mecanismo de pesquisa.",
         "plat": "Search",
-        "rel": "-"
+        "rel": "-",
+        "abr": "Texto"
       },
       {
         "opt": "Video",
         "sig": "Anúncio de pesquisa paga baseado em vídeo, exibido no YouTube ou em outro mecanismo de pesquisa.",
-        "plat": "Google Video"
+        "plat": "Google Video",
+        "abr": "vinijr"
       },
       {
         "opt": "Email",
         "sig": "Anúncio de pesquisa paga baseado em imagem, exibido no Google ou em outro mecanismo de pesquisa.",
-        "plat": "Google Others"
+        "plat": "Google Others",
+        "abr": "Email"
       },
       {
         "opt": "Image",
         "sig": "Anúncio exibido na caixa de entrada de e-mail. Ex: anúncios do Gmail, que são interativos e aparecem nas guias Promoções e Social da caixa de entrada.",
-        "plat": "Google Others"
+        "plat": "Google Others",
+        "abr": "Image"
       },
       {
         "opt": "Rich Mix",
         "sig": "Anúncio que combina múltiplos elementos criativos (texto, imagem e/ou vídeo) em um único formato.",
-        "plat": "Google Others"
+        "plat": "Google Others",
+        "abr": "Rmix"
       },
       {
         "opt": "Shopping Campaigns with Partners",
         "sig": "Formato que permite que varejistas aceitem orçamento adicional de parceiros fabricantes de marca para campanhas do Shopping.",
-        "plat": "Google Others"
+        "plat": "Google Others",
+        "abr": "SCwP"
       },
       {
         "opt": "Shopping PLA",
         "sig": "Anúncio de Lista de Produtos (Product Listing Ad), formato de pesquisa paga que exibe informações mais detalhadas do produto do que um anúncio de texto padrão.",
-        "plat": "Google Others"
+        "plat": "Google Others",
+        "abr": "ShopPLA"
       },
       {
         "opt": "Shopping Showcase Ads",
         "sig": "Anúncio de pesquisa paga que combina vídeo/imagem e texto em um único formato, agrupando múltiplos produtos relacionados.",
-        "plat": "Google Others"
+        "plat": "Google Others",
+        "abr": "ShopShow"
       },
       {
         "opt": "Audio",
         "sig": "Anúncio composto apenas por asset de áudio.",
-        "plat": "Amazon DSP"
+        "plat": "Amazon DSP",
+        "abr": "365scores"
       },
       {
         "opt": "Display",
         "sig": "Banner estático ou animado.",
-        "plat": "Amazon DSP"
+        "plat": "Amazon DSP",
+        "abr": "Disp"
       },
       {
         "opt": "NativeDisplay",
         "sig": "Anúncio gráfico que replica a aparência da propriedade de mídia em que é exibido.",
-        "plat": "Amazon DSP"
+        "plat": "Amazon DSP",
+        "abr": "NatDisp"
       },
       {
         "opt": "NativeVideo",
         "sig": "Anúncio em vídeo que replica a aparência da propriedade de mídia em que é exibido, com assets mais nativos à plataforma de veiculação.",
-        "plat": "Amazon DSP"
+        "plat": "Amazon DSP",
+        "abr": "NatVid"
       },
       {
         "opt": "Video",
         "sig": "Anúncio em formato de vídeo.",
-        "plat": "Amazon DSP"
+        "plat": "Amazon DSP",
+        "abr": "vinijr"
       },
       {
         "opt": "carousel",
         "sig": "Projetado para destacar produtos diferentes, mostrar detalhes específicos sobre um produto, serviço ou promoção, ou contar uma história.",
-        "plat": "Meta"
+        "plat": "Meta",
+        "abr": "carousel"
       },
       {
         "opt": "collection",
         "sig": "Formato para que os usuários descubram, naveguem e comprem produtos e serviços.",
-        "plat": "Meta"
+        "plat": "Meta",
+        "abr": "collect"
       },
       {
         "opt": "dynamic-product-ad-{NA-Only}",
         "sig": "Projetado para mostrar produtos específicos para o usuário de forma dinâmica.",
-        "plat": "Meta"
+        "plat": "Meta",
+        "abr": "DynProdNA"
       },
       {
         "opt": "event-response",
         "sig": "Destinado a agir ou responder a eventos.",
-        "plat": "Meta"
+        "plat": "Meta",
+        "abr": "EventResp"
       },
       {
         "opt": "image",
         "sig": "Imagem única estática dentro de post, ex: link page post.",
-        "plat": "Meta"
+        "plat": "Meta",
+        "abr": "Image"
       },
       {
         "opt": "instant-experiences",
         "sig": "Projetado para experiências em tela cheia.",
-        "plat": "Meta"
+        "plat": "Meta",
+        "abr": "instant-experiences"
       },
       {
         "opt": "lead-generation",
         "sig": "Projetado para coletar dados do usuário.",
-        "plat": "Meta"
+        "plat": "Meta",
+        "abr": "lead-generation"
       },
       {
         "opt": "offer-ads",
         "sig": "Projetado para levar os usuários a fazer compras.",
-        "plat": "Meta"
+        "plat": "Meta",
+        "abr": "offer-ads"
       },
       {
         "opt": "slideshow",
         "sig": "Projetado para exibir produtos em anúncios semelhantes a vídeos que usam movimento, som e texto para contar sua história.",
-        "plat": "Meta"
+        "plat": "Meta",
+        "abr": "Sshow"
       },
       {
         "opt": "stories",
         "sig": "Projetado para dar vida aos produtos em um formato imersivo, com opções para adicionar adesivos, emojis e outros elementos criativos.",
-        "plat": "Meta"
+        "plat": "Meta",
+        "abr": "stor"
       },
       {
         "opt": "video",
         "sig": "Vídeo com a mensagem da campanha.",
-        "plat": "Meta"
+        "plat": "Meta",
+        "abr": "vinijr"
       },
       {
         "opt": "Branded Effect",
         "sig": "Mix de filtros 2D e 3D que oferecem uma nova forma de os usuários engajarem com as marcas.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "BranEffect"
       },
       {
         "opt": "Collection Ad",
         "sig": "Cartões personalizados de produtos. Mostra o catálogo de produtos da marca, levando a uma Página Instantânea de navegação e compra sem sair do app.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "Collection"
       },
       {
         "opt": "Display Cards",
         "sig": "Complemento interativo padrão que mostra o produto ou a marca com um cartão com imagem personalizável, direcionando clique pra site ou app.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "DispCard"
       },
       {
         "opt": "Dynamic Showcase Ad",
         "sig": "Catálogo de produtos por XML ou API. Integração de eventos do app com os principais MMPs (AppsFlyer, Adjust etc) e tráfego para o site.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "DSA"
       },
       {
         "opt": "Hashtag Challenge",
         "sig": "Desafios feitos dentro do TikTok, onde o usuário sobe conteúdo junto a uma hashtag.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "TagChal"
       },
       {
         "opt": "In-Feed Ads",
         "sig": "Vídeo padrão exibido no feed For You, criado direto no TikTok Ads Manager. O usuário pode curtir, comentar e compartilhar como um post orgânico.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "InFeed"
       },
       {
         "opt": "Instant Page",
         "sig": "Página instantânea dentro do anúncio, onde os usuários podem ver vídeos e imagens, deslizar pelos carrosséis ou clicar em botões pra explorar outro destino, sem sair do app.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "InstPage"
       },
       {
         "opt": "Interactive Cards",
         "sig": "Complementos interativos (add-ons) que se somam a um vídeo do anúncio pra aumentar engajamento, incluindo pop-ups, adesivos e outros elementos visuais (ex: Display Cards, Voting Cards, SuperLike).",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "InteraCard"
       },
       {
         "opt": "Live Shopping Ads",
         "sig": "Anúncio que direciona o usuário para uma transmissão em live, onde ele pode navegar e comprar produtos em tempo real via TikTok Shop.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "LSA"
       },
       {
         "opt": "Product Shopping Ads",
         "sig": "Anúncio de catálogo que exibe produto(s) em formato de grade/listagem, com caminho direto de compra via TikTok Shop.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "PSA"
       },
       {
         "opt": "Spark Ads",
         "sig": "Formato nativo que permite impulsionar um post orgânico já publicado no TikTok (da própria conta da marca ou de um criador autorizado) como anúncio, mantendo o engajamento orgânico já existente.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "SparkAds"
       },
       {
         "opt": "SuperLike",
         "sig": "Complemento interativo premium que adiciona ícones flutuantes animados (ex: corações) na tela conforme o usuário interage com o anúncio. Focado em topo de funil (branding/awareness), reforçando engajamento visual em vez de clique direto.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "SuperLike"
       },
       {
         "opt": "TopView",
         "sig": "Formato premium de reserva (não leilão), exibido em tela cheia no momento em que o usuário abre o app, antes de qualquer outro vídeo. Exclusivo por categoria/dia no mercado.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "TopView"
       },
       {
         "opt": "Video Shopping Ads",
         "sig": "Vídeo (geralmente de criador) rodando como anúncio shoppable, com produto do TikTok Shop atrelado diretamente ao vídeo.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "VSA"
       },
       {
         "opt": "Voting Cards",
         "sig": "Complemento interativo padrão que adiciona uma enquete de duas opções ao vídeo do anúncio. Fica visível durante toda a duração do anúncio, sem opção de fechar antes do fim. O usuário vota e vê o resultado em tempo real; cada pessoa vota uma vez só.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "VotCard"
       },
       {
         "opt": "Top-feed Ads",
         "sig": "Anúncio que ocupa a primeira posição no feed For You (Top Feed), reserva premium com entrega garantida.",
-        "plat": "Tiktok"
+        "plat": "Tiktok",
+        "abr": "TopFeed"
       },
       {
         "opt": "Carousel",
         "sig": "Projetado para destacar diferentes produtos, mostrar detalhes específicos sobre um produto, serviço ou promoção, ou contar uma história.",
-        "plat": "Pinterest"
+        "plat": "Pinterest",
+        "abr": "carousel"
       },
       {
         "opt": "Idea",
         "sig": "Formato de anúncio que promove um Idea Pin (conjunto de vídeos, imagens, listas e texto personalizado publicado organicamente no Pinterest), transformando-o em Idea Ads (anúncio pago).",
-        "plat": "Pinterest"
+        "plat": "Pinterest",
+        "abr": "Idea"
       },
       {
         "opt": "Image",
         "sig": "Destaca apenas uma imagem. Projetado para exibir um produto ou serviço.",
-        "plat": "Pinterest"
+        "plat": "Pinterest",
+        "abr": "Image"
       },
       {
         "opt": "Max. Video",
         "sig": "Vídeos que se expandem por todo o feed das pessoas em dispositivos móveis.",
-        "plat": "Pinterest"
+        "plat": "Pinterest",
+        "abr": "MaxVid"
       },
       {
         "opt": "Shopping Ads",
         "sig": "Apresentam uma imagem por vez e permitem que as pessoas comprem os produtos que encontram no Pinterest.",
-        "plat": "Pinterest"
+        "plat": "Pinterest",
+        "abr": "Shop"
       },
       {
         "opt": "Standard Video",
         "sig": "Anúncios em vídeo de largura padrão, do mesmo tamanho de um Pin normal.",
-        "plat": "Pinterest"
+        "plat": "Pinterest",
+        "abr": "StandVid"
       },
       {
         "opt": "App Card",
         "sig": "Projetado para impulsionar instalações de aplicativos.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "AppCard"
       },
       {
         "opt": "Conversational Card",
         "sig": "Projetado para impulsionar a conversa e o alcance conquistado.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "concard"
       },
       {
         "opt": "Direct Message Card",
         "sig": "Projetado para promover o chatbot da sua marca em Mensagens Diretas.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "DMCard"
       },
       {
         "opt": "First View",
         "sig": "Projetado para alcançar um alcance de público significativo com propriedade exclusiva do Twitter por um período de 24 horas.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "1stView"
       },
       {
         "opt": "Image",
         "sig": "Estático projetado para mostrar um produto ou serviço.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "Image"
       },
       {
         "opt": "Promoted Account",
         "sig": "Projetado para impulsionar o crescimento de seguidores no Twitter.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "PromAc"
       },
       {
         "opt": "Promoted Moments",
         "sig": "Projetado para contar uma história que vai além de um Tweet e destaca diferentes perspectivas.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "ProMom"
       },
       {
         "opt": "Promoted Poll",
         "sig": "Projetado para obter insights sobre os pensamentos do consumidor.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "prompoll"
       },
       {
         "opt": "Video",
         "sig": "Projetado para mostrar um produto ou serviço em um visual em movimento.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "vinijr"
       },
       {
         "opt": "Website Card",
         "sig": "Projetado para direcionar os usuários para um destino externo.",
-        "plat": "Twitter"
+        "plat": "Twitter",
+        "abr": "WebCard"
       }
     ]
   },
@@ -2149,157 +2444,188 @@ const DATA = [
         "opt": "Video",
         "sig": "Anúncio em formato de vídeo.",
         "plat": "",
-        "rel": "-"
+        "rel": "-",
+        "abr": "vinijr"
       },
       {
         "opt": "Display",
         "sig": "Anúncio em formato de banner estático ou animado.",
-        "plat": ""
+        "plat": "",
+        "abr": "Disp"
       },
       {
         "opt": "Audio",
         "sig": "Anúncio em formato de áudio.",
-        "plat": ""
+        "plat": "",
+        "abr": "365scores"
       },
       {
         "opt": "Texto",
         "sig": "Anúncio em formato de texto.",
-        "plat": ""
+        "plat": "",
+        "abr": "Texto"
       },
       {
         "opt": "GIF",
         "sig": "Anúncio em imagem animada em loop (GIF).",
-        "plat": ""
+        "plat": "",
+        "abr": "GIF"
       },
       {
         "opt": "Cpas-Rmkt",
         "sig": "Campanha via CPAS (Collaborative Ads/Collaborative Performance Advertising Solution, Meta), usando o catálogo do varejista parceiro, com foco em remarketing de usuários que já demonstraram interesse no produto.",
-        "plat": ""
+        "plat": "",
+        "abr": "Cpas-Rmkt"
       },
       {
         "opt": "E-mail-Marketing",
         "sig": "Disparo de comunicação via e-mail marketing, fora da veiculação padrão em redes de anúncio.",
-        "plat": ""
+        "plat": "",
+        "abr": "E-mail-Marketing"
       },
       {
         "opt": "InApp",
         "sig": "Anúncio veiculado dentro de aplicativos mobile.",
-        "plat": ""
+        "plat": "",
+        "abr": "InApp"
       },
       {
         "opt": "Produto-Patrocinado",
         "sig": "Anúncio de patrocínio de um produto específico dentro dos resultados de busca de um marketplace/retail media.",
-        "plat": ""
+        "plat": "",
+        "abr": "Produto-Patrocinado"
       },
       {
         "opt": "Rec",
         "sig": "Anúncio em formato de recomendação de produto, geralmente em widget de \"recomendados para você\" dentro de retail media.",
-        "plat": ""
+        "plat": "",
+        "abr": "Rec"
       },
       {
         "opt": "Rec-1P",
         "sig": "Anúncio de recomendação de produto segmentado com dados first-party (1P) do varejista.",
-        "plat": ""
+        "plat": "",
+        "abr": "Rec-1P"
       },
       {
         "opt": "Sponsored-Brand-Product-Collection",
         "sig": "Formato Sponsored Brands (Amazon Ads) que exibe uma coleção de produtos da marca.",
-        "plat": ""
+        "plat": "",
+        "abr": "SponBPC"
       },
       {
         "opt": "Sponsored-Brand-Store-Spotlight",
         "sig": "Formato Sponsored Brands (Amazon Ads) que destaca páginas/categorias da loja da marca.",
-        "plat": ""
+        "plat": "",
+        "abr": "SponBSS"
       },
       {
         "opt": "Sponsored-Brand-Video",
         "sig": "Formato Sponsored Brands (Amazon Ads) em vídeo.",
-        "plat": ""
+        "plat": "",
+        "abr": "SponBV"
       },
       {
         "opt": "Sponsored-Brands",
         "sig": "Anúncio que promove a marca com logo, título customizado e múltiplos produtos, exibido nos resultados de busca do marketplace.",
-        "plat": ""
+        "plat": "",
+        "abr": "Sponsored-Brands"
       },
       {
         "opt": "Sponsored-Display",
         "sig": "Anúncio de display de retail media (Amazon Ads), usado para remarketing dentro e fora do marketplace.",
-        "plat": ""
+        "plat": "",
+        "abr": "Sponsored-Display"
       },
       {
         "opt": "Sponsored-Products",
         "sig": "Anúncio de CPC que promove um produto individual nos resultados de busca do marketplace.",
-        "plat": ""
+        "plat": "",
+        "abr": "Sponsored-Products"
       },
       {
         "opt": "TP-Checkout",
         "sig": "Anúncio de terceiros (third-party) exibido na página de checkout do varejista/marketplace. Nomenclatura não confirmada em fonte pública, recomendo validar com o parceiro/Rique.",
-        "plat": ""
+        "plat": "",
+        "abr": "TP-Checkout"
       },
       {
         "opt": "TP-Search",
         "sig": "Anúncio de terceiros (third-party) exibido na página de busca do varejista/marketplace. Nomenclatura não confirmada em fonte pública, recomendo validar com o parceiro/Rique.",
-        "plat": ""
+        "plat": "",
+        "abr": "TP-Search"
       },
       {
         "opt": "N-A",
         "sig": "Não aplicável.",
-        "plat": ""
+        "plat": "",
+        "abr": "N-A"
       },
       {
         "opt": "Playable",
         "sig": "Anúncio interativo no formato de mini demonstração jogável (comum em campanhas de instalação de app).",
-        "plat": ""
+        "plat": "",
+        "abr": "Playable"
       },
       {
         "opt": "InstantExperience",
         "sig": "Formato Meta (Instant Experience, antigo Canvas), tela cheia mobile que abre após o toque no anúncio, combinando imagens, vídeo e elementos interativos.",
-        "plat": ""
+        "plat": "",
+        "abr": "InstantExperience"
       },
       {
         "opt": "Carrossel",
         "sig": "Anúncio com múltiplas imagens ou cartões que o usuário pode deslizar lateralmente.",
-        "plat": ""
+        "plat": "",
+        "abr": "Carrossel"
       },
       {
         "opt": "DOOH-Display",
         "sig": "Anúncio estático/animado em mídia digital out-of-home (telas em espaços públicos).",
-        "plat": ""
+        "plat": "",
+        "abr": "DOOH-Display"
       },
       {
         "opt": "DOOH-Video",
         "sig": "Anúncio em vídeo em mídia digital out-of-home.",
-        "plat": ""
+        "plat": "",
+        "abr": "DOOH-Video"
       },
       {
         "opt": "html",
         "sig": "Criativo entregue em formato HTML/HTML5.",
-        "plat": ""
+        "plat": "",
+        "abr": "html"
       },
       {
         "opt": "ResponsiveEcom",
         "sig": "Anúncio de e-commerce responsivo, que adapta dinamicamente o layout e os produtos exibidos conforme o espaço disponível e o catálogo.",
-        "plat": ""
+        "plat": "",
+        "abr": "ResponsiveEcom"
       },
       {
         "opt": "Widget-Count",
         "sig": "Provável elemento de criativo que exibe uma contagem (ex: unidades vendidas, estoque). Recomendo confirmar definição exata com a fonte/plataforma.",
-        "plat": ""
+        "plat": "",
+        "abr": "Widget-Count"
       },
       {
         "opt": "Widget-Countdown",
         "sig": "Elemento de criativo com contador regressivo, geralmente usado para reforçar urgência (fim de promoção, estoque etc).",
-        "plat": ""
+        "plat": "",
+        "abr": "Widget-Countdown"
       },
       {
         "opt": "Insterscroller",
         "sig": "Anúncio mobile em tela cheia que aparece durante a rolagem da página, forçando uma pausa breve na navegação antes de continuar.",
-        "plat": ""
+        "plat": "",
+        "abr": "Insterscroller"
       },
       {
         "opt": "Immersive-Banner",
         "sig": "Banner de alto impacto com elementos interativos ou expansíveis, indo além do display estático padrão.",
-        "plat": ""
+        "plat": "",
+        "abr": "Immersive-Banner"
       }
     ]
   },
@@ -2312,37 +2638,44 @@ const DATA = [
         "opt": "Brand",
         "sig": "Palavras-chave que contêm apenas a marca, sem referência a um produto específico. Ex: Tresemmé.",
         "plat": "Google Search",
-        "rel": "-"
+        "rel": "-",
+        "abr": "Brand"
       },
       {
         "opt": "Brand Generic",
         "sig": "Palavras-chave que contêm a marca combinada com um termo genérico da categoria, sem citar o produto específico. Ex: shampoo Tresemmé.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "BrndGen"
       },
       {
         "opt": "Brand Product",
         "sig": "Palavras-chave que contêm a marca e o produto. Ex: Tresemmé Queratina Liso.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "BrndProd"
       },
       {
         "opt": "Competitor",
         "sig": "Palavras-chave que contêm o nome de um concorrente. Ex: Head and Shoulders.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "Comp"
       },
       {
         "opt": "Dynamic Search Ads",
         "sig": "Anúncios da Rede de Pesquisa exibidos com base no conteúdo do site do anunciante. O Google rastreia o site e associa o anúncio a termos de pesquisa relacionados ao conteúdo, gerando título e página de destino dinamicamente para corresponder ao termo buscado.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "DSA"
       },
       {
         "opt": "Generic",
         "sig": "Palavras-chave sobre a categoria, sem marca, produto da marca ou referência a um tipo de produto específico. Ex: solução para cabelo com caspa.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "Gen"
       },
       {
         "opt": "Generic Product",
         "sig": "Palavras-chave sobre a categoria, sem marca ou produto da marca, mas que fazem referência a um tipo de produto. Ex: melhor shampoo.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "GenProd"
       }
     ]
   },
@@ -2355,77 +2688,92 @@ const DATA = [
         "opt": "Broad Match",
         "sig": "Correspondência ampla. O anúncio pode ser exibido em pesquisas relacionadas à palavra-chave, incluindo buscas que não contêm os termos literais dela. É o tipo padrão quando nenhum outro é especificado.",
         "plat": "Google Search",
-        "rel": "-"
+        "rel": "-",
+        "abr": "BM"
       },
       {
         "opt": "Dynamic Search Ads + Exact",
         "sig": "Linha que combina Dynamic Search Ads com Correspondência Exata.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "DSAE"
       },
       {
         "opt": "Dynamic Search Ads",
         "sig": "Anúncios dinâmicos da Rede de Pesquisa, exibidos com base no conteúdo do site do anunciante. O Google rastreia o site e associa o anúncio a termos de pesquisa relacionados ao conteúdo, gerando título e página de destino dinamicamente.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "DSA"
       },
       {
         "opt": "Dynamic Search Ads + Broad",
         "sig": "Linha que combina Dynamic Search Ads com Correspondência Ampla.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "DSAB"
       },
       {
         "opt": "Dynamic Search Ads + Broad + Exact",
         "sig": "Linha que combina Dynamic Search Ads, Correspondência Ampla e Correspondência Exata.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "DSABE"
       },
       {
         "opt": "Dynamic Search Ads + Broad + Exact + Phrase",
         "sig": "Linha que combina Dynamic Search Ads, Correspondência Ampla, Correspondência Exata e Correspondência de Frase.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "DSABPE"
       },
       {
         "opt": "Dynamic Search Ads + Broad + Phrase",
         "sig": "Linha que combina Dynamic Search Ads, Correspondência Ampla e Correspondência de Frase.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "DSABP"
       },
       {
         "opt": "Dynamic Search Ads + Phrase",
         "sig": "Linha que combina Dynamic Search Ads com Correspondência de Frase.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "DSAP"
       },
       {
         "opt": "Dynamic Search Ads + Phrase + Exact",
         "sig": "Linha que combina Dynamic Search Ads, Correspondência de Frase e Correspondência Exata.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "DSAPE"
       },
       {
         "opt": "Exact Match",
         "sig": "Correspondência exata. O anúncio pode ser exibido em pesquisas com o mesmo significado ou intenção da palavra-chave. Das três opções, é a que dá mais controle sobre quem vê o anúncio. Representada entre colchetes, ex: [sapato vermelho].",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "EM"
       },
       {
         "opt": "Exact Match + Broad",
         "sig": "Linha que combina Correspondência Exata e Correspondência Ampla.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "EMB"
       },
       {
         "opt": "Exact Match + Broad + Phrase",
         "sig": "Linha que combina Correspondência Exata, Correspondência Ampla e Correspondência de Frase.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "EMBP"
       },
       {
         "opt": "Exact Match + Phrase",
         "sig": "Linha que combina Correspondência Exata e Correspondência de Frase.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "EMP"
       },
       {
         "opt": "Phrase Match",
         "sig": "Correspondência de frase. O anúncio pode ser exibido em pesquisas que incluem o significado da palavra-chave, de forma mais flexível que a correspondência exata; a busca do usuário pode ser uma variação mais específica desse significado.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "PM"
       },
       {
         "opt": "Phrase Match + Broad",
         "sig": "Linha que combina Correspondência de Frase e Correspondência Ampla.",
-        "plat": "Google Search"
+        "plat": "Google Search",
+        "abr": "PMB"
       }
     ]
   },
@@ -2438,52 +2786,62 @@ const DATA = [
         "opt": "vpaid",
         "sig": "VPAID (Video Player-Ad Interface Definition). Padrão que permite que o vídeo interativo/rich media se comunique diretamente com o player, possibilitando interatividade além do vídeo linear simples. Vem sendo descontinuado no mercado em favor de padrões como OM SDK/SIMID.",
         "plat": "Amazon DSP, DV",
-        "rel": "-"
+        "rel": "-",
+        "abr": "vpaid"
       },
       {
         "opt": "vast",
         "sig": "VAST (Video Ad Serving Template). Padrão em XML para servir anúncios em vídeo, define a estrutura da tag que o player usa para solicitar o criativo e reportar eventos de rastreamento (start, quartis, complete etc).",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "vast"
       },
       {
         "opt": "na",
         "sig": "Não aplicável. Usado quando a linha não utiliza nenhuma tag de rastreamento específica.",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "na"
       },
       {
         "opt": "html",
         "sig": "Tag entregue em formato HTML/JS, usada para servir criativos de display ou rich media.",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "html"
       },
       {
         "opt": "pixel",
         "sig": "Pixel de rastreamento (imagem 1x1), usado apenas para registrar a impressão/evento, sem renderizar o criativo.",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "pixel"
       },
       {
         "opt": "native",
         "sig": "Tag de rastreamento específica para anúncios nativos, adaptada às especificações de formato nativo da plataforma.",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "native"
       },
       {
         "opt": "audio",
         "sig": "Tag de rastreamento específica para criativos em áudio.",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "365scores"
       },
       {
         "opt": "multi-tracker",
         "sig": "Configuração de tag que dispara múltiplos rastreadores/pixels simultaneamente, geralmente combinando mais de um fornecedor de verificação/mensuração na mesma linha.",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "multi-tracker"
       },
       {
         "opt": "video-pixel",
         "sig": "Pixel de rastreamento específico para eventos de impressão em anúncios de vídeo.",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "video-pixel"
       },
       {
         "opt": "audio-pixel",
         "sig": "Pixel de rastreamento específico para eventos de impressão em anúncios de áudio.",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "audio-pixel"
       }
     ]
   },
@@ -2496,22 +2854,26 @@ const DATA = [
         "opt": "Audience",
         "sig": "Segmentação com base nas características do usuário (dados demográficos, interesses, comportamento, composição familiar, eventos de vida etc), coletadas via cookies, IDFA ou Identity Solutions.",
         "plat": "Amazon DSP, DV",
-        "rel": "-"
+        "rel": "-",
+        "abr": "Aud"
       },
       {
         "opt": "Contextual",
         "sig": "Segmentação com base no conteúdo da página em que o anúncio aparece, identificado por palavras-chave no título, corpo do texto, URL etc. Ex: parceiro Seedtag entregando Rexona dentro de matérias esportivas.",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "CNT"
       },
       {
         "opt": "Domains-List",
         "sig": "Segmentação por uma lista específica de sites/aplicativos definida previamente.",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "Domains-List"
       },
       {
         "opt": "Run-of-Network",
         "sig": "Nenhuma segmentação aplicada além dos parâmetros do próprio tipo de compra (ex: toda a web dentro de Open Exchange, PMP, etc).",
-        "plat": "Amazon DSP, DV"
+        "plat": "Amazon DSP, DV",
+        "abr": "Run-of-Network"
       }
     ]
   },
@@ -2523,309 +2885,362 @@ const DATA = [
       {
         "opt": "Ad Recall",
         "sig": "Lembrança de Anúncio: Otimiza a entrega para maximizar a lembrança da marca entre o público impactado.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "AdRcl"
       },
       {
         "opt": "App Event",
         "sig": "Evento do App: Otimiza a entrega para gerar um evento específico dentro do app, rastreado via SDK após a instalação.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "AppEve"
       },
       {
         "opt": "Brand Consideration",
         "sig": "Consideração de marca: Otimiza a entrega para gerar consideração de marca, priorizando engajamento com o conteúdo.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "BrndCons"
       },
       {
         "opt": "Call",
         "sig": "Ligações: Otimiza a entrega para gerar ligações telefônicas (click-to-call).",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "Call"
       },
       {
         "opt": "Catalog Sales",
         "sig": "Vendas de Catálogo: Otimiza a entrega para gerar vendas a partir de um catálogo de produtos (anúncios dinâmicos).",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "CatSal"
       },
       {
         "opt": "Clicks",
         "sig": "Cliques: Otimiza a entrega para maximizar o número de cliques.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "Clicks"
       },
       {
         "opt": "Conversations",
         "sig": "Conversas: Otimiza a entrega para gerar início de conversas via mensagem direta.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "Conversations"
       },
       {
         "opt": "Conversion",
         "sig": "Volume de Conversão: Otimiza a entrega para gerar conversões (ação de valor definida pelo anunciante).",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "Conversion"
       },
       {
         "opt": "Conversion Manual",
         "sig": "Conversão Manual: Otimização de conversão com lance definido manualmente pelo anunciante.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "ConvMnl"
       },
       {
         "opt": "Conversion Manual Revenue",
         "sig": "Otimização de conversão com lance manual, priorizando o valor de receita gerado por cada conversão.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "ConvMnlRev"
       },
       {
         "opt": "Conversion Search",
         "sig": "Conversão Search: Conversão originada especificamente de uma campanha de busca.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "ConvSrch"
       },
       {
         "opt": "Conversion Smart",
         "sig": "Otimização de conversão com lance automático da plataforma (Smart Bidding).",
         "plat": "Todas",
-        "rel": "Conversão Smart"
+        "rel": "Conversão Smart",
+        "abr": "ConvSmt"
       },
       {
         "opt": "Conversion Tik Tok Shop Clicks",
         "sig": "Conversão do TikTok Shop referente a clique no produto exibido no anúncio.",
         "plat": "Todas",
-        "rel": "Conversão Tik Tok Shop - Cliques"
+        "rel": "Conversão Tik Tok Shop - Cliques",
+        "abr": "ConvTTSClk"
       },
       {
         "opt": "Conversion Tik Tok Shop Chekouts",
         "sig": "Conversão do TikTok Shop referente ao início do checkout do produto.",
         "plat": "Todas",
-        "rel": "Conversão Tik Tok Shop - Checkouts"
+        "rel": "Conversão Tik Tok Shop - Checkouts",
+        "abr": "ConvTTSChk"
       },
       {
         "opt": "Conversion Tik Tok Shop Purchase",
         "sig": "Conversão do TikTok Shop referente à compra concluída do produto.",
         "plat": "Todas",
-        "rel": "Conversão Tik Tok Shop - Compra"
+        "rel": "Conversão Tik Tok Shop - Compra",
+        "abr": "ConvTTSPur"
       },
       {
         "opt": "Conversion Tik Tok Shop Revenue",
         "sig": "Conversão do TikTok Shop referente ao valor de receita gerado pela venda.",
         "plat": "Todas",
-        "rel": "Conversão Tik Tok Shop - Receita"
+        "rel": "Conversão Tik Tok Shop - Receita",
+        "abr": "ConvTTSRev"
       },
       {
         "opt": "Conversions",
         "sig": "Mesma lógica de \"Conversion\", em sua forma plural. Vale confirmar com o time de origem se são de fato dois valores distintos no sistema (a planilha oficial usa o mesmo código curto \"conve\" pros dois).",
         "plat": "Todas",
-        "rel": "Conversões"
+        "rel": "Conversões",
+        "abr": "Conversions"
       },
       {
         "opt": "Daily Reach",
         "sig": "Otimiza a entrega para maximizar o alcance de pessoas únicas por dia.",
         "plat": "Todas",
-        "rel": "Alcance Diário Único"
+        "rel": "Alcance Diário Único",
+        "abr": "DlyRch"
       },
       {
         "opt": "Event",
         "sig": "Otimiza a entrega para gerar participação em um evento.",
         "plat": "Todas",
-        "rel": "Participação de Evento"
+        "rel": "Participação de Evento",
+        "abr": "Event"
       },
       {
         "opt": "Impressions",
         "sig": "Otimiza a entrega para maximizar o número de impressões entregues.",
         "plat": "Todas",
-        "rel": "Impressões"
+        "rel": "Impressões",
+        "abr": "Impressions"
       },
       {
         "opt": "Install",
         "sig": "Otimiza a entrega para gerar instalações de aplicativo.",
         "plat": "Todas",
-        "rel": "Instalação do App"
+        "rel": "Instalação do App",
+        "abr": "Install"
       },
       {
         "opt": "Interaction",
         "sig": "Otimiza a entrega para gerar engajamento genérico com o post/anúncio.",
         "plat": "Todas",
-        "rel": "Interação com o Post"
+        "rel": "Interação com o Post",
+        "abr": "Interaction"
       },
       {
         "opt": "Interaction with the community Follow",
         "sig": "Otimiza a entrega para gerar novos seguidores para o perfil da marca.",
         "plat": "Todas",
-        "rel": "Interação com a comunidade - Seguir"
+        "rel": "Interação com a comunidade - Seguir",
+        "abr": "IntrFollow"
       },
       {
         "opt": "Interaction with the community Page Visit",
         "sig": "Otimiza a entrega para gerar visitas à página/perfil da marca.",
         "plat": "Todas",
-        "rel": "Interação com a comunidade - Visita à Página"
+        "rel": "Interação com a comunidade - Visita à Página",
+        "abr": "IntrPgVst"
       },
       {
         "opt": "Leads",
         "sig": "Otimiza a entrega para gerar leads via formulário nativo.",
         "plat": "Todas",
-        "rel": "Leads"
+        "rel": "Leads",
+        "abr": "Leads"
       },
       {
         "opt": "Link Clicks",
         "sig": "Otimiza a entrega para maximizar cliques no link de destino do anúncio.",
         "plat": "Todas",
-        "rel": "Cliques no Link"
+        "rel": "Cliques no Link",
+        "abr": "LnkClk"
       },
       {
         "opt": "Manual Clicks",
         "sig": "Lance manual definido pelo anunciante, otimizado por clique.",
         "plat": "Todas",
-        "rel": "Clicks Manual"
+        "rel": "Clicks Manual",
+        "abr": "MnlClk"
       },
       {
         "opt": "Manual Leads",
         "sig": "Lance manual definido pelo anunciante, otimizado por geração de lead.",
         "plat": "Todas",
-        "rel": "Leads Manual"
+        "rel": "Leads Manual",
+        "abr": "MnlLead"
       },
       {
         "opt": "Manual Trafic",
         "sig": "Lance manual definido pelo anunciante, otimizado por tráfego/cliques para o site.",
         "plat": "Todas",
-        "rel": "Tráfego Manual"
+        "rel": "Tráfego Manual",
+        "abr": "MnlTrf"
       },
       {
         "opt": "Messages",
         "sig": "Otimiza a entrega para gerar início de conversas via mensagem direta.",
         "plat": "Todas",
-        "rel": "Mensagem"
+        "rel": "Mensagem",
+        "abr": "Message"
       },
       {
         "opt": "Page View",
         "sig": "Otimiza a entrega para gerar visualizações da página de destino.",
         "plat": "Todas",
-        "rel": "Página destino"
+        "rel": "Página destino",
+        "abr": "PgView"
       },
       {
         "opt": "Profile View",
         "sig": "Otimiza a entrega para gerar visualizações do perfil da marca no Instagram.",
         "plat": "Todas",
-        "rel": "Visitas ao Perfil do Instagram"
+        "rel": "Visitas ao Perfil do Instagram",
+        "abr": "ProfView"
       },
       {
         "opt": "Pulse",
         "sig": "Fonte oficial repete só o nome \"Pulse\", sem explicar o mecanismo. Possível relação com o produto TikTok Pulse. Recomendo confirmar com o Rique.",
         "plat": "Todas",
-        "rel": "Pulse"
+        "rel": "Pulse",
+        "abr": "Pulse"
       },
       {
         "opt": "Reach",
         "sig": "Otimiza a entrega para maximizar o número de pessoas únicas alcançadas.",
         "plat": "Todas",
-        "rel": "Alcance"
+        "rel": "Alcance",
+        "abr": "Reach"
       },
       {
         "opt": "Reach & Frequence",
         "sig": "Otimiza a entrega controlando alcance de pessoas únicas e frequência de exibição simultaneamente.",
         "plat": "Todas",
-        "rel": "Alcance & Frequência"
+        "rel": "Alcance & Frequência",
+        "abr": "R&F"
       },
       {
         "opt": "Reach & Frequence Non Skip",
         "sig": "Mesma lógica de Reach & Frequence, considerando apenas impressões não puláveis.",
         "plat": "Todas",
-        "rel": "Alcance & Frequência Non Skip"
+        "rel": "Alcance & Frequência Non Skip",
+        "abr": "R&FNSkp"
       },
       {
         "opt": "Reach & Frequence Skip",
         "sig": "Mesma lógica de Reach & Frequence, considerando apenas impressões puláveis.",
         "plat": "Todas",
-        "rel": "Alcance & Frequência Skip"
+        "rel": "Alcance & Frequência Skip",
+        "abr": "R&FSkp"
       },
       {
         "opt": "Reach Non Skip",
         "sig": "Otimiza o alcance considerando apenas impressões não puláveis.",
         "plat": "Todas",
-        "rel": "Alcance Non Skip"
+        "rel": "Alcance Non Skip",
+        "abr": "RNSkp"
       },
       {
         "opt": "Reach Skip",
         "sig": "Otimiza o alcance considerando apenas impressões puláveis.",
         "plat": "Todas",
-        "rel": "Alcance Skip"
+        "rel": "Alcance Skip",
+        "abr": "RSkp"
       },
       {
         "opt": "Reminder",
         "sig": "Otimiza a entrega para ativar um lembrete configurado previamente pelo usuário.",
         "plat": "Todas",
-        "rel": "Ativação de Lembrete"
+        "rel": "Ativação de Lembrete",
+        "abr": "Reminder"
       },
       {
         "opt": "Revenue",
         "sig": "Otimiza a entrega para maximizar a receita gerada pela campanha.",
         "plat": "Todas",
-        "rel": "Valor de Conversão"
+        "rel": "Valor de Conversão",
+        "abr": "Revenue"
       },
       {
         "opt": "Search Clicks",
         "sig": "Otimiza a entrega para maximizar cliques originados de uma busca.",
         "plat": "Todas",
-        "rel": "Clicks Search"
+        "rel": "Clicks Search",
+        "abr": "SrchClk"
       },
       {
         "opt": "Search Trafic",
         "sig": "Otimiza a entrega para maximizar tráfego ao site originado de uma busca.",
         "plat": "Todas",
-        "rel": "Tráfego Search"
+        "rel": "Tráfego Search",
+        "abr": "SrchTrf"
       },
       {
         "opt": "Smart Clicks",
         "sig": "Lance automático (Smart Bidding), otimizado por clique.",
         "plat": "Todas",
-        "rel": "Clicks Smart"
+        "rel": "Clicks Smart",
+        "abr": "SmtClk"
       },
       {
         "opt": "Smart Leads",
         "sig": "Lance automático (Smart Bidding), otimizado por geração de lead.",
         "plat": "Todas",
-        "rel": "Leads Smart"
+        "rel": "Leads Smart",
+        "abr": "SmtLead"
       },
       {
         "opt": "Smart Trafic",
         "sig": "Lance automático (Smart Bidding), otimizado por tráfego/cliques para o site.",
         "plat": "Todas",
-        "rel": "Tráfego Smart"
+        "rel": "Tráfego Smart",
+        "abr": "SmtTrf"
       },
       {
         "opt": "Views 6 Seg",
         "sig": "Otimiza a entrega para visualizações de vídeo de pelo menos 6 segundos.",
         "plat": "Todas",
-        "rel": "—"
+        "rel": "—",
+        "abr": "V6s"
       },
       {
         "opt": "Views 15 Seg",
         "sig": "Métrica ThruPlay (Meta): conta visualização completa do vídeo ou pelo menos 15 segundos, o que ocorrer primeiro.",
         "plat": "Todas",
-        "rel": "Views Thruplay"
+        "rel": "Views Thruplay",
+        "abr": "V15s"
       },
       {
         "opt": "Views 10 Seg",
         "sig": "Otimiza a entrega para visualizações de vídeo de pelo menos 10 segundos.",
         "plat": "Todas",
-        "rel": "—"
+        "rel": "—",
+        "abr": "V10s"
       },
       {
         "opt": "Views 2 Seg",
         "sig": "Otimiza a entrega para visualizações de vídeo de pelo menos 2 segundos.",
         "plat": "Todas",
-        "rel": "Views 2 segundos"
+        "rel": "Views 2 segundos",
+        "abr": "V2s"
       },
       {
         "opt": "Views Conclusion",
         "sig": "Otimiza a entrega para visualizações completas do vídeo.",
         "plat": "Todas",
-        "rel": "Conclusão de Visualização"
+        "rel": "Conclusão de Visualização",
+        "abr": "VConc"
       },
       {
         "opt": "Views Non Skip",
         "sig": "Otimiza a entrega para visualizações em formato não pulável.",
         "plat": "Todas",
-        "rel": "Visualização Non Skip"
+        "rel": "Visualização Non Skip",
+        "abr": "VNSkp"
       },
       {
         "opt": "Views Skip",
         "sig": "Otimiza a entrega para visualizações em formato pulável.",
         "plat": "Todas",
-        "rel": "Visualização Skip"
+        "rel": "Visualização Skip",
+        "abr": "VSkp"
       }
     ]
   },
@@ -2838,17 +3253,20 @@ const DATA = [
         "opt": "Brand Say",
         "sig": "Sem influenciador, conteúdo geral da marca.",
         "plat": "Todas",
-        "rel": "-"
+        "rel": "-",
+        "abr": "BSAY"
       },
       {
         "opt": "Influencer Handle (Influencer) / Other say",
         "sig": "Post do influenciador impulsionado pelo perfil do próprio influenciador.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "InfHndOSay"
       },
       {
         "opt": "Brand Handle (Influencer) / Brand say",
         "sig": "Post do influenciador impulsionado pelo perfil da marca.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "BrdHndBSay"
       }
     ]
   },
@@ -2861,19 +3279,22 @@ const DATA = [
         "opt": "na",
         "sig": "Não aplicável. Usado quando não há vínculo com post de influenciador (Influencer GL = Brand Say).",
         "plat": "Todas",
-        "rel": "Influencer GL = bsay"
+        "rel": "Influencer GL = bsay",
+        "abr": "na"
       },
       {
         "opt": "dark",
         "sig": "Dark post. Anúncio criado direto no gerenciador de anúncios, sem ser publicado organicamente no feed/perfil antes.",
         "plat": "Todas",
-        "rel": "Influencer GL = bhamp ou ihamp"
+        "rel": "Influencer GL = bhamp ou ihamp",
+        "abr": "dark"
       },
       {
         "opt": "boosted",
         "sig": "Post orgânico já publicado no perfil (marca ou influenciador) e depois impulsionado como anúncio.",
         "plat": "Todas",
-        "rel": "Influencer GL = bhamp ou ihamp"
+        "rel": "Influencer GL = bhamp ou ihamp",
+        "abr": "BSTD"
       }
     ]
   },
@@ -2886,19 +3307,22 @@ const DATA = [
         "opt": "brd",
         "sig": "Conteúdo da marca, sem influenciador.",
         "plat": "Todas",
-        "rel": "Influencer GL = bsay"
+        "rel": "Influencer GL = bsay",
+        "abr": "brd"
       },
       {
         "opt": "inf",
         "sig": "Conteúdo protagonizado por um influenciador, em formato de colaboração ou parceria patrocinada.",
         "plat": "Todas",
-        "rel": "Influencer GL = bhamp ou ihamp"
+        "rel": "Influencer GL = bhamp ou ihamp",
+        "abr": "inf"
       },
       {
         "opt": "ugc",
         "sig": "Conteúdo produzido por criador contratado via squad.",
         "plat": "Todas",
-        "rel": "Influencer GL = bhamp ou ihamp"
+        "rel": "Influencer GL = bhamp ou ihamp",
+        "abr": "ugc"
       }
     ]
   },
@@ -2911,22 +3335,26 @@ const DATA = [
         "opt": "regiao",
         "sig": "Segmentação no nível de região do Brasil (Norte, Nordeste, Centro-Oeste, Sudeste, Sul, ou combinações entre elas).",
         "plat": "Todas",
-        "rel": "-"
+        "rel": "-",
+        "abr": "regiao"
       },
       {
         "opt": "estado",
         "sig": "Segmentação no nível de estado (UF).",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "estado"
       },
       {
         "opt": "cidades",
         "sig": "Segmentação no nível de cidade (ou conjunto de cidades combinadas em um mesmo mercado).",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "cidades"
       },
       {
         "opt": "nacional",
         "sig": "Segmentação abrangendo todo o território nacional, sem recorte geográfico.",
-        "plat": "Todas"
+        "plat": "Todas",
+        "abr": "nacional"
       }
     ]
   },
@@ -2939,781 +3367,911 @@ const DATA = [
         "opt": "cid-aju",
         "sig": "-",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-aju"
       },
       {
         "opt": "cid-apg",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-apg"
       },
       {
         "opt": "cid-aps",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-aps"
       },
       {
         "opt": "cid-bel",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-bel"
       },
       {
         "opt": "cid-bel-mao",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-bel-mao"
       },
       {
         "opt": "cid-bel-slz",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-bel-slz"
       },
       {
         "opt": "cid-bhz",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-bhz"
       },
       {
         "opt": "cid-bhz-jdf",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-bhz-jdf"
       },
       {
         "opt": "cid-bhz-udi",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-bhz-udi"
       },
       {
         "opt": "cid-bnu",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-bnu"
       },
       {
         "opt": "cid-bnu-fln",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-bnu-fln"
       },
       {
         "opt": "cid-brb",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-brb"
       },
       {
         "opt": "cid-brb-cgb",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-brb-cgb"
       },
       {
         "opt": "cid-brb-gyn",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-brb-gyn"
       },
       {
         "opt": "cid-cau",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-cau"
       },
       {
         "opt": "cid-cax",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-cax"
       },
       {
         "opt": "cid-cgb",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-cgb"
       },
       {
         "opt": "cid-cgr",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-cgr"
       },
       {
         "opt": "cid-con",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-con"
       },
       {
         "opt": "cid-cpq",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-cpq"
       },
       {
         "opt": "cid-cpq-rao",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-cpq-rao"
       },
       {
         "opt": "cid-cpq-sod",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-cpq-sod"
       },
       {
         "opt": "cid-cwb",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-cwb"
       },
       {
         "opt": "cid-cwb-fln",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-cwb-fln"
       },
       {
         "opt": "cid-cwb-poa",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-cwb-poa"
       },
       {
         "opt": "cid-cxj",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-cxj"
       },
       {
         "opt": "cid-fec",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-fec"
       },
       {
         "opt": "cid-fln",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-fln"
       },
       {
         "opt": "cid-for",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-for"
       },
       {
         "opt": "cid-gru",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-gru"
       },
       {
         "opt": "cid-gyn",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-gyn"
       },
       {
         "opt": "cid-imp",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-imp"
       },
       {
         "opt": "cid-jdf",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-jdf"
       },
       {
         "opt": "cid-jdo",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-jdo"
       },
       {
         "opt": "cid-joi",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-joi"
       },
       {
         "opt": "cid-joi-bnu",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-joi-bnu"
       },
       {
         "opt": "cid-joi-fln",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-joi-fln"
       },
       {
         "opt": "cid-jpa",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-jpa"
       },
       {
         "opt": "cid-jpa-nat",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-jpa-nat"
       },
       {
         "opt": "cid-jpa-rec",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-jpa-rec"
       },
       {
         "opt": "cid-ldb",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-ldb"
       },
       {
         "opt": "cid-mao",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-mao"
       },
       {
         "opt": "cid-mao-cgb",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-mao-cgb"
       },
       {
         "opt": "cid-mcz",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-mcz"
       },
       {
         "opt": "cid-mgf",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-mgf"
       },
       {
         "opt": "cid-nat",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-nat"
       },
       {
         "opt": "cid-nat-for",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-nat-for"
       },
       {
         "opt": "cid-nig",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-nig"
       },
       {
         "opt": "cid-nit",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-nit"
       },
       {
         "opt": "cid-osa",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-osa"
       },
       {
         "opt": "cid-pet",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-pet"
       },
       {
         "opt": "cid-pnz",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-pnz"
       },
       {
         "opt": "cid-poa",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-poa"
       },
       {
         "opt": "cid-poa-fln",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-poa-fln"
       },
       {
         "opt": "cid-rao",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-rao"
       },
       {
         "opt": "cid-rao-sod",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-rao-sod"
       },
       {
         "opt": "cid-rec",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-rec"
       },
       {
         "opt": "cid-rec-for",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-rec-for"
       },
       {
         "opt": "cid-rio",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-rio"
       },
       {
         "opt": "cid-rio-bhz",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-rio-bhz"
       },
       {
         "opt": "cid-rio-brb",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-rio-brb"
       },
       {
         "opt": "cid-rio-rec",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-rio-rec"
       },
       {
         "opt": "cid-rio-ssa",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-rio-ssa"
       },
       {
         "opt": "cid-sao",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao"
       },
       {
         "opt": "cid-sao",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao"
       },
       {
         "opt": "cid-sao-bhz",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-bhz"
       },
       {
         "opt": "cid-sao-brb",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-brb"
       },
       {
         "opt": "cid-sao-cpq",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-cpq"
       },
       {
         "opt": "cid-sao-cwb",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-cwb"
       },
       {
         "opt": "cid-sao-for",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-for"
       },
       {
         "opt": "cid-sao-gru",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-gru"
       },
       {
         "opt": "cid-sao-osa",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-osa"
       },
       {
         "opt": "cid-sao-poa",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-poa"
       },
       {
         "opt": "cid-sao-rec",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-rec"
       },
       {
         "opt": "cid-sao-rio",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-rio"
       },
       {
         "opt": "cid-sao-sbc",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-sbc"
       },
       {
         "opt": "cid-sao-ssa",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sao-ssa"
       },
       {
         "opt": "cid-sbc",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sbc"
       },
       {
         "opt": "cid-slz",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-slz"
       },
       {
         "opt": "cid-sod",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-sod"
       },
       {
         "opt": "cid-ssa",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-ssa"
       },
       {
         "opt": "cid-ssa-for",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-ssa-for"
       },
       {
         "opt": "cid-ssa-rec",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-ssa-rec"
       },
       {
         "opt": "cid-ssz",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-ssz"
       },
       {
         "opt": "cid-stm",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-stm"
       },
       {
         "opt": "cid-the",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-the"
       },
       {
         "opt": "cid-udi",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-udi"
       },
       {
         "opt": "cid-vix",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-vix"
       },
       {
         "opt": "cid-vix-bhz",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-vix-bhz"
       },
       {
         "opt": "cid-vix-rio",
         "sig": "",
         "plat": "Todas",
-        "rel": "cidades"
+        "rel": "cidades",
+        "abr": "cid-vix-rio"
       },
       {
         "opt": "est-ac",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-ac"
       },
       {
         "opt": "est-al",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-al"
       },
       {
         "opt": "est-am",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-am"
       },
       {
         "opt": "est-ap",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-ap"
       },
       {
         "opt": "est-ba",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-ba"
       },
       {
         "opt": "est-ce",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-ce"
       },
       {
         "opt": "est-df",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-df"
       },
       {
         "opt": "est-es",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-es"
       },
       {
         "opt": "est-go",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-go"
       },
       {
         "opt": "est-ma",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-ma"
       },
       {
         "opt": "est-mg",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-mg"
       },
       {
         "opt": "est-ms",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-ms"
       },
       {
         "opt": "est-mt",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-mt"
       },
       {
         "opt": "est-pa",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-pa"
       },
       {
         "opt": "est-pb",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-pb"
       },
       {
         "opt": "est-pe",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-pe"
       },
       {
         "opt": "est-pi",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-pi"
       },
       {
         "opt": "est-pr",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-pr"
       },
       {
         "opt": "est-rj",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-rj"
       },
       {
         "opt": "est-rn",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-rn"
       },
       {
         "opt": "est-ro",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-ro"
       },
       {
         "opt": "est-rr",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-rr"
       },
       {
         "opt": "est-rs",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-rs"
       },
       {
         "opt": "est-sc",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-sc"
       },
       {
         "opt": "est-se",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-se"
       },
       {
         "opt": "est-sp",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-sp"
       },
       {
         "opt": "est-to",
         "sig": "",
         "plat": "Todas",
-        "rel": "estado"
+        "rel": "estado",
+        "abr": "est-to"
       },
       {
         "opt": "nac",
         "sig": "",
         "plat": "Todas",
-        "rel": "nacional"
+        "rel": "nacional",
+        "abr": "nac"
       },
       {
         "opt": "reg-co",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-co"
       },
       {
         "opt": "reg-co-se",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-co-se"
       },
       {
         "opt": "reg-ne",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-ne"
       },
       {
         "opt": "reg-ne-se",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-ne-se"
       },
       {
         "opt": "reg-ne-se-su",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-ne-se-su"
       },
       {
         "opt": "reg-no",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-no"
       },
       {
         "opt": "reg-no-ne",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-no-ne"
       },
       {
         "opt": "reg-no-se",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-no-se"
       },
       {
         "opt": "reg-no-se-su",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-no-se-su"
       },
       {
         "opt": "reg-se",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-se"
       },
       {
         "opt": "reg-su",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-su"
       },
       {
         "opt": "reg-su-se",
         "sig": "",
         "plat": "Todas",
-        "rel": "regiao"
+        "rel": "regiao",
+        "abr": "reg-su-se"
       }
     ]
   }
