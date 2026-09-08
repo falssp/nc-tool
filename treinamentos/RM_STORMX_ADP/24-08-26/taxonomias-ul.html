@@ -4756,6 +4756,38 @@ document.addEventListener('click', e => {
   }
 });
 
+function aplicarFiltroSubgrupo(grupo) {
+  // Dentro do bloco de Location FT, esconde cards que não são do grupo
+  // Cada card tem data-key="location-ft::opt"
+  // Cada subgroup-label tem textContent === grupo
+  const secLocation = document.getElementById('sec-location-ft');
+  if(!secLocation) return;
+
+  let dentroDoGrupo = false;
+  [...secLocation.querySelectorAll('.subgroup-label, .card')].forEach(el => {
+    if(el.classList.contains('subgroup-label')) {
+      dentroDoGrupo = el.textContent.trim() === grupo;
+      el.style.display = dentroDoGrupo ? '' : 'none';
+    } else {
+      el.style.display = dentroDoGrupo ? '' : 'none';
+    }
+  });
+
+  // Scroll para o label
+  requestAnimationFrame(() => {
+    const label = secLocation.querySelector('.subgroup-label:not([style*="none"])');
+    if(label) label.scrollIntoView({behavior: 'smooth', block: 'start'});
+  });
+}
+
+function limparFiltroSubgrupo() {
+  const secLocation = document.getElementById('sec-location-ft');
+  if(!secLocation) return;
+  [...secLocation.querySelectorAll('.subgroup-label, .card')].forEach(el => {
+    el.style.display = '';
+  });
+}
+
 function buildSidebar(){
   const sb = document.getElementById('sidebar');
 
@@ -4835,8 +4867,12 @@ function buildSidebar(){
       if(subs) {
         if(block.field === 'Location FT') {
           subs.style.display = activeFields.has(block.id) ? 'block' : 'none';
+          if(!activeFields.has(block.id)) {
+            // Desmarcou Location — limpa filtro e subitems
+            limparFiltroSubgrupo();
+            subs.querySelectorAll('.nav-subitem').forEach(s => s.classList.remove('on'));
+          }
         } else {
-          // Esconde subitems quando outro campo é selecionado
           subs.style.display = activeFields.has('location-ft') ? 'block' : 'none';
         }
       }
