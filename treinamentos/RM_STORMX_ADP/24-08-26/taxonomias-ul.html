@@ -4827,11 +4827,17 @@ function buildSidebar(){
       sub.innerHTML = esc(g) + '<span class="nav-subitem-count">' + counts[g] + '</span>';
       sub.onclick = e => {
         e.stopPropagation();
-        sub.classList.toggle('on');
-        // Scroll para o subgrupo no conteúdo
-        const label = [...document.querySelectorAll('.subgroup-label')]
-          .find(el => el.textContent === g);
-        if(label) label.scrollIntoView({behavior:'smooth', block:'start'});
+        // Garante que Location FT está selecionado
+        const locNav = document.querySelector('.nav-item[data-id="location-ft"]');
+        if(locNav && !activeFields.has('location-ft')) {
+          locNav.click();
+        }
+        // Scroll para o subgrupo após render
+        requestAnimationFrame(() => {
+          const label = [...document.querySelectorAll('.subgroup-label')]
+            .find(el => el.textContent.trim() === g);
+          if(label) label.scrollIntoView({behavior:'smooth', block:'start'});
+        });
       };
       wrap.appendChild(sub);
     });
@@ -4862,13 +4868,15 @@ document.getElementById('search').addEventListener('input', e => {
   render();
 });
 
-// Ao carregar: volta ao topo e limpa qualquer hash na URL
-window.scrollTo(0, 0);
-if(window.location.hash) history.replaceState(null, '', window.location.pathname);
-
 buildPlatOptions();
 buildSidebar();
 render();
+
+// Garante scroll ao topo após o browser restaurar posição
+window.addEventListener('load', () => {
+  window.scrollTo({top: 0, behavior: 'instant'});
+  if(window.location.hash) history.replaceState(null, '', window.location.pathname);
+});
 
 // ── ATALHOS DE TECLADO ────────────────────────────────────────
 document.addEventListener('keydown', e => {
