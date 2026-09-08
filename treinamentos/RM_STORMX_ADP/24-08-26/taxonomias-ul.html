@@ -93,6 +93,10 @@
   .nav-clear { font-size: 10px; color: var(--text3); cursor: pointer; padding: 2px 8px; margin: 4px 1rem 0; display: none; border-radius: 10px; background: var(--surface2); text-align: center; }
   .nav-clear:hover { color: var(--accent-text); }
   .nav-clear.visible { display: block; }
+  .nav-subitem { display: flex; align-items: center; justify-content: space-between; padding: 3px 1rem 3px 1.75rem; font-size: 11px; color: var(--text3); cursor: pointer; transition: color .12s; }
+  .nav-subitem:hover { color: var(--accent-text); }
+  .nav-subitem.on { color: var(--accent-text); font-weight: 500; }
+  .nav-subitem-count { font-size: 10px; color: var(--text3); }
   /* Grupos sidebar */
   .nav-group-label { font-size: 9px; font-weight: 700; color: var(--text3); letter-spacing: .08em; text-transform: uppercase; padding: 10px 1rem 3px; margin-top: 4px; border-top: 1px solid var(--border); }
   .nav-group-label:first-child { border-top: none; margin-top: 0; }
@@ -4797,8 +4801,41 @@ function buildSidebar(){
         const sec = document.getElementById('sec-' + block.id);
         if(sec) sec.scrollIntoView({behavior:'smooth', block:'start'});
       }
+      // Location FT: mostrar/esconder subitems
+      const subs = document.getElementById('nav-location-subs');
+      if(subs) subs.style.display = activeFields.has(block.id) ? 'block' : 'none';
     };
     return a;
+  }
+
+  function makeLocationSubitems(block) {
+    // Contar items por grupo
+    const counts = {};
+    const order = ['Nacional', 'Região', 'Estado', 'Cidade'];
+    order.forEach(g => counts[g] = 0);
+    block.items.forEach(it => { if(it.group) counts[it.group] = (counts[it.group]||0) + 1; });
+
+    const wrap = document.createElement('div');
+    wrap.style.display = 'none';
+    wrap.id = 'nav-location-subs';
+
+    order.forEach(g => {
+      if(!counts[g]) return;
+      const sub = document.createElement('div');
+      sub.className = 'nav-subitem';
+      sub.dataset.group = g;
+      sub.innerHTML = esc(g) + '<span class="nav-subitem-count">' + counts[g] + '</span>';
+      sub.onclick = e => {
+        e.stopPropagation();
+        sub.classList.toggle('on');
+        // Scroll para o subgrupo no conteúdo
+        const label = [...document.querySelectorAll('.subgroup-label')]
+          .find(el => el.textContent === g);
+        if(label) label.scrollIntoView({behavior:'smooth', block:'start'});
+      };
+      wrap.appendChild(sub);
+    });
+    return wrap;
   }
 
   grupos.forEach(grupo => {
@@ -4810,7 +4847,13 @@ function buildSidebar(){
     grpLbl.className = 'nav-group-label';
     grpLbl.textContent = grupo.label;
     sb.appendChild(grpLbl);
-    blocos.forEach(block => sb.appendChild(makeNavItem(block)));
+    blocos.forEach(block => {
+      sb.appendChild(makeNavItem(block));
+      // Location FT: adicionar subitems
+      if(block.field === 'Location FT') {
+        sb.appendChild(makeLocationSubitems(block));
+      }
+    });
   });
 }
 
