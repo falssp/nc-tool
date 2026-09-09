@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NC Tool 360</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --azul:#1F36C7; --escuro:#1a237e; --muted:#9fa8da;
+      --borda:#d6dbf2; --bg:#f0f2ff;
+      --ok:#2e7d32; --ok-bg:#e8f5e9;
+      --aviso:#e65100; --aviso-bg:#fff8e1;
+      --erro:#c62828; --erro-bg:#ffebee;
+      --inativo:#9e9e9e; --inativo-bg:#f5f5f5;
+      --f1:#5c35c7; --f1-bg:#ede7f6;
+      --f2:#1565c0; --f2-bg:#e3f2fd;
+      --f3:#2e7d32; --f3-bg:#e8f5e9;
+      --f4:#e65100; --f4-bg:#fff8e1;
+    }
+    html, body { height:100%; }
+    body {
+      font-family:'Segoe UI',Arial,sans-serif;
+      background:var(--bg); min-height:100vh;
+      display:flex; flex-direction:column;
+      align-items:center; padding:32px 24px 48px;
+    }
+    header { text-align:center; margin-bottom:8px; }
+    header h1 { font-size:1.7rem; font-weight:800; color:var(--escuro); }
+    header p { font-size:.85rem; color:var(--muted); margin-top:4px; }
+    .back { font-size:.8rem; color:var(--azul); text-decoration:none; font-weight:600; margin-bottom:24px; display:inline-block; }
+    .back:hover { opacity:.8; }
+
+    /* Progresso */
+    .progress { display:flex; align-items:center; gap:0; margin:24px 0 32px; width:100%; max-width:800px; }
+    .step-dot {
+      display:flex; flex-direction:column; align-items:center; gap:6px;
+      flex:1; position:relative; cursor:pointer;
+    }
+    .step-dot:not(:last-child)::after {
+      content:''; position:absolute; top:18px; left:55%; width:90%;
+      height:2px; background:var(--borda); z-index:0;
+      transition:background .3s;
+    }
+    .step-dot.done:not(:last-child)::after { background:var(--ok); }
+    .step-dot.active:not(:last-child)::after { background:var(--azul); }
+    .dot-circle {
+      width:36px; height:36px; border-radius:50%;
+      display:flex; align-items:center; justify-content:center;
+      font-size:.8rem; font-weight:700; z-index:1; position:relative;
+      border:2px solid var(--borda); background:#fff; color:var(--inativo);
+      transition:all .3s;
+    }
+    .step-dot.done .dot-circle { background:var(--ok); border-color:var(--ok); color:#fff; }
+    .step-dot.active .dot-circle { background:var(--azul); border-color:var(--azul); color:#fff; }
+    .dot-label { font-size:.68rem; font-weight:600; color:var(--inativo); text-align:center; }
+    .step-dot.done .dot-label { color:var(--ok); }
+    .step-dot.active .dot-label { color:var(--azul); }
+
+    /* Painel principal */
+    .panel {
+      width:100%; max-width:800px;
+      background:#fff; border:1px solid var(--borda); border-radius:18px;
+      overflow:hidden;
+    }
+    .panel-header {
+      padding:22px 28px 18px;
+      border-bottom:1px solid var(--borda);
+      display:flex; align-items:center; gap:14px;
+    }
+    .fase-badge {
+      padding:4px 12px; border-radius:20px;
+      font-size:.7rem; font-weight:700; letter-spacing:.8px; text-transform:uppercase;
+    }
+    .panel-title { font-size:1.1rem; font-weight:800; color:var(--escuro); flex:1; }
+    .status-badge {
+      display:flex; align-items:center; gap:5px;
+      font-size:.72rem; font-weight:600; padding:4px 10px;
+      border-radius:20px; background:var(--inativo-bg); color:var(--inativo);
+    }
+    .status-dot { width:7px; height:7px; border-radius:50%; background:var(--inativo); }
+    .status-badge.ok { background:var(--ok-bg); color:var(--ok); }
+    .status-badge.ok .status-dot { background:var(--ok); }
+    .status-badge.pendente { background:var(--aviso-bg); color:var(--aviso); }
+    .status-badge.pendente .status-dot { background:var(--aviso); }
+
+    .panel-body { padding:24px 28px; }
+    .panel-desc { font-size:.85rem; color:#555; margin-bottom:20px; line-height:1.6; }
+
+    /* Campos de input */
+    .field { margin-bottom:16px; }
+    .field label { display:block; font-size:.75rem; font-weight:700; color:var(--escuro); margin-bottom:6px; text-transform:uppercase; letter-spacing:.5px; }
+    .field input, .field select, .field textarea {
+      width:100%; padding:10px 14px; border:1px solid var(--borda);
+      border-radius:9px; font-size:.85rem; color:var(--escuro);
+      font-family:'Segoe UI',Arial,sans-serif; outline:none;
+      transition:border .2s;
+    }
+    .field input:focus, .field select:focus { border-color:var(--azul); }
+    .field textarea { resize:vertical; min-height:80px; }
+
+    /* Resultado */
+    .resultado {
+      background:var(--inativo-bg); border:1px solid var(--borda);
+      border-radius:10px; padding:14px 16px; font-size:.82rem;
+      color:#555; margin-bottom:16px; min-height:48px;
+    }
+    .resultado.ok { background:var(--ok-bg); border-color:#a5d6a7; color:var(--ok); }
+    .resultado.erro { background:var(--erro-bg); border-color:#ef9a9a; color:var(--erro); }
+
+    /* Botões */
+    .btn-row { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn {
+      padding:11px 20px; border-radius:10px; font-size:.85rem; font-weight:700;
+      cursor:pointer; text-decoration:none; border:none; transition:opacity .18s, transform .18s;
+      display:inline-flex; align-items:center; gap:6px;
+    }
+    .btn:hover { opacity:.85; transform:translateY(-1px); }
+    .btn-primary { background:var(--azul); color:#fff; }
+    .btn-secondary { background:#fff; color:var(--azul); border:2px solid var(--azul); }
+    .btn-success { background:var(--ok); color:#fff; }
+    .btn-sm { padding:8px 14px; font-size:.78rem; }
+    .btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+
+    /* Nav */
+    .panel-footer {
+      padding:16px 28px; border-top:1px solid var(--borda);
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .nav-hint { font-size:.75rem; color:var(--muted); }
+
+    /* Resumo final */
+    .resumo-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+    .resumo-item { background:var(--inativo-bg); border-radius:10px; padding:14px 16px; }
+    .resumo-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.5px; color:#888; margin-bottom:4px; }
+    .resumo-val { font-size:.88rem; font-weight:700; color:var(--escuro); }
+
+    .hidden { display:none; }
+    footer { margin-top:32px; font-size:.72rem; color:var(--muted); }
+  </style>
+</head>
+<body>
+
+<a class="back" href="/nc-tool/">&larr; Portal NC Tool</a>
+
+<header>
+  <h1>NC Tool 360</h1>
+  <p>Fluxo completo de campanha — F2 &rarr; F1 &rarr; F3 &rarr; F4</p>
+</header>
+
+<!-- Barra de progresso -->
+<div class="progress" id="progress">
+  <div class="step-dot active" id="dot-0" onclick="goTo(0)">
+    <div class="dot-circle">1</div>
+    <div class="dot-label">Campanha</div>
+  </div>
+  <div class="step-dot" id="dot-1" onclick="goTo(1)">
+    <div class="dot-circle">2</div>
+    <div class="dot-label">F2 Taxonomia</div>
+  </div>
+  <div class="step-dot" id="dot-2" onclick="goTo(2)">
+    <div class="dot-circle">3</div>
+    <div class="dot-label">F1 IDs</div>
+  </div>
+  <div class="step-dot" id="dot-3" onclick="goTo(3)">
+    <div class="dot-circle">4</div>
+    <div class="dot-label">F3 Validacao</div>
+  </div>
+  <div class="step-dot" id="dot-4" onclick="goTo(4)">
+    <div class="dot-circle">5</div>
+    <div class="dot-label">F4 Export</div>
+  </div>
+  <div class="step-dot" id="dot-5" onclick="goTo(5)">
+    <div class="dot-circle">&#10003;</div>
+    <div class="dot-label">Concluido</div>
+  </div>
+</div>
+
+<!-- Painel -->
+<div class="panel">
+
+  <!-- Step 0: Campanha -->
+  <div id="step-0">
+    <div class="panel-header">
+      <div class="fase-badge" style="background:#e8eaf6;color:#3949ab">INICIO</div>
+      <div class="panel-title">Dados da Campanha</div>
+    </div>
+    <div class="panel-body">
+      <p class="panel-desc">Preencha as informacoes basicas da campanha para iniciar o fluxo 360.</p>
+      <div class="field">
+        <label>Cliente</label>
+        <select id="cliente">
+          <option value="">Selecione...</option>
+          <option value="Unilever BR">Unilever BR</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Brand</label>
+        <select id="brand">
+          <option value="">Selecione...</option>
+          <option>AXE</option><option>Ben &amp; Jerry's</option><option>Closeup</option>
+          <option>Comfort</option><option>Dove</option><option>Hellmann's</option>
+          <option>Knorr</option><option>Lifebuoy</option><option>Lux</option>
+          <option>Mae Terra</option><option>Maizena</option><option>Omo</option>
+          <option>Pond's</option><option>Rexona</option><option>Sim</option>
+          <option>Skip</option><option>Sorriso</option><option>Sunsilk</option>
+          <option>TRESemme</option><option>Unilever</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Plataformas</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;padding:10px 0">
+          <label id="plt-checkbox" style="display:contents"></label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Ambiente</label>
+        <select id="ambiente">
+          <option value="corp">Corp</option>
+          <option value="pessoal">Pessoal</option>
+        </select>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <span class="nav-hint">Passo 1 de 6</span>
+      <button class="btn btn-primary" onclick="avancar(0)">Proximo &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Step 1: F2 Taxonomia -->
+  <div id="step-1" class="hidden">
+    <div class="panel-header">
+      <div class="fase-badge" style="background:var(--f2-bg);color:var(--f2)">F2</div>
+      <div class="panel-title">Gerador de Taxonomia</div>
+      <div class="status-badge" id="status-f2"><span class="status-dot"></span> Aguardando</div>
+    </div>
+    <div class="panel-body">
+      <p class="panel-desc">Abra o F2 e gere os ad names para as plataformas selecionadas. Quando terminar, cole os ad names gerados abaixo.</p>
+      <div class="btn-row" style="margin-bottom:16px">
+        <button class="btn btn-secondary" id="btn-abrir-f2" onclick="abrirFase('f2')">&#128196; Abrir F2 &rarr;</button>
+      </div>
+      <div class="field">
+        <label>Ad names gerados (um por linha)</label>
+        <textarea id="adnames-f2" placeholder="Cole aqui os ad names gerados no F2..."></textarea>
+      </div>
+      <div class="resultado" id="resultado-f2">Aguardando ad names...</div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-secondary btn-sm" onclick="voltar(1)">&larr; Voltar</button>
+      <span class="nav-hint">Passo 2 de 6</span>
+      <button class="btn btn-primary" onclick="avancar(1)">Proximo &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Step 2: F1 IDs -->
+  <div id="step-2" class="hidden">
+    <div class="panel-header">
+      <div class="fase-badge" style="background:var(--f1-bg);color:var(--f1)">F1</div>
+      <div class="panel-title">Registro de IDs</div>
+      <div class="status-badge" id="status-f1"><span class="status-dot"></span> Aguardando</div>
+    </div>
+    <div class="panel-body">
+      <p class="panel-desc">Abra o F1 e registre os IDs para as plataformas que necessitam (SX: Search, YouTube, Meta, TikTok / AMZ: Amazon). Plataformas sem ID interno podem ser ignoradas.</p>
+      <div class="resumo-grid" id="resumo-plataformas"></div>
+      <div class="btn-row" style="margin-bottom:16px">
+        <button class="btn btn-secondary" id="btn-abrir-f1" onclick="abrirFase('f1')">&#128196; Abrir F1 &rarr;</button>
+      </div>
+      <div class="field">
+        <label>IDs gerados (formato: AdName | ID)</label>
+        <textarea id="ids-f1" placeholder="Ex:&#10;BR_Dove_Meta_Awareness_SX00001234&#10;BR_Dove_Amazon_Awareness_AMZ000123H"></textarea>
+      </div>
+      <div class="resultado" id="resultado-f1">Aguardando IDs...</div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-secondary btn-sm" onclick="voltar(2)">&larr; Voltar</button>
+      <span class="nav-hint">Passo 3 de 6</span>
+      <button class="btn btn-primary" onclick="avancar(2)">Proximo &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Step 3: F3 Validacao -->
+  <div id="step-3" class="hidden">
+    <div class="panel-header">
+      <div class="fase-badge" style="background:var(--f3-bg);color:var(--f3)">F3</div>
+      <div class="panel-title">Validacao de Naming</div>
+      <div class="status-badge" id="status-f3-360"><span class="status-dot"></span> Aguardando</div>
+    </div>
+    <div class="panel-body">
+      <p class="panel-desc">Abra o F3 e valide os ad names gerados no F2. Use o modo "Manual / Colar" e cole os ad names. Depois informe o score obtido.</p>
+      <div class="btn-row" style="margin-bottom:16px">
+        <button class="btn btn-secondary" id="btn-abrir-f3" onclick="abrirFase('f3')">&#128269; Abrir F3 &rarr;</button>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:16px">
+        <div class="field" style="flex:1;margin:0">
+          <label>Score obtido (%)</label>
+          <input type="number" id="score-f3" min="0" max="100" placeholder="Ex: 98">
+        </div>
+        <div class="field" style="flex:1;margin:0">
+          <label>Total de strings</label>
+          <input type="number" id="total-f3" min="0" placeholder="Ex: 48">
+        </div>
+        <div class="field" style="flex:1;margin:0">
+          <label>Erros</label>
+          <input type="number" id="erros-f3" min="0" placeholder="Ex: 1">
+        </div>
+      </div>
+      <div class="resultado" id="resultado-f3-360">Aguardando resultado da validacao...</div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-secondary btn-sm" onclick="voltar(3)">&larr; Voltar</button>
+      <span class="nav-hint">Passo 4 de 6</span>
+      <button class="btn btn-primary" onclick="avancar(3)">Proximo &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Step 4: F4 Export -->
+  <div id="step-4" class="hidden">
+    <div class="panel-header">
+      <div class="fase-badge" style="background:var(--f4-bg);color:var(--f4)">F4</div>
+      <div class="panel-title">Exportacao ADP</div>
+      <div class="status-badge" id="status-f4-360"><span class="status-dot"></span> Aguardando</div>
+    </div>
+    <div class="panel-body">
+      <p class="panel-desc">Abra o F4 e realize o Merge RM &rarr; ADP ou outros procedimentos de exportacao necessarios.</p>
+      <div class="btn-row" style="margin-bottom:16px">
+        <button class="btn btn-secondary" id="btn-abrir-f4" onclick="abrirFase('f4')">&#128295; Abrir F4 &rarr;</button>
+      </div>
+      <div class="field">
+        <label>Modulos utilizados</label>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;padding:6px 0">
+          <label style="font-size:.8rem;display:flex;align-items:center;gap:4px"><input type="checkbox" value="Merge RM→ADP"> Merge RM→ADP</label>
+          <label style="font-size:.8rem;display:flex;align-items:center;gap:4px"><input type="checkbox" value="Mapeador"> Mapeador</label>
+          <label style="font-size:.8rem;display:flex;align-items:center;gap:4px"><input type="checkbox" value="ANS"> Ad Name Sync</label>
+          <label style="font-size:.8rem;display:flex;align-items:center;gap:4px"><input type="checkbox" value="Campaign Local"> Campaign Local</label>
+          <label style="font-size:.8rem;display:flex;align-items:center;gap:4px"><input type="checkbox" value="Extrator"> Extrator</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Observacoes</label>
+        <textarea id="obs-f4" placeholder="Alguma observacao sobre a exportacao..."></textarea>
+      </div>
+      <div class="resultado" id="resultado-f4-360">Aguardando exportacao...</div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-secondary btn-sm" onclick="voltar(4)">&larr; Voltar</button>
+      <span class="nav-hint">Passo 5 de 6</span>
+      <button class="btn btn-primary" onclick="avancar(4)">Concluir &rarr;</button>
+    </div>
+  </div>
+
+  <!-- Step 5: Resumo Final -->
+  <div id="step-5" class="hidden">
+    <div class="panel-header">
+      <div class="fase-badge" style="background:#e8f5e9;color:#2e7d32">&#10003; CONCLUIDO</div>
+      <div class="panel-title">Resumo da Campanha</div>
+    </div>
+    <div class="panel-body">
+      <div class="resumo-grid" id="resumo-final"></div>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="exportarResumo()">&#128424; Exportar Resumo PDF</button>
+        <button class="btn btn-secondary" onclick="novaCampanha()">&#43; Nova Campanha</button>
+      </div>
+    </div>
+    <div class="panel-footer">
+      <button class="btn btn-secondary btn-sm" onclick="voltar(5)">&larr; Voltar</button>
+      <span class="nav-hint">Concluido!</span>
+      <span></span>
+    </div>
+  </div>
+
+</div>
+
+<footer>NC Tool 360 &copy; 2026</footer>
+
+<script>
+var URLS = {
+  corp:    { f1:'https://docs.google.com/spreadsheets/d/1VBaExPGHOVYxpTyzJymrb8RuWWe34_9WBE0aC3slETU',
+             f2:'https://script.google.com/macros/s/AKfycbzKKuKhr111DFtk5jAhx3ofQzZL78sQvliDKtxDj_FlBZmbPaLuufd6-oHxq7Tsr9sp_w/exec',
+             f3:'https://script.google.com/macros/s/AKfycbzKKuKhr111DFtk5jAhx3ofQzZL78sQvliDKtxDj_FlBZmbPaLuufd6-oHxq7Tsr9sp_w/exec',
+             f4:'https://script.google.com/macros/s/AKfycbxiWW0zVuFdRJCvzwCBeH8OIqsFJyKkhqZotgHX8vrD0UARbU3SUtJ7IxZsg2BXc_QrPw/exec' },
+  pessoal: { f1:'https://docs.google.com/spreadsheets/d/1vGM_se-b1rechwv91WnSw-SW2XQFJ4DN4FPWqrEMkq8',
+             f2:'https://docs.google.com/spreadsheets/d/1fOPF6JLH29rY15Obb-QC88jVGuR1t0c4wuB4SyDmqyc',
+             f3:'https://script.google.com/macros/s/AKfycby6uFxVBlvGx2bC93m1NK9ixTG8Oa61CA2qeKCEc8FR9JnGJCv5m1AlOgoq4kmzbpS3/exec',
+             f4:'https://script.google.com/macros/s/AKfycby6h6qvXqacFrf2TmcXYaflRQp7rvhklpnR27VWhIueh9pLxWvUCRYkFToJPxYezUN7cw/exec' }
+};
+
+var PLATAFORMAS = ['Google Ads','DV360','YouTube','Meta','TikTok','Amazon DSP','Pinterest','Snapchat','Twitter/X','Flashtalking','Compra Direta'];
+var PLATAFORMAS_SX  = ['Google Ads','DV360','YouTube','Meta','TikTok'];
+var PLATAFORMAS_AMZ = ['Amazon DSP'];
+
+var estado = { step:0, cliente:'', brand:'', plataformas:[], ambiente:'corp', adnames:[], ids:[], score:0, total:0, erros:0 };
+
+// Monta checkboxes de plataformas
+(function() {
+  var container = document.querySelector('#plt-checkbox').parentNode;
+  PLATAFORMAS.forEach(function(p) {
+    var lbl = document.createElement('label');
+    lbl.style.cssText = 'font-size:.8rem;display:flex;align-items:center;gap:4px;padding:6px 12px;background:#fff;border:1px solid var(--borda);border-radius:8px;cursor:pointer;';
+    lbl.innerHTML = '<input type="checkbox" value="' + p + '" style="margin:0"> ' + p;
+    container.appendChild(lbl);
+  });
+  document.getElementById('plt-checkbox').remove();
+})();
+
+function getPlataformasSelecionadas() {
+  return Array.from(document.querySelectorAll('#step-0 input[type=checkbox]:checked')).map(function(c) { return c.value; });
+}
+
+function abrirFase(fase) {
+  var amb = document.getElementById('ambiente').value || estado.ambiente;
+  var url = URLS[amb][fase];
+  if (url) window.open(url, '_blank');
+}
+
+function goTo(n) {
+  if (n > estado.step) return;
+  mostrarStep(n);
+}
+
+function mostrarStep(n) {
+  for (var i = 0; i <= 5; i++) {
+    var el = document.getElementById('step-' + i);
+    if (el) el.classList.toggle('hidden', i !== n);
+    var dot = document.getElementById('dot-' + i);
+    if (dot) {
+      dot.classList.remove('active','done');
+      if (i < n) dot.classList.add('done');
+      if (i === n) dot.classList.add('active');
+    }
+  }
+  estado.step = n;
+}
+
+function voltar(step) { mostrarStep(step - 1); }
+
+function avancar(step) {
+  if (step === 0) {
+    estado.cliente     = document.getElementById('cliente').value;
+    estado.brand       = document.getElementById('brand').value;
+    estado.ambiente    = document.getElementById('ambiente').value;
+    estado.plataformas = getPlataformasSelecionadas();
+    if (!estado.cliente || !estado.brand || !estado.plataformas.length) {
+      alert('Preencha cliente, brand e ao menos uma plataforma.');
+      return;
+    }
+    // Atualiza URLs com ambiente
+    var amb = estado.ambiente;
+    document.getElementById('btn-abrir-f2').onclick = function() { window.open(URLS[amb].f2,'_blank'); };
+    document.getElementById('btn-abrir-f1').onclick = function() { window.open(URLS[amb].f1,'_blank'); };
+    document.getElementById('btn-abrir-f3').onclick = function() { window.open(URLS[amb].f3,'_blank'); };
+    document.getElementById('btn-abrir-f4').onclick = function() { window.open(URLS[amb].f4,'_blank'); };
+    // Mostra plataformas que precisam de ID no step F1
+    var grid = document.getElementById('resumo-plataformas');
+    grid.innerHTML = '';
+    estado.plataformas.forEach(function(p) {
+      var tipoID = PLATAFORMAS_SX.includes(p) ? 'SX' : PLATAFORMAS_AMZ.includes(p) ? 'AMZ' : 'N/A';
+      var cor = tipoID === 'SX' ? '#e3f2fd' : tipoID === 'AMZ' ? '#fff8e1' : '#f5f5f5';
+      grid.innerHTML += '<div class="resumo-item" style="background:' + cor + '"><div class="resumo-label">' + p + '</div><div class="resumo-val">ID: ' + tipoID + '</div></div>';
+    });
+    mostrarStep(1);
+
+  } else if (step === 1) {
+    var txt = document.getElementById('adnames-f2').value.trim();
+    estado.adnames = txt ? txt.split('\n').filter(function(l) { return l.trim(); }) : [];
+    var res = document.getElementById('resultado-f2');
+    if (!estado.adnames.length) {
+      res.className = 'resultado';
+      res.textContent = 'Aguardando ad names...';
+      alert('Cole ao menos um ad name antes de continuar.');
+      return;
+    }
+    res.className = 'resultado ok';
+    res.textContent = '✓ ' + estado.adnames.length + ' ad name(s) registrado(s).';
+    document.getElementById('status-f2').className = 'status-badge ok';
+    document.getElementById('status-f2').innerHTML = '<span class="status-dot"></span> Concluido';
+    mostrarStep(2);
+
+  } else if (step === 2) {
+    var txt2 = document.getElementById('ids-f1').value.trim();
+    estado.ids = txt2 ? txt2.split('\n').filter(function(l) { return l.trim(); }) : [];
+    var res2 = document.getElementById('resultado-f1');
+    res2.className = 'resultado ok';
+    var platsComID = estado.plataformas.filter(function(p) { return PLATAFORMAS_SX.includes(p) || PLATAFORMAS_AMZ.includes(p); });
+    res2.textContent = platsComID.length
+      ? '✓ ' + (estado.ids.length || 0) + ' ID(s) registrado(s) para ' + platsComID.join(', ') + '.'
+      : '✓ Nenhuma plataforma selecionada requer ID interno.';
+    document.getElementById('status-f1').className = 'status-badge ok';
+    document.getElementById('status-f1').innerHTML = '<span class="status-dot"></span> Concluido';
+    mostrarStep(3);
+
+  } else if (step === 3) {
+    var score = parseFloat(document.getElementById('score-f3').value);
+    estado.total  = parseInt(document.getElementById('total-f3').value) || 0;
+    estado.erros  = parseInt(document.getElementById('erros-f3').value) || 0;
+    estado.score  = isNaN(score) ? 0 : score;
+    var res3 = document.getElementById('resultado-f3-360');
+    var cor3 = estado.score >= 95 ? 'ok' : estado.score >= 70 ? 'pendente' : 'erro';
+    var emoji = estado.score >= 95 ? '✅' : estado.score >= 70 ? '⚠️' : '❌';
+    res3.className = 'resultado ' + cor3;
+    res3.textContent = emoji + ' Score: ' + estado.score + '% — ' + estado.total + ' strings, ' + estado.erros + ' erro(s).';
+    document.getElementById('status-f3-360').className = 'status-badge ' + (estado.score >= 95 ? 'ok' : 'pendente');
+    document.getElementById('status-f3-360').innerHTML = '<span class="status-dot"></span> ' + estado.score + '%';
+    mostrarStep(4);
+
+  } else if (step === 4) {
+    var modulos = Array.from(document.querySelectorAll('#step-4 input[type=checkbox]:checked')).map(function(c) { return c.value; });
+    var res4 = document.getElementById('resultado-f4-360');
+    res4.className = 'resultado ok';
+    res4.textContent = '✓ Exportacao concluida.' + (modulos.length ? ' Modulos: ' + modulos.join(', ') + '.' : '');
+    document.getElementById('status-f4-360').className = 'status-badge ok';
+    document.getElementById('status-f4-360').innerHTML = '<span class="status-dot"></span> Concluido';
+    // Monta resumo final
+    var rf = document.getElementById('resumo-final');
+    rf.innerHTML =
+      '<div class="resumo-item"><div class="resumo-label">Cliente</div><div class="resumo-val">' + estado.cliente + '</div></div>' +
+      '<div class="resumo-item"><div class="resumo-label">Brand</div><div class="resumo-val">' + estado.brand + '</div></div>' +
+      '<div class="resumo-item"><div class="resumo-label">Ambiente</div><div class="resumo-val">' + estado.ambiente + '</div></div>' +
+      '<div class="resumo-item"><div class="resumo-label">Plataformas</div><div class="resumo-val">' + estado.plataformas.join(', ') + '</div></div>' +
+      '<div class="resumo-item"><div class="resumo-label">Ad Names</div><div class="resumo-val">' + estado.adnames.length + ' gerados</div></div>' +
+      '<div class="resumo-item"><div class="resumo-label">Score F3</div><div class="resumo-val" style="color:' + (estado.score>=95?'#2e7d32':estado.score>=70?'#e65100':'#c62828') + '">' + estado.score + '%</div></div>' +
+      '<div class="resumo-item"><div class="resumo-label">Erros</div><div class="resumo-val">' + estado.erros + '</div></div>' +
+      '<div class="resumo-item"><div class="resumo-label">Exportacao</div><div class="resumo-val">' + (modulos.length ? modulos.join(', ') : 'Manual') + '</div></div>';
+    mostrarStep(5);
+  }
+}
+
+function exportarResumo() {
+  var conteudo = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>NC Tool 360 - Resumo</title>' +
+    '<style>body{font-family:Arial,sans-serif;padding:32px;color:#1a237e;}h1{font-size:1.3rem;margin-bottom:8px;}' +
+    '.sub{color:#666;font-size:.85rem;margin-bottom:24px;}' +
+    'table{width:100%;border-collapse:collapse;font-size:.85rem;}' +
+    'th{background:#1F36C7;color:#fff;padding:10px 14px;text-align:left;}' +
+    'td{padding:10px 14px;border-bottom:1px solid #e0e0e0;}' +
+    'tr:nth-child(even)td{background:#f5f5f5;}' +
+    '@media print{button{display:none!important;}}' +
+    '</style></head><body>' +
+    '<button onclick="window.print()" style="position:fixed;top:16px;right:16px;padding:10px 20px;background:#1F36C7;color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer;">Exportar PDF</button>' +
+    '<h1>NC Tool 360 — Resumo de Campanha</h1>' +
+    '<div class="sub">Gerado em ' + new Date().toLocaleString('pt-BR') + '</div>' +
+    '<table><thead><tr><th>Campo</th><th>Valor</th></tr></thead><tbody>' +
+    '<tr><td>Cliente</td><td>' + estado.cliente + '</td></tr>' +
+    '<tr><td>Brand</td><td>' + estado.brand + '</td></tr>' +
+    '<tr><td>Ambiente</td><td>' + estado.ambiente + '</td></tr>' +
+    '<tr><td>Plataformas</td><td>' + estado.plataformas.join(', ') + '</td></tr>' +
+    '<tr><td>Ad Names gerados</td><td>' + estado.adnames.length + '</td></tr>' +
+    '<tr><td>Score F3</td><td>' + estado.score + '%</td></tr>' +
+    '<tr><td>Total strings</td><td>' + estado.total + '</td></tr>' +
+    '<tr><td>Erros</td><td>' + estado.erros + '</td></tr>' +
+    '</tbody></table></body></html>';
+  var win = window.open('','_blank');
+  win.document.write(conteudo);
+  win.document.close();
+}
+
+function novaCampanha() {
+  if (!confirm('Iniciar nova campanha? Os dados atuais serao perdidos.')) return;
+  estado = { step:0, cliente:'', brand:'', plataformas:[], ambiente:'corp', adnames:[], ids:[], score:0, total:0, erros:0 };
+  document.getElementById('adnames-f2').value = '';
+  document.getElementById('ids-f1').value = '';
+  document.getElementById('score-f3').value = '';
+  document.getElementById('total-f3').value = '';
+  document.getElementById('erros-f3').value = '';
+  document.getElementById('obs-f4').value = '';
+  document.querySelectorAll('input[type=checkbox]').forEach(function(c) { c.checked = false; });
+  mostrarStep(0);
+}
+</script>
+</body>
+</html>
