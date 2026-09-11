@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>F2 — Gerador NC | NC Tool</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --azul:#1F36C7; --escuro:#1a237e; --muted:#9fa8da;
+      --borda:#d6dbf2; --bg:#f0f2ff;
+      --ok:#2e7d32; --ok-bg:#e8f5e9;
+      --erro:#c62828; --erro-bg:#ffebee;
+      --aviso:#e65100; --aviso-bg:#fff8e1;
+      --f2:#1565c0; --f2-bg:#e3f2fd;
+      --amazon:#FF9900; --meta:#0866FF; --tiktok:#FF0050;
+      --youtube:#FF0000; --search:#4285F4; --google:#34A853;
+      --dv360:#1967D2; --pinterest:#E60023; --twitter:#000000;
+      --flashtalking:#E8461E; --compra:#6B7280;
+    }
+    html, body { height:100%; }
+    body { font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); min-height:100vh; display:flex; flex-direction:column; }
+
+    /* Header */
+    .header { background:#fff; border-bottom:1px solid var(--borda); padding:14px 24px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; }
+    .header-logo { font-size:1rem; font-weight:800; color:var(--escuro); }
+    .header-fase { padding:3px 10px; border-radius:20px; background:var(--f2-bg); color:var(--f2); font-size:.72rem; font-weight:700; }
+    .header-user { font-size:.78rem; color:var(--muted); }
+    .header-spacer { flex:1; }
+    .env-toggle { display:flex; gap:4px; background:var(--bg); border-radius:8px; padding:3px; }
+    .env-btn { padding:5px 14px; border:none; border-radius:6px; font-size:.78rem; font-weight:600; cursor:pointer; color:var(--muted); background:transparent; transition:all .2s; }
+    .env-btn.active { background:var(--azul); color:#fff; }
+    .status-dot-h { width:8px; height:8px; border-radius:50%; background:var(--muted); flex-shrink:0; }
+    .status-dot-h.ok { background:var(--ok); }
+
+    /* Layout */
+    .layout { display:flex; flex:1; overflow:hidden; }
+    .sidebar { width:220px; background:#fff; border-right:1px solid var(--borda); display:flex; flex-direction:column; flex-shrink:0; }
+    .nav-item { padding:12px 20px; font-size:.82rem; font-weight:600; color:var(--muted); cursor:pointer; border-left:3px solid transparent; transition:all .2s; display:flex; align-items:center; gap:8px; }
+    .nav-item:hover { color:var(--escuro); background:var(--bg); }
+    .nav-item.active { color:var(--azul); border-left-color:var(--azul); background:var(--bg); }
+    .nav-section { padding:8px 20px 4px; font-size:.68rem; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.8px; }
+
+    .main { flex:1; overflow-y:auto; padding:24px; }
+
+    /* Buttons */
+    .btn { padding:9px 18px; border-radius:9px; font-size:.82rem; font-weight:700; cursor:pointer; border:none; transition:all .2s; display:inline-flex; align-items:center; gap:6px; }
+    .btn:hover { opacity:.85; transform:translateY(-1px); }
+    .btn-primary { background:var(--azul); color:#fff; }
+    .btn-secondary { background:#fff; color:var(--azul); border:2px solid var(--azul); }
+    .btn-success { background:var(--ok); color:#fff; }
+    .btn-sm { padding:6px 12px; font-size:.76rem; }
+    .btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
+
+    /* Cards de campanha */
+    .camp-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:14px; }
+    .camp-card { background:#fff; border:1px solid var(--borda); border-radius:12px; padding:18px; cursor:pointer; transition:all .2s; }
+    .camp-card:hover { box-shadow:0 4px 16px rgba(31,54,199,.1); transform:translateY(-1px); }
+    .camp-id { font-size:.7rem; color:var(--muted); font-family:monospace; margin-bottom:6px; }
+    .camp-brand { font-size:.95rem; font-weight:800; color:var(--escuro); margin-bottom:4px; }
+    .camp-plats { display:flex; flex-wrap:wrap; gap:4px; margin-bottom:10px; }
+    .plat-chip { padding:2px 8px; border-radius:20px; font-size:.68rem; font-weight:700; color:#fff; }
+    .camp-meta { font-size:.75rem; color:#888; display:flex; justify-content:space-between; }
+    .camp-status { padding:2px 8px; border-radius:20px; font-size:.68rem; font-weight:700; }
+    .status-ativo { background:var(--ok-bg); color:var(--ok); }
+    .status-arquivado { background:#f5f5f5; color:#999; }
+
+    /* Nova campanha / Editor */
+    .editor-wrap { max-width:1000px; }
+    .editor-header { display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+    .editor-title { font-size:1.1rem; font-weight:800; color:var(--escuro); flex:1; }
+    .editor-meta { font-size:.75rem; color:var(--muted); }
+
+    /* Steps */
+    .steps { display:flex; gap:0; margin-bottom:28px; }
+    .step { flex:1; padding:12px 16px; background:#fff; border:1px solid var(--borda); border-right:none; font-size:.78rem; font-weight:600; color:var(--muted); cursor:pointer; transition:all .2s; text-align:center; }
+    .step:first-child { border-radius:9px 0 0 9px; }
+    .step:last-child { border-radius:0 9px 9px 0; border-right:1px solid var(--borda); }
+    .step.active { background:var(--azul); color:#fff; border-color:var(--azul); }
+    .step.done { background:var(--ok-bg); color:var(--ok); border-color:#a5d6a7; }
+
+    /* Campos */
+    .field { margin-bottom:14px; }
+    .field label { display:block; font-size:.72rem; font-weight:700; color:var(--escuro); margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px; }
+    .field input, .field select, .field textarea { width:100%; padding:9px 12px; border:1px solid var(--borda); border-radius:8px; font-size:.85rem; outline:none; transition:border .2s; font-family:'Segoe UI',sans-serif; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--azul); }
+    .field textarea { resize:vertical; min-height:80px; }
+    .field-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .field-row3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+
+    /* Plataformas checkboxes */
+    .plat-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .plat-check { display:none; }
+    .plat-label {
+      padding:6px 14px; border:1px solid var(--borda); border-radius:20px;
+      font-size:.78rem; font-weight:600; cursor:pointer; color:var(--muted);
+      transition:all .2s; background:#fff; user-select:none;
+    }
+    .plat-check:checked + .plat-label { color:#fff; border-color:transparent; }
+
+    /* Abas de plataforma no editor */
+    .plat-tabs { display:flex; gap:4px; flex-wrap:wrap; margin-bottom:16px; }
+    .plat-tab { padding:6px 14px; border:1px solid var(--borda); border-radius:20px; font-size:.76rem; font-weight:600; cursor:pointer; background:#fff; color:var(--muted); transition:all .2s; }
+    .plat-tab.active { color:#fff; border-color:transparent; }
+
+    /* Tabela de ad names */
+    .adnames-table { width:100%; border-collapse:collapse; font-size:.82rem; }
+    .adnames-table th { background:var(--bg); color:var(--escuro); padding:8px 12px; text-align:left; font-size:.72rem; text-transform:uppercase; border-bottom:2px solid var(--borda); }
+    .adnames-table td { padding:8px 12px; border-bottom:1px solid var(--borda); }
+    .adnames-table input { border:none; background:transparent; font-size:.82rem; width:100%; outline:none; font-family:'Segoe UI',sans-serif; }
+    .adnames-table input:focus { background:var(--bg); border-radius:4px; padding:2px 6px; }
+    .row-num { color:var(--muted); font-size:.72rem; width:32px; text-align:center; }
+    .id-cell { font-family:monospace; font-size:.78rem; color:var(--f2); font-weight:700; min-width:120px; }
+    .id-cell.pendente { color:var(--muted); font-style:italic; }
+
+    /* Export */
+    .export-section { background:#fff; border:1px solid var(--borda); border-radius:12px; padding:20px; margin-top:16px; }
+    .export-title { font-size:.88rem; font-weight:700; color:var(--escuro); margin-bottom:12px; }
+    .export-options { display:flex; gap:24px; flex-wrap:wrap; margin-bottom:16px; }
+    .export-opt { display:flex; flex-direction:column; gap:8px; }
+    .export-opt label { font-size:.72rem; font-weight:700; color:var(--escuro); text-transform:uppercase; }
+    .checkbox-list { display:flex; flex-direction:column; gap:6px; }
+    .checkbox-list label { font-size:.82rem; color:#444; display:flex; align-items:center; gap:6px; cursor:pointer; }
+
+    .alert { padding:10px 14px; border-radius:8px; font-size:.82rem; margin-bottom:12px; }
+    .alert-erro { background:var(--erro-bg); color:var(--erro); }
+    .alert-ok { background:var(--ok-bg); color:var(--ok); }
+    .alert.hidden { display:none; }
+
+    /* Toolbar */
+    .toolbar { display:flex; gap:10px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
+    .search-input { flex:1; min-width:200px; padding:9px 14px; border:1px solid var(--borda); border-radius:9px; font-size:.85rem; outline:none; }
+    .search-input:focus { border-color:var(--azul); }
+
+    /* Versões */
+    .versoes-list { display:flex; flex-direction:column; gap:6px; }
+    .versao-item { display:flex; align-items:center; gap:10px; padding:10px 14px; background:#fff; border:1px solid var(--borda); border-radius:8px; font-size:.82rem; }
+    .versao-num { font-weight:700; color:var(--azul); min-width:40px; }
+    .versao-data { color:#888; flex:1; }
+
+    .empty-state { text-align:center; padding:48px; color:var(--muted); font-size:.9rem; }
+    .loading { text-align:center; padding:32px; color:var(--muted); }
+    .spinner { display:inline-block; width:24px; height:24px; border:3px solid var(--borda); border-top-color:var(--azul); border-radius:50%; animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .hidden { display:none; }
+
+    @media(max-width:768px) { .sidebar { display:none; } .field-row, .field-row3 { grid-template-columns:1fr; } }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-logo">NC Tool</div>
+  <div class="header-fase">F2 — Gerador NC</div>
+  <span class="header-user" id="header-user"></span>
+  <div class="header-spacer"></div>
+  <div class="env-toggle">
+    <button class="env-btn active" onclick="setEnv('corp')">Corp</button>
+    <button class="env-btn" onclick="setEnv('pessoal')">Pessoal</button>
+  </div>
+  <div class="status-dot-h" id="status-header" title="Verificando..."></div>
+  <a href="/nc-tool/" style="font-size:.78rem;color:var(--muted);text-decoration:none;margin-left:8px;">Portal</a>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="nav-section">Campanhas</div>
+    <div class="nav-item active" id="nav-lista"   onclick="showView('lista')">&#128196; Todas as Campanhas</div>
+    <div class="nav-item"        id="nav-nova"    onclick="novaCampanha()">&#43; Nova Campanha</div>
+    <div class="nav-item hidden" id="nav-editor"  onclick="showView('editor')">&#9999;&#65039; Editar</div>
+    <div class="nav-section" style="margin-top:8px">Histórico</div>
+    <div class="nav-item"        id="nav-versoes" onclick="showView('versoes')">&#128336; Versões</div>
+  </div>
+
+  <div class="main">
+
+    <!-- View: Lista de campanhas -->
+    <div id="view-lista">
+      <div class="toolbar">
+        <input class="search-input" id="search-camp" placeholder="Buscar por brand, ID ou plataforma..." oninput="filtrarCampanhas()">
+        <select class="filter-select" id="filter-camp-status" onchange="filtrarCampanhas()" style="padding:9px 12px;border:1px solid var(--borda);border-radius:9px;font-size:.82rem;outline:none;background:#fff">
+          <option value="">Todos os status</option>
+          <option value="ativo">Ativo</option>
+          <option value="arquivado">Arquivado</option>
+        </select>
+        <button class="btn btn-primary btn-sm" onclick="novaCampanha()">&#43; Nova Campanha</button>
+      </div>
+      <div id="camp-grid" class="camp-grid">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+    <!-- View: Nova / Editar campanha -->
+    <div id="view-editor" class="hidden">
+      <div class="editor-wrap">
+        <div class="editor-header">
+          <button class="btn btn-secondary btn-sm" onclick="showView('lista')">&larr; Voltar</button>
+          <div class="editor-title" id="editor-title">Nova Campanha</div>
+          <div class="editor-meta" id="editor-meta"></div>
+          <button class="btn btn-sm" style="background:#fff;border:1px solid var(--borda);color:#666" onclick="arquivarCampanha()" id="btn-arquivar">Arquivar</button>
+        </div>
+
+        <div class="steps">
+          <div class="step active" id="step-0" onclick="irStep(0)">1. Dados</div>
+          <div class="step"        id="step-1" onclick="irStep(1)">2. Plataformas</div>
+          <div class="step"        id="step-2" onclick="irStep(2)">3. Ad Names</div>
+          <div class="step"        id="step-3" onclick="irStep(3)">4. Exportar</div>
+        </div>
+
+        <!-- Step 0: Dados da campanha -->
+        <div id="passo-0">
+          <div class="field-row">
+            <div class="field"><label>Brand</label>
+              <select id="camp-brand">
+                <option value="">Selecione...</option>
+                <option>AXE</option><option>Ben &amp; Jerry's</option><option>Closeup</option>
+                <option>Comfort</option><option>Dove</option><option>Hellmann's</option>
+                <option>Knorr</option><option>Lifebuoy</option><option>Lux</option>
+                <option>Mãe Terra</option><option>Maizena</option><option>Omo</option>
+                <option>Pond's</option><option>Rexona</option><option>Sim</option>
+                <option>Skip</option><option>Sorriso</option><option>Sunsilk</option>
+                <option>TRESemmé</option><option>Unilever</option>
+              </select>
+            </div>
+            <div class="field"><label>Objetivo</label>
+              <select id="camp-objetivo">
+                <option value="">Selecione...</option>
+                <option>Awareness</option><option>Awareness/Consideration</option>
+                <option>Consideration</option><option>Conversion</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field"><label>Mês/Ano</label>
+              <input type="month" id="camp-mes" value="">
+            </div>
+            <div class="field"><label>CN Code</label>
+              <input id="camp-cn" placeholder="Ex: CN0001">
+            </div>
+          </div>
+          <div class="field"><label>Observações</label>
+            <textarea id="camp-obs" placeholder="Notas internas sobre esta campanha..."></textarea>
+          </div>
+          <div class="alert alert-erro hidden" id="alert-dados"></div>
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn btn-primary" onclick="irStep(1)">Próximo &rarr;</button>
+            <button class="btn btn-secondary" onclick="salvarRascunho()">&#128190; Salvar Rascunho</button>
+          </div>
+        </div>
+
+        <!-- Step 1: Plataformas -->
+        <div id="passo-1" class="hidden">
+          <div class="field">
+            <label>Selecione as plataformas desta campanha</label>
+            <div class="plat-grid" id="plat-checkboxes"></div>
+          </div>
+          <div class="alert alert-erro hidden" id="alert-plats"></div>
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn btn-secondary" onclick="irStep(0)">&larr; Voltar</button>
+            <button class="btn btn-primary" onclick="irStep(2)">Próximo &rarr;</button>
+          </div>
+        </div>
+
+        <!-- Step 2: Ad Names por plataforma -->
+        <div id="passo-2" class="hidden">
+          <div class="plat-tabs" id="plat-tabs"></div>
+          <div id="adnames-editor">
+            <div class="empty-state">Selecione uma aba de plataforma acima.</div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+            <button class="btn btn-secondary" onclick="irStep(1)">&larr; Voltar</button>
+            <button class="btn btn-secondary btn-sm" onclick="addLinhaAtual()">&#43; Linha</button>
+            <button class="btn btn-secondary btn-sm" onclick="addLinhasLote()">&#43; Lote</button>
+            <button class="btn btn-primary" onclick="irStep(3)">Próximo &rarr;</button>
+            <button class="btn btn-secondary" onclick="salvarCampanha()">&#128190; Salvar</button>
+          </div>
+        </div>
+
+        <!-- Step 3: Exportar -->
+        <div id="passo-3" class="hidden">
+          <div class="export-section">
+            <div class="export-title">&#128229; Exportar ADP</div>
+            <div class="export-options">
+              <div class="export-opt">
+                <label>Plataformas</label>
+                <div class="checkbox-list" id="export-plats"></div>
+              </div>
+              <div class="export-opt">
+                <label>Linhas</label>
+                <div class="checkbox-list">
+                  <label><input type="radio" name="export-linhas" value="todas" checked> Todas as linhas</label>
+                  <label><input type="radio" name="export-linhas" value="selecionadas"> Selecionadas</label>
+                </div>
+              </div>
+              <div class="export-opt">
+                <label>Formato</label>
+                <div class="checkbox-list">
+                  <label><input type="radio" name="export-fmt" value="novo" checked> Novo ADP</label>
+                  <label><input type="radio" name="export-fmt" value="atualizar"> Atualizar ADP existente</label>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex;gap:10px">
+              <button class="btn btn-success" onclick="exportarADP()">&#128229; Exportar ADP</button>
+              <button class="btn btn-secondary" onclick="exportarCSV()">&#128196; Exportar CSV</button>
+            </div>
+            <div class="alert hidden" id="alert-export" style="margin-top:12px"></div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:16px">
+            <button class="btn btn-secondary" onclick="irStep(2)">&larr; Voltar</button>
+            <button class="btn btn-primary" onclick="salvarCampanha()">&#128190; Salvar Campanha</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- View: Versões -->
+    <div id="view-versoes" class="hidden">
+      <h2 style="font-size:1rem;font-weight:800;color:var(--escuro);margin-bottom:16px">&#128336; Histórico de Versões</h2>
+      <div id="versoes-list" class="versoes-list">
+        <div class="loading"><div class="spinner"></div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+var PROXY = 'https://nc-proxy.falssp.workers.dev/';
+var env   = 'corp';
+var usuarioAtual = '';
+var todasCampanhas = [];
+var campanhaAtual  = null; // { id, brand, objetivo, mes, cn, obs, plataformas, adNames, versao, status }
+var platAtiva      = '';
+
+var PLATAFORMAS = [
+  { nome:'Amazon DSP',    cor:'#FF9900', fonte:'#000' },
+  { nome:'Compra Direta', cor:'#6B7280', fonte:'#fff' },
+  { nome:'DV360',         cor:'#1967D2', fonte:'#fff' },
+  { nome:'Flashtalking',  cor:'#E8461E', fonte:'#fff' },
+  { nome:'Google Others', cor:'#34A853', fonte:'#fff' },
+  { nome:'Google Search', cor:'#4285F4', fonte:'#fff' },
+  { nome:'Google Video',  cor:'#FF0000', fonte:'#fff' },
+  { nome:'Meta',          cor:'#0866FF', fonte:'#fff' },
+  { nome:'Pinterest',     cor:'#E60023', fonte:'#fff' },
+  { nome:'TikTok',        cor:'#FF0050', fonte:'#fff' },
+  { nome:'Twitter/X',     cor:'#000000', fonte:'#fff' },
+  { nome:'YouTube',       cor:'#FF0000', fonte:'#fff' },
+  { nome:'LinkedIn',      cor:'#0A66C2', fonte:'#fff' },
+  { nome:'Snapchat',      cor:'#FFFC00', fonte:'#000' },
+];
+
+// Monta checkboxes de plataformas
+(function() {
+  var div = document.getElementById('plat-checkboxes');
+  PLATAFORMAS.forEach(function(p, i) {
+    var id = 'plat-' + i;
+    div.innerHTML +=
+      '<input type="checkbox" class="plat-check" id="' + id + '" value="' + p.nome + '" onchange="atualizarTabs()">' +
+      '<label class="plat-label" for="' + id + '" style="--cor:' + p.cor + '">' + p.nome + '</label>';
+  });
+  // CSS dinâmico para checked
+  var style = document.createElement('style');
+  PLATAFORMAS.forEach(function(p, i) {
+    style.textContent += '#plat-' + i + ':checked + .plat-label { background:' + p.cor + '; color:' + p.fonte + '; border-color:' + p.cor + '; }';
+  });
+  document.head.appendChild(style);
+
+  // Monta options de exportação
+  var expDiv = document.getElementById('export-plats');
+  PLATAFORMAS.forEach(function(p) {
+    expDiv.innerHTML += '<label><input type="checkbox" class="exp-plat" value="' + p.nome + '" checked> ' + p.nome + '</label>';
+  });
+})();
+
+// ── API ──────────────────────────────────────────────────────
+function setEnv(e) {
+  env = e;
+  document.querySelectorAll('.env-btn').forEach(function(b) { b.classList.toggle('active', b.textContent.toLowerCase() === e); });
+  carregarTudo();
+}
+
+function gas(action, params) {
+  var url = PROXY + '?fase=f2&env=' + (env === 'pessoal' ? 'pes' : env) + '&action=' + action;
+  if (params) Object.keys(params).forEach(function(k) { url += '&' + k + '=' + encodeURIComponent(params[k]); });
+  return fetch(url).then(function(r) { return r.json(); });
+}
+
+function gasPost(action, body) {
+  var url = PROXY + '?fase=f2&env=' + (env === 'pessoal' ? 'pes' : env) + '&action=' + action;
+  return fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }).then(function(r) { return r.json(); });
+}
+
+function carregarTudo() {
+  verificarStatus();
+  carregarCampanhas();
+}
+
+function verificarStatus() {
+  gas('ping').then(function(d) {
+    var dot = document.getElementById('status-header');
+    dot.classList.toggle('ok', !d.error);
+    if (d.usuario && !usuarioAtual) {
+      usuarioAtual = d.usuario;
+      document.getElementById('header-user').textContent = d.usuario;
+    }
+  }).catch(function() {});
+}
+
+function carregarCampanhas() {
+  var grid = document.getElementById('camp-grid');
+  grid.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  gas('listarCampanhas').then(function(d) {
+    if (d.error || !d.campanhas) {
+      todasCampanhas = [];
+      grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Nenhuma campanha encontrada.<br><br><button class="btn btn-primary btn-sm" onclick="novaCampanha()">+ Criar primeira campanha</button></div>';
+      return;
+    }
+    todasCampanhas = d.campanhas;
+    renderCampanhas(todasCampanhas);
+  }).catch(function() {
+    todasCampanhas = [];
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Endpoint F2 pendente de implementação.<br><br><button class="btn btn-primary btn-sm" onclick="novaCampanha()">+ Criar campanha localmente</button></div>';
+  });
+}
+
+function renderCampanhas(camps) {
+  var grid = document.getElementById('camp-grid');
+  if (!camps.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1">Nenhuma campanha encontrada.</div>'; return; }
+  grid.innerHTML = camps.map(function(c) {
+    var chips = (c.plataformas || []).slice(0,4).map(function(p) {
+      var plat = PLATAFORMAS.find(function(x) { return x.nome === p; }) || { cor:'#9e9e9e', fonte:'#fff' };
+      return '<span class="plat-chip" style="background:' + plat.cor + ';color:' + plat.fonte + '">' + p + '</span>';
+    }).join('') + ((c.plataformas||[]).length > 4 ? '<span class="plat-chip" style="background:#9e9e9e">+' + ((c.plataformas||[]).length-4) + '</span>' : '');
+    var st = c.status === 'arquivado' ? 'arquivado' : 'ativo';
+    return '<div class="camp-card" onclick="abrirCampanha(' + JSON.stringify(c).replace(/"/g,'&quot;') + ')">' +
+      '<div class="camp-id">' + (c.id||'') + ' · v' + (c.versao||1) + '</div>' +
+      '<div class="camp-brand">' + (c.brand||'—') + '</div>' +
+      '<div class="camp-plats">' + chips + '</div>' +
+      '<div class="camp-meta"><span>' + (c.dataCriacao||'') + '</span><span class="camp-status status-' + st + '">' + (st === 'ativo' ? 'Ativo' : 'Arquivado') + '</span></div>' +
+      '</div>';
+  }).join('');
+}
+
+function filtrarCampanhas() {
+  var q  = document.getElementById('search-camp').value.toLowerCase();
+  var st = document.getElementById('filter-camp-status').value;
+  renderCampanhas(todasCampanhas.filter(function(c) {
+    return (!q || (c.brand||'').toLowerCase().includes(q) || (c.id||'').toLowerCase().includes(q) || (c.plataformas||[]).some(function(p) { return p.toLowerCase().includes(q); })) &&
+           (!st || c.status === st);
+  }));
+}
+
+// ── Editor ───────────────────────────────────────────────────
+function novaCampanha() {
+  campanhaAtual = { id:'', brand:'', objetivo:'', mes:'', cn:'', obs:'', plataformas:[], adNames:{}, versao:1, status:'ativo' };
+  document.getElementById('editor-title').textContent = 'Nova Campanha';
+  document.getElementById('editor-meta').textContent = '';
+  document.getElementById('btn-arquivar').classList.add('hidden');
+  document.getElementById('camp-brand').value = '';
+  document.getElementById('camp-objetivo').value = '';
+  document.getElementById('camp-mes').value = new Date().toISOString().slice(0,7);
+  document.getElementById('camp-cn').value = '';
+  document.getElementById('camp-obs').value = '';
+  document.querySelectorAll('.plat-check').forEach(function(c) { c.checked = false; });
+  document.getElementById('nav-editor').classList.remove('hidden');
+  showView('editor');
+  irStep(0);
+}
+
+function abrirCampanha(c) {
+  campanhaAtual = typeof c === 'string' ? JSON.parse(c) : c;
+  document.getElementById('editor-title').textContent = campanhaAtual.brand || 'Campanha';
+  document.getElementById('editor-meta').textContent = campanhaAtual.id ? campanhaAtual.id + ' · v' + campanhaAtual.versao : '';
+  document.getElementById('btn-arquivar').classList.remove('hidden');
+  document.getElementById('camp-brand').value    = campanhaAtual.brand || '';
+  document.getElementById('camp-objetivo').value = campanhaAtual.objetivo || '';
+  document.getElementById('camp-mes').value      = campanhaAtual.mes || '';
+  document.getElementById('camp-cn').value       = campanhaAtual.cn || '';
+  document.getElementById('camp-obs').value      = campanhaAtual.obs || '';
+  document.querySelectorAll('.plat-check').forEach(function(c) {
+    c.checked = (campanhaAtual.plataformas||[]).includes(c.value);
+  });
+  document.getElementById('nav-editor').classList.remove('hidden');
+  showView('editor');
+  irStep(0);
+}
+
+function lerDados() {
+  campanhaAtual.brand     = document.getElementById('camp-brand').value;
+  campanhaAtual.objetivo  = document.getElementById('camp-objetivo').value;
+  campanhaAtual.mes       = document.getElementById('camp-mes').value;
+  campanhaAtual.cn        = document.getElementById('camp-cn').value;
+  campanhaAtual.obs       = document.getElementById('camp-obs').value;
+  campanhaAtual.plataformas = Array.from(document.querySelectorAll('.plat-check:checked')).map(function(c) { return c.value; });
+}
+
+function irStep(n) {
+  lerDados();
+  if (n === 1 && !campanhaAtual.brand) { document.getElementById('alert-dados').textContent = 'Selecione um brand.'; document.getElementById('alert-dados').classList.remove('hidden'); return; }
+  document.getElementById('alert-dados').classList.add('hidden');
+  if (n === 2 && !campanhaAtual.plataformas.length) { document.getElementById('alert-plats').textContent = 'Selecione ao menos uma plataforma.'; document.getElementById('alert-plats').classList.remove('hidden'); return; }
+  document.getElementById('alert-plats').classList.add('hidden');
+  [0,1,2,3].forEach(function(i) {
+    document.getElementById('passo-' + i).classList.toggle('hidden', i !== n);
+    var s = document.getElementById('step-' + i);
+    s.classList.remove('active','done');
+    if (i < n) s.classList.add('done');
+    if (i === n) s.classList.add('active');
+  });
+  if (n === 2) renderAdNamesEditor();
+  if (n === 3) renderExportPlats();
+}
+
+function atualizarTabs() {
+  var plats = Array.from(document.querySelectorAll('.plat-check:checked')).map(function(c) { return c.value; });
+  campanhaAtual.plataformas = plats;
+}
+
+function renderAdNamesEditor() {
+  var tabs = document.getElementById('plat-tabs');
+  var plats = campanhaAtual.plataformas;
+  if (!plats.length) { tabs.innerHTML = ''; document.getElementById('adnames-editor').innerHTML = '<div class="empty-state">Nenhuma plataforma selecionada.</div>'; return; }
+  tabs.innerHTML = plats.map(function(p) {
+    var plat = PLATAFORMAS.find(function(x) { return x.nome === p; }) || { cor:'#9e9e9e', fonte:'#fff' };
+    return '<div class="plat-tab' + (p === platAtiva ? ' active' : '') + '" onclick="mudarPlat(\'' + p.replace(/'/g,"\\'") + '\')" style="' + (p === platAtiva ? 'background:' + plat.cor + ';color:' + plat.fonte + ';border-color:' + plat.cor : '') + '">' + p + '</div>';
+  }).join('');
+  if (!platAtiva || !plats.includes(platAtiva)) { platAtiva = plats[0]; }
+  renderAdNamesPlat(platAtiva);
+}
+
+function mudarPlat(p) {
+  salvarAdNamesAtual();
+  platAtiva = p;
+  renderAdNamesEditor();
+}
+
+function renderAdNamesPlat(p) {
+  if (!campanhaAtual.adNames[p]) campanhaAtual.adNames[p] = [{ adName:'', id:'' }];
+  var linhas = campanhaAtual.adNames[p];
+  var plat = PLATAFORMAS.find(function(x) { return x.nome === p; }) || { cor:'#9e9e9e' };
+  document.getElementById('adnames-editor').innerHTML =
+    '<table class="adnames-table">' +
+    '<thead><tr><th class="row-num">#</th><th>Ad Name</th><th>ID</th></tr></thead>' +
+    '<tbody id="adnames-tbody">' +
+    linhas.map(function(l, i) {
+      return '<tr>' +
+        '<td class="row-num">' + (i+1) + '</td>' +
+        '<td><input value="' + (l.adName||'').replace(/"/g,'&quot;') + '" placeholder="Ad name..." onchange="atualizarLinha(' + i + ', \'adName\', this.value)"></td>' +
+        '<td><span class="id-cell ' + (l.id ? '' : 'pendente') + '">' + (l.id || 'Será gerado') + '</span></td>' +
+        '</tr>';
+    }).join('') +
+    '</tbody></table>';
+}
+
+function atualizarLinha(i, campo, val) {
+  if (!campanhaAtual.adNames[platAtiva]) campanhaAtual.adNames[platAtiva] = [];
+  if (!campanhaAtual.adNames[platAtiva][i]) campanhaAtual.adNames[platAtiva][i] = {};
+  campanhaAtual.adNames[platAtiva][i][campo] = val;
+}
+
+function salvarAdNamesAtual() {
+  var inputs = document.querySelectorAll('#adnames-tbody input');
+  inputs.forEach(function(inp, i) {
+    if (!campanhaAtual.adNames[platAtiva]) campanhaAtual.adNames[platAtiva] = [];
+    if (!campanhaAtual.adNames[platAtiva][i]) campanhaAtual.adNames[platAtiva][i] = {};
+    campanhaAtual.adNames[platAtiva][i].adName = inp.value;
+  });
+}
+
+function addLinhaAtual() {
+  salvarAdNamesAtual();
+  if (!campanhaAtual.adNames[platAtiva]) campanhaAtual.adNames[platAtiva] = [];
+  campanhaAtual.adNames[platAtiva].push({ adName:'', id:'' });
+  renderAdNamesPlat(platAtiva);
+}
+
+function addLinhasLote() {
+  var txt = prompt('Cole os ad names (um por linha):');
+  if (!txt) return;
+  salvarAdNamesAtual();
+  if (!campanhaAtual.adNames[platAtiva]) campanhaAtual.adNames[platAtiva] = [];
+  txt.split('\n').map(function(l) { return l.trim(); }).filter(Boolean).forEach(function(l) {
+    campanhaAtual.adNames[platAtiva].push({ adName:l, id:'' });
+  });
+  renderAdNamesPlat(platAtiva);
+}
+
+function renderExportPlats() {
+  var div = document.getElementById('export-plats');
+  div.innerHTML = campanhaAtual.plataformas.map(function(p) {
+    return '<label><input type="checkbox" class="exp-plat" value="' + p + '" checked> ' + p + '</label>';
+  }).join('');
+}
+
+function salvarRascunho() {
+  lerDados();
+  salvarAdNamesAtual();
+  gasPost('salvarCampanha', campanhaAtual).then(function(d) {
+    if (d.id) { campanhaAtual.id = d.id; campanhaAtual.versao = d.versao || 1; document.getElementById('editor-meta').textContent = campanhaAtual.id + ' · v' + campanhaAtual.versao; }
+    alert('✓ Rascunho salvo.');
+    carregarCampanhas();
+  }).catch(function() { alert('Endpoint F2 pendente — campanha salva localmente.'); });
+}
+
+function salvarCampanha() {
+  lerDados();
+  salvarAdNamesAtual();
+  gasPost('salvarCampanha', campanhaAtual).then(function(d) {
+    if (d.id) { campanhaAtual.id = d.id; campanhaAtual.versao = d.versao || 1; }
+    alert('✓ Campanha salva — versão ' + (campanhaAtual.versao || 1) + '.');
+    carregarCampanhas();
+  }).catch(function() { alert('Endpoint F2 pendente — campanha não persistida no servidor.'); });
+}
+
+function arquivarCampanha() {
+  if (!campanhaAtual.id) { alert('Salve a campanha antes de arquivar.'); return; }
+  if (!confirm('Arquivar esta campanha? Ela ficará no histórico mas não aparecerá na lista principal.')) return;
+  gasPost('salvarCampanha', Object.assign({}, campanhaAtual, { status:'arquivado' }))
+    .then(function() { showView('lista'); carregarCampanhas(); })
+    .catch(function() { alert('Erro ao arquivar.'); });
+}
+
+function exportarADP() {
+  lerDados();
+  salvarAdNamesAtual();
+  var plats = Array.from(document.querySelectorAll('.exp-plat:checked')).map(function(c) { return c.value; });
+  var linhas = document.querySelector('input[name="export-linhas"]:checked').value;
+  var fmt    = document.querySelector('input[name="export-fmt"]:checked').value;
+  var alerta = document.getElementById('alert-export');
+  alerta.className = 'alert alert-ok';
+  alerta.textContent = 'Gerando exportação...';
+  alerta.classList.remove('hidden');
+
+  gasPost('exportarADP', { id: campanhaAtual.id, plataformas: plats, linhas: linhas, formato: fmt, adNames: campanhaAtual.adNames })
+    .then(function(d) {
+      if (d.error) { alerta.className = 'alert alert-erro'; alerta.textContent = d.error; return; }
+      if (d.arquivo) {
+        var blob = b64ToBlob(d.arquivo, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        var url  = URL.createObjectURL(blob);
+        var a    = document.createElement('a');
+        a.href = url; a.download = d.nome || 'ADP_Export.xlsx'; a.click();
+        URL.revokeObjectURL(url);
+        alerta.textContent = '✓ ADP exportado com sucesso!';
+      } else {
+        alerta.textContent = 'Endpoint F2 pendente — exportação não disponível ainda.';
+      }
+    })
+    .catch(function() {
+      alerta.className = 'alert alert-ok';
+      alerta.textContent = 'Endpoint F2 pendente — exportação disponível após implementação no GAS.';
+    });
+}
+
+function exportarCSV() {
+  lerDados();
+  salvarAdNamesAtual();
+  var linhas = ['Plataforma,Ad Name,ID'];
+  campanhaAtual.plataformas.forEach(function(p) {
+    (campanhaAtual.adNames[p] || []).forEach(function(l) {
+      if (l.adName) linhas.push('"' + p + '","' + l.adName + '","' + (l.id||'') + '"');
+    });
+  });
+  var csv  = linhas.join('\n');
+  var blob = new Blob([csv], { type:'text/csv;charset=utf-8;' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href = url; a.download = 'NC_' + (campanhaAtual.brand||'Export') + '_' + (campanhaAtual.mes||'') + '.csv'; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function b64ToBlob(b64, type) {
+  var bin = atob(b64), arr = new Uint8Array(bin.length);
+  for (var i=0; i<bin.length; i++) arr[i] = bin.charCodeAt(i);
+  return new Blob([arr], { type:type });
+}
+
+function showView(v) {
+  ['lista','editor','versoes'].forEach(function(n) {
+    document.getElementById('view-' + n).classList.toggle('hidden', n !== v);
+  });
+  ['lista','nova','versoes'].forEach(function(n) {
+    var el = document.getElementById('nav-' + n);
+    if (el) el.classList.toggle('active', n === v);
+  });
+  if (v === 'versoes') carregarVersoes();
+}
+
+function carregarVersoes() {
+  var list = document.getElementById('versoes-list');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  gas('listarCampanhas').then(function(d) {
+    if (d.error || !d.campanhas || !d.campanhas.length) {
+      list.innerHTML = '<div class="empty-state">Nenhuma versão encontrada.</div>'; return;
+    }
+    list.innerHTML = d.campanhas.map(function(c) {
+      return '<div class="versao-item">' +
+        '<span class="versao-num">v' + (c.versao||1) + '</span>' +
+        '<span style="font-weight:700;color:var(--escuro)">' + (c.brand||'—') + '</span>' +
+        '<span class="versao-data">' + (c.dataCriacao||'') + '</span>' +
+        '<span class="camp-status status-' + (c.status||'ativo') + '">' + (c.status||'ativo') + '</span>' +
+        '<button class="btn btn-sm btn-secondary" onclick="abrirCampanha(' + JSON.stringify(c).replace(/"/g,'&quot;') + ')">Abrir</button>' +
+        '</div>';
+    }).join('');
+  }).catch(function() { list.innerHTML = '<div class="empty-state">Endpoint F2 pendente.</div>'; });
+}
+
+carregarTudo();
+</script>
+</body>
+</html>
