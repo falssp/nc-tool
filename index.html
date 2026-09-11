@@ -129,7 +129,7 @@
       <div class="card-desc">Geração de naming conventions por campanha</div>
     </div>
     <div class="card-stats" id="stats-f2-portal">
-      <span class="stat-loading">Frontend em desenvolvimento</span>
+      <span class="stat-loading" id="stats-f2-portal-inner">Carregando...</span>
     </div>
     <div class="card-body">
       <div class="divider"></div>
@@ -139,10 +139,10 @@
         <li><span class="dot dot-f3"></span>Exportação ADP</li>
         <li><span class="dot dot-f3"></span>Filtro por plataforma/linha</li>
       </ul>
-      <button class="btn-refresh" disabled style="opacity:.4;cursor:not-allowed">Em desenvolvimento</button>
+      <button class="btn-refresh" id="refresh-f2-portal" onclick="fetchF2Stats()">&#8635; Atualizar</button>
       <div class="btn-group">
-        <a class="btn-abrir btn-corp" href="https://docs.google.com/spreadsheets/d/1_6SEjmDdYvSkxoLwLLpqORitM-QxX5flBpF8LoSX8Lc" target="_blank">Corp &rarr;</a>
-        <a class="btn-abrir btn-pessoal" href="https://docs.google.com/spreadsheets/d/1fOPF6JLH29rY15Obb-QC88jVGuR1t0c4wuB4SyDmqyc" target="_blank">Pessoal &rarr;</a>
+        <a class="btn-abrir btn-corp" href="f2/?env=corp" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" href="f2/?env=pessoal" target="_blank">Pessoal &rarr;</a>
       </div>
     </div>
   </div>
