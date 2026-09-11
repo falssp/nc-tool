@@ -28,7 +28,7 @@
     .env-toggle { display:flex; gap:8px; margin-bottom:28px; background:#fff; border:1px solid var(--borda); border-radius:10px; padding:4px; }
     .env-btn { flex:1; padding:8px 28px; border:none; border-radius:7px; font-size:.85rem; font-weight:600; cursor:pointer; transition:all .2s; color:var(--muted); background:transparent; }
     .env-btn.active { background:var(--azul); color:#fff; }
-    .cards { width:100%; max-width:1100px; display:grid; grid-template-columns:repeat(3,1fr); gap:20px; align-items:stretch; }
+    .cards { width:100%; max-width:1600px; display:grid; grid-template-columns:repeat(5,1fr); gap:20px; align-items:stretch; }
     .card { background:#fff; border:1px solid var(--borda); border-radius:16px; overflow:hidden; display:flex; flex-direction:column; transition:box-shadow .2s, transform .2s; }
     .card:hover { box-shadow:0 8px 32px rgba(31,54,199,.12); transform:translateY(-2px); }
     .card-header { padding:22px 22px 16px; }
@@ -81,6 +81,71 @@
   <button class="env-btn" onclick="setEnv('pessoal')">Pessoal</button>
 </div>
 <div class="cards">
+
+
+  <!-- F1 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon" style="background:#ede7f6;">&#128273;</div>
+      <div class="card-top" style="margin-top:12px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="card-fase" style="color:#5c35c7">F1</div>
+          <div class="status-badge" id="status-f1-portal"><span class="status-dot"></span><span>Verificando...</span></div>
+        </div>
+      </div>
+      <div class="card-title">IDs AdServer</div>
+      <div class="card-desc">Registro e controle de IDs por campanha</div>
+    </div>
+    <div class="card-stats" id="stats-f1-portal">
+      <span class="stat-loading">Carregando...</span>
+    </div>
+    <div class="card-body">
+      <div class="divider"></div>
+      <ul class="modulos">
+        <li><span class="dot" style="background:#5c35c7"></span>Geração de IDs SX e AMZ</li>
+        <li><span class="dot" style="background:#5c35c7"></span>Controle por usuário</li>
+        <li><span class="dot" style="background:#5c35c7"></span>Painel executivo</li>
+        <li><span class="dot" style="background:#5c35c7"></span>Histórico completo</li>
+      </ul>
+      <button class="btn-refresh" id="refresh-f1-portal" onclick="fetchStats('f1p')">&#8635; Atualizar</button>
+      <div class="btn-group">
+        <a class="btn-abrir btn-corp" href="f1/?env=corp" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" href="f1/?env=pessoal" target="_blank">Pessoal &rarr;</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- F2 -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon icon-f3">&#128196;</div>
+      <div class="card-top" style="margin-top:12px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="card-fase fase-f3">F2</div>
+          <div class="status-badge" id="status-f2-portal"><span class="status-dot"></span><span>Em breve</span></div>
+        </div>
+      </div>
+      <div class="card-title">Gerador NC</div>
+      <div class="card-desc">Geração de naming conventions por campanha</div>
+    </div>
+    <div class="card-stats" id="stats-f2-portal">
+      <span class="stat-loading">Frontend em desenvolvimento</span>
+    </div>
+    <div class="card-body">
+      <div class="divider"></div>
+      <ul class="modulos">
+        <li><span class="dot dot-f3"></span>14 plataformas Unilever BR</li>
+        <li><span class="dot dot-f3"></span>Histórico por campanha</li>
+        <li><span class="dot dot-f3"></span>Exportação ADP</li>
+        <li><span class="dot dot-f3"></span>Filtro por plataforma/linha</li>
+      </ul>
+      <button class="btn-refresh" disabled style="opacity:.4;cursor:not-allowed">Em desenvolvimento</button>
+      <div class="btn-group">
+        <a class="btn-abrir btn-corp" href="https://docs.google.com/spreadsheets/d/1_6SEjmDdYvSkxoLwLLpqORitM-QxX5flBpF8LoSX8Lc" target="_blank">Corp &rarr;</a>
+        <a class="btn-abrir btn-pessoal" href="https://docs.google.com/spreadsheets/d/1fOPF6JLH29rY15Obb-QC88jVGuR1t0c4wuB4SyDmqyc" target="_blank">Pessoal &rarr;</a>
+      </div>
+    </div>
+  </div>
 
   <!-- F3 -->
   <div class="card">
@@ -245,8 +310,30 @@ function fetchStats(fase) {
     });
 }
 
+function fetchF1Stats() {
+  var url = PROXY + '?fase=f1&env=' + (env === 'pessoal' ? 'pes' : env) + '&action=stats';
+  var badge = document.getElementById('status-f1-portal');
+  var statsEl = document.getElementById('stats-f1-portal');
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) throw new Error(d.error);
+      badge.className = 'status-badge ok';
+      badge.innerHTML = '<span class="status-dot"></span><span>Online</span>';
+      var rows = '';
+      if (d.totalMes !== undefined) rows += '<div class="stat-row"><span class="stat-label">Este mês</span><span class="stat-val">' + d.totalMes + ' IDs</span></div>';
+      if (d.totalSlugs !== undefined) rows += '<div class="stat-row"><span class="stat-label">Total</span><span class="stat-val">' + d.totalSlugs + ' IDs</span></div>';
+      statsEl.innerHTML = rows || '<span class="stat-loading">Online</span>';
+    })
+    .catch(function() {
+      badge.className = 'status-badge erro';
+      badge.innerHTML = '<span class="status-dot"></span><span>Offline</span>';
+      statsEl.innerHTML = '<span class="stat-loading">Dados indisponíveis</span>';
+    });
+}
+
 function loadAll() {
-  ['f3','f4','f5'].forEach(function(f) { fetchStats(f); });
+  ['f3','f4','f5'].forEach(function(f) { fetchStats(f); }); fetchF1Stats();
 }
 
 loadAll();
