@@ -13,70 +13,38 @@
       --erro:#c62828; --erro-bg:#ffebee;
       --aviso:#e65100; --aviso-bg:#fff8e1;
       --f1:#5c35c7; --f1-bg:#ede7f6;
-      --amazon:#FF9900; --meta:#0866FF; --tiktok:#FF0050;
-      --youtube:#FF0000; --search:#4285F4; --google:#34A853;
-      --dv360:#1967D2; --pinterest:#E60023; --snapchat:#FFFC00;
-      --twitter:#000000; --flashtalking:#E8461E; --compra:#6B7280;
     }
     html, body { height:100%; }
-    body {
-      font-family:'Segoe UI',Arial,sans-serif;
-      background:var(--bg); min-height:100vh;
-      display:flex; flex-direction:column;
-    }
+    body { font-family:'Segoe UI',Arial,sans-serif; background:var(--bg); min-height:100vh; display:flex; flex-direction:column; }
 
-    /* Header */
-    .header {
-      background:#fff; border-bottom:1px solid var(--borda);
-      padding:14px 24px; display:flex; align-items:center;
-      gap:16px; position:sticky; top:0; z-index:100;
-    }
+    .header { background:#fff; border-bottom:1px solid var(--borda); padding:14px 24px; display:flex; align-items:center; gap:16px; position:sticky; top:0; z-index:100; }
     .header-logo { font-size:1rem; font-weight:800; color:var(--escuro); }
     .header-fase { padding:3px 10px; border-radius:20px; background:var(--f1-bg); color:var(--f1); font-size:.72rem; font-weight:700; }
+    .header-user { font-size:.78rem; color:var(--muted); }
     .header-spacer { flex:1; }
     .env-toggle { display:flex; gap:4px; background:var(--bg); border-radius:8px; padding:3px; }
     .env-btn { padding:5px 14px; border:none; border-radius:6px; font-size:.78rem; font-weight:600; cursor:pointer; color:var(--muted); background:transparent; transition:all .2s; }
     .env-btn.active { background:var(--azul); color:#fff; }
-    .status-dot-header { width:8px; height:8px; border-radius:50%; background:var(--muted); }
-    .status-dot-header.ok { background:var(--ok); }
+    .status-dot-h { width:8px; height:8px; border-radius:50%; background:var(--muted); flex-shrink:0; }
+    .status-dot-h.ok { background:var(--ok); }
 
-    /* Layout */
     .layout { display:flex; flex:1; overflow:hidden; }
-
-    /* Sidebar */
-    .sidebar {
-      width:220px; background:#fff; border-right:1px solid var(--borda);
-      display:flex; flex-direction:column; flex-shrink:0;
-    }
-    .nav-item {
-      padding:12px 20px; font-size:.82rem; font-weight:600; color:var(--muted);
-      cursor:pointer; border-left:3px solid transparent; transition:all .2s;
-      display:flex; align-items:center; gap:8px;
-    }
+    .sidebar { width:220px; background:#fff; border-right:1px solid var(--borda); display:flex; flex-direction:column; flex-shrink:0; }
+    .nav-item { padding:12px 20px; font-size:.82rem; font-weight:600; color:var(--muted); cursor:pointer; border-left:3px solid transparent; transition:all .2s; display:flex; align-items:center; gap:8px; }
     .nav-item:hover { color:var(--escuro); background:var(--bg); }
     .nav-item.active { color:var(--azul); border-left-color:var(--azul); background:var(--bg); }
 
-    /* Main */
     .main { flex:1; overflow-y:auto; padding:24px; }
 
-    /* Cards de stats */
     .stats-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px; }
     .stat-card { background:#fff; border:1px solid var(--borda); border-radius:12px; padding:16px 18px; }
     .stat-val { font-size:1.8rem; font-weight:800; color:var(--azul); }
     .stat-label { font-size:.72rem; color:#888; text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
 
-    /* Toolbar */
     .toolbar { display:flex; gap:10px; align-items:center; margin-bottom:16px; flex-wrap:wrap; }
-    .search-input {
-      flex:1; min-width:200px; padding:9px 14px;
-      border:1px solid var(--borda); border-radius:9px;
-      font-size:.85rem; outline:none; transition:border .2s;
-    }
+    .search-input { flex:1; min-width:200px; padding:9px 14px; border:1px solid var(--borda); border-radius:9px; font-size:.85rem; outline:none; transition:border .2s; }
     .search-input:focus { border-color:var(--azul); }
-    .filter-select {
-      padding:9px 12px; border:1px solid var(--borda); border-radius:9px;
-      font-size:.82rem; outline:none; background:#fff; cursor:pointer;
-    }
+    .filter-select { padding:9px 12px; border:1px solid var(--borda); border-radius:9px; font-size:.82rem; outline:none; background:#fff; cursor:pointer; }
     .btn { padding:9px 18px; border-radius:9px; font-size:.82rem; font-weight:700; cursor:pointer; border:none; transition:all .2s; display:inline-flex; align-items:center; gap:6px; }
     .btn:hover { opacity:.85; transform:translateY(-1px); }
     .btn-primary { background:var(--azul); color:#fff; }
@@ -84,7 +52,6 @@
     .btn-sm { padding:6px 12px; font-size:.76rem; }
     .btn:disabled { opacity:.4; cursor:not-allowed; transform:none; }
 
-    /* Tabela */
     .table-wrap { background:#fff; border:1px solid var(--borda); border-radius:12px; overflow:hidden; }
     table { width:100%; border-collapse:collapse; font-size:.82rem; }
     thead th { background:var(--azul); color:#fff; padding:11px 14px; text-align:left; font-weight:600; font-size:.75rem; text-transform:uppercase; letter-spacing:.5px; }
@@ -98,31 +65,34 @@
     .plat-badge { padding:3px 8px; border-radius:6px; font-size:.7rem; font-weight:700; color:#fff; }
     .empty-state { text-align:center; padding:48px; color:var(--muted); font-size:.9rem; }
 
-    /* Modal */
-    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:200; display:flex; align-items:center; justify-content:center; }
-    .modal-overlay.hidden { display:none; }
-    .modal { background:#fff; border-radius:16px; width:100%; max-width:480px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.2); }
-    .modal-header { padding:20px 24px 16px; border-bottom:1px solid var(--borda); display:flex; align-items:center; justify-content:space-between; }
-    .modal-title { font-size:1rem; font-weight:800; color:var(--escuro); }
-    .modal-close { background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--muted); padding:4px; }
-    .modal-body { padding:20px 24px; }
-    .modal-footer { padding:16px 24px; border-top:1px solid var(--borda); display:flex; justify-content:flex-end; gap:10px; }
+    /* Formulário de lote */
+    .form-card { background:#fff; border:1px solid var(--borda); border-radius:14px; padding:24px; max-width:680px; }
+    .form-card h2 { font-size:1rem; font-weight:800; color:var(--escuro); margin-bottom:18px; }
     .field { margin-bottom:14px; }
     .field label { display:block; font-size:.72rem; font-weight:700; color:var(--escuro); margin-bottom:5px; text-transform:uppercase; letter-spacing:.5px; }
-    .field input, .field select, .field textarea {
-      width:100%; padding:9px 12px; border:1px solid var(--borda); border-radius:8px;
-      font-size:.85rem; outline:none; transition:border .2s; font-family:'Segoe UI',sans-serif;
-    }
-    .field input:focus, .field select:focus { border-color:var(--azul); }
-    .alert { padding:10px 14px; border-radius:8px; font-size:.82rem; margin-bottom:14px; }
-    .alert-erro { background:var(--erro-bg); color:var(--erro); }
-    .alert-ok { background:var(--ok-bg); color:var(--ok); }
-    .alert.hidden { display:none; }
+    .field input, .field select, .field textarea { width:100%; padding:9px 12px; border:1px solid var(--borda); border-radius:8px; font-size:.85rem; outline:none; transition:border .2s; font-family:'Segoe UI',sans-serif; }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color:var(--azul); }
+    .field textarea { resize:vertical; min-height:120px; }
 
-    /* Loading */
-    .loading { text-align:center; padding:32px; color:var(--muted); }
-    .spinner { display:inline-block; width:24px; height:24px; border:3px solid var(--borda); border-top-color:var(--azul); border-radius:50%; animation:spin .8s linear infinite; }
-    @keyframes spin { to { transform:rotate(360deg); } }
+    /* Autocomplete */
+    .autocomplete-wrap { position:relative; }
+    .autocomplete-list { position:absolute; top:100%; left:0; right:0; background:#fff; border:1px solid var(--borda); border-radius:8px; max-height:200px; overflow-y:auto; z-index:50; box-shadow:0 4px 16px rgba(0,0,0,.1); }
+    .autocomplete-item { padding:8px 12px; font-size:.83rem; cursor:pointer; color:var(--escuro); }
+    .autocomplete-item:hover, .autocomplete-item.selected { background:var(--bg); }
+    .autocomplete-list.hidden { display:none; }
+
+    /* Preview de lote */
+    .preview-table { width:100%; border-collapse:collapse; font-size:.8rem; margin-top:14px; }
+    .preview-table th { background:var(--bg); color:var(--escuro); padding:8px 10px; text-align:left; font-size:.72rem; text-transform:uppercase; }
+    .preview-table td { padding:8px 10px; border-bottom:1px solid var(--borda); }
+    .tipo-sx { color:var(--f1); font-weight:700; }
+    .tipo-amz { color:var(--aviso); font-weight:700; }
+    .tipo-manual { color:var(--muted); }
+
+    /* Resultado lote */
+    .resultado-lote { margin-top:16px; }
+    .resultado-item { display:flex; align-items:center; gap:10px; padding:8px 12px; border-radius:8px; background:var(--ok-bg); margin-bottom:6px; font-size:.82rem; }
+    .resultado-item.erro { background:var(--erro-bg); }
 
     /* Painel */
     .painel-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
@@ -131,6 +101,24 @@
     .painel-bar-wrap { background:var(--bg); border-radius:4px; height:8px; overflow:hidden; }
     .painel-bar { height:100%; border-radius:4px; background:var(--azul); transition:width .5s; }
     .painel-count { font-size:1.4rem; font-weight:800; color:var(--azul); margin-top:6px; }
+
+    /* Modal */
+    .modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:200; display:flex; align-items:center; justify-content:center; }
+    .modal-overlay.hidden { display:none; }
+    .modal { background:#fff; border-radius:16px; width:100%; max-width:420px; overflow:hidden; box-shadow:0 20px 60px rgba(0,0,0,.2); }
+    .modal-header { padding:18px 22px 14px; border-bottom:1px solid var(--borda); display:flex; align-items:center; justify-content:space-between; }
+    .modal-title { font-size:.95rem; font-weight:800; color:var(--escuro); }
+    .modal-close { background:none; border:none; font-size:1.1rem; cursor:pointer; color:var(--muted); }
+    .modal-body { padding:18px 22px; }
+    .modal-footer { padding:14px 22px; border-top:1px solid var(--borda); display:flex; justify-content:flex-end; gap:10px; }
+    .alert { padding:10px 14px; border-radius:8px; font-size:.82rem; margin-bottom:12px; }
+    .alert-erro { background:var(--erro-bg); color:var(--erro); }
+    .alert.hidden { display:none; }
+
+    .loading { text-align:center; padding:32px; color:var(--muted); }
+    .spinner { display:inline-block; width:24px; height:24px; border:3px solid var(--borda); border-top-color:var(--azul); border-radius:50%; animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .hidden { display:none; }
 
     @media(max-width:768px) {
       .stats-grid { grid-template-columns:1fr 1fr; }
@@ -141,114 +129,96 @@
 </head>
 <body>
 
-<!-- Header -->
 <div class="header">
   <div class="header-logo">NC Tool</div>
   <div class="header-fase">F1 — IDs AdServer</div>
+  <span class="header-user" id="header-user"></span>
   <div class="header-spacer"></div>
   <div class="env-toggle">
     <button class="env-btn active" onclick="setEnv('corp')">Corp</button>
     <button class="env-btn" onclick="setEnv('pessoal')">Pessoal</button>
   </div>
-  <div class="status-dot-header" id="status-header" title="Status do sistema"></div>
+  <div class="status-dot-h" id="status-header" title="Verificando..."></div>
   <a href="/nc-tool/" style="font-size:.78rem;color:var(--muted);text-decoration:none;margin-left:8px;">Portal</a>
 </div>
 
-<!-- Layout -->
 <div class="layout">
-
-  <!-- Sidebar -->
   <div class="sidebar">
-    <div class="nav-item active" id="nav-ids" onclick="showView('ids')">&#128273; IDs</div>
-    <div class="nav-item" id="nav-criar" onclick="showView('criar')">&#43; Novo ID</div>
-    <div class="nav-item" id="nav-painel" onclick="showView('painel')">&#128202; Painel</div>
+    <div class="nav-item active" id="nav-ids"    onclick="showView('ids')">&#128273; IDs</div>
+    <div class="nav-item"        id="nav-criar"  onclick="showView('criar')">&#43; Gerar IDs</div>
+    <div class="nav-item"        id="nav-painel" onclick="showView('painel')">&#128202; Painel</div>
   </div>
 
-  <!-- Main -->
-  <div class="main" id="main">
+  <div class="main">
 
     <!-- View: IDs -->
     <div id="view-ids">
-      <!-- Stats -->
-      <div class="stats-grid" id="stats-grid">
-        <div class="stat-card"><div class="stat-val" id="s-total">—</div><div class="stat-label">Total IDs</div></div>
-        <div class="stat-card"><div class="stat-val" id="s-mes">—</div><div class="stat-label">Este mes</div></div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-val" id="s-total">—</div><div class="stat-label">Total de IDs</div></div>
+        <div class="stat-card"><div class="stat-val" id="s-mes">—</div><div class="stat-label">Este mês</div></div>
         <div class="stat-card"><div class="stat-val" id="s-sx">—</div><div class="stat-label">IDs SX</div></div>
         <div class="stat-card"><div class="stat-val" id="s-amz">—</div><div class="stat-label">IDs AMZ</div></div>
       </div>
-
-      <!-- Toolbar -->
       <div class="toolbar">
-        <input class="search-input" id="search" placeholder="Buscar por ID, Ad Name ou usuario..." oninput="filtrar()">
+        <input class="search-input" id="search" placeholder="Buscar por ID, Ad Name ou usuário..." oninput="filtrar()">
         <select class="filter-select" id="filter-plat" onchange="filtrar()">
-          <option value="">Todas plataformas</option>
-          <option>Meta</option><option>TikTok</option><option>YouTube</option>
-          <option>Search</option><option>Google Ads</option><option>DV360</option>
-          <option>Amazon DSP</option><option>Pinterest</option><option>Snapchat</option>
-          <option>Twitter/X</option><option>Flashtalking</option><option>Compra Direta</option>
+          <option value="">Todas as plataformas</option>
         </select>
         <select class="filter-select" id="filter-status" onchange="filtrar()">
-          <option value="">Todos status</option>
+          <option value="">Todos os status</option>
           <option value="ativo">Ativo</option>
           <option value="inativo">Inativo</option>
         </select>
         <button class="btn btn-secondary btn-sm" onclick="carregarIDs()">&#8635; Atualizar</button>
       </div>
-
-      <!-- Tabela -->
       <div class="table-wrap">
         <table>
-          <thead>
-            <tr>
-              <th>ID</th><th>Ad Name</th><th>Plataforma</th>
-              <th>Usuario</th><th>Data</th><th>Status</th><th></th>
-            </tr>
-          </thead>
-          <tbody id="tabela-ids">
-            <tr><td colspan="7" class="loading"><div class="spinner"></div></td></tr>
-          </tbody>
+          <thead><tr><th>ID</th><th>Ad Name</th><th>Plataforma</th><th>Usuário</th><th>Data</th><th>Status</th><th></th></tr></thead>
+          <tbody id="tabela-ids"><tr><td colspan="7" class="loading"><div class="spinner"></div></td></tr></tbody>
         </table>
       </div>
     </div>
 
-    <!-- View: Criar -->
+    <!-- View: Gerar IDs em lote -->
     <div id="view-criar" class="hidden">
-      <div style="max-width:480px">
-        <h2 style="font-size:1.1rem;font-weight:800;color:var(--escuro);margin-bottom:20px">Gerar Novo ID</h2>
-        <div class="alert alert-erro hidden" id="alert-criar"></div>
+      <div class="form-card">
+        <h2>&#128273; Gerar IDs em Lote</h2>
+
         <div class="field">
           <label>Plataforma</label>
-          <select id="criar-plat" onchange="atualizarTipoID()">
-            <option value="">Selecione...</option>
-            <option>Meta</option><option>TikTok</option><option>YouTube</option>
-            <option>Search</option><option>Google Ads</option><option>DV360</option>
-            <option>Amazon DSP</option><option>Pinterest</option><option>Snapchat</option>
-            <option>Twitter/X</option><option>Flashtalking</option><option>Compra Direta</option>
-          </select>
+          <div class="autocomplete-wrap">
+            <input id="criar-plat-input" placeholder="Digite para buscar plataforma..." oninput="filtrarPlataformas()" autocomplete="off">
+            <div class="autocomplete-list hidden" id="plat-list"></div>
+          </div>
+          <div id="criar-tipo-info" style="font-size:.75rem;color:var(--muted);margin-top:4px;"></div>
         </div>
+
         <div class="field">
-          <label>Tipo de ID</label>
-          <input id="criar-tipo" readonly placeholder="Selecione a plataforma..." style="background:#fafafa;color:#888">
+          <label>Ad Names (um por linha)</label>
+          <textarea id="criar-adnames" placeholder="Cole aqui os ad names — um por linha:&#10;BR_Dove_Meta_Awareness_2026-09&#10;BR_Dove_Meta_Awareness_2026-09_v2&#10;..."></textarea>
         </div>
-        <div class="field">
-          <label>Ad Name</label>
-          <input id="criar-adname" placeholder="Ex: BR_Dove_Meta_Awareness_2026-09">
+
+        <div id="preview-section" class="hidden">
+          <div style="font-size:.75rem;font-weight:700;color:var(--escuro);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">Pré-visualização</div>
+          <table class="preview-table">
+            <thead><tr><th>Ad Name</th><th>Tipo ID</th><th>ID gerado</th></tr></thead>
+            <tbody id="preview-tbody"></tbody>
+          </table>
         </div>
-        <div class="field">
-          <label>Usuario</label>
-          <input id="criar-usuario" placeholder="Ex: felipe.lima">
-        </div>
-        <div class="btn-row" style="display:flex;gap:10px;margin-top:8px">
-          <button class="btn btn-primary" onclick="criarID()">&#128273; Gerar ID</button>
+
+        <div class="btn-row" style="display:flex;gap:10px;margin-top:16px">
+          <button class="btn btn-secondary btn-sm" onclick="previsualizar()">&#128065; Pré-visualizar</button>
+          <button class="btn btn-primary" id="btn-gerar" onclick="gerarLote()" disabled>&#128273; Gerar IDs</button>
           <button class="btn btn-secondary" onclick="showView('ids')">Cancelar</button>
         </div>
-        <div class="alert alert-ok hidden" id="resultado-criar" style="margin-top:16px"></div>
+
+        <div id="resultado-lote" class="resultado-lote hidden"></div>
       </div>
     </div>
 
     <!-- View: Painel -->
     <div id="view-painel" class="hidden">
-      <h2 style="font-size:1.1rem;font-weight:800;color:var(--escuro);margin-bottom:20px">Painel Executivo</h2>
+      <h2 style="font-size:1rem;font-weight:800;color:var(--escuro);margin-bottom:20px">&#128202; Painel Executivo</h2>
       <div class="painel-grid" id="painel-grid">
         <div class="loading"><div class="spinner"></div></div>
       </div>
@@ -265,11 +235,8 @@
       <button class="modal-close" onclick="fecharModal()">&#10005;</button>
     </div>
     <div class="modal-body">
-      <p style="font-size:.85rem;color:#555;margin-bottom:16px">O ID sera inativado mas mantido no historico.</p>
-      <div class="field">
-        <label>ID</label>
-        <input id="inativar-id" readonly style="background:#fafafa">
-      </div>
+      <p style="font-size:.83rem;color:#555;margin-bottom:14px">O ID será inativado mas mantido no histórico.</p>
+      <div class="field"><label>ID</label><input id="inativar-id" readonly style="background:#fafafa"></div>
       <div class="field">
         <label>Motivo</label>
         <select id="inativar-motivo">
@@ -279,10 +246,6 @@
           <option>Erro de cadastro</option>
           <option>Outro</option>
         </select>
-      </div>
-      <div class="field">
-        <label>Usuario</label>
-        <input id="inativar-usuario" placeholder="Ex: felipe.lima">
       </div>
       <div class="alert alert-erro hidden" id="alert-inativar"></div>
     </div>
@@ -297,17 +260,145 @@
 var PROXY = 'https://nc-proxy.falssp.workers.dev/';
 var env   = 'corp';
 var todosIDs = [];
+var platSelecionada = '';
+var previewData = [];
+
+// Lista completa de plataformas em ordem alfabética
+var TODAS_PLATAFORMAS = [
+  'Amazon DSP','Apple Search Ads','Bing Ads','Compra Direta','DV360',
+  'Facebook','Flashtalking','Google Ads','Instagram','Kwai','LinkedIn',
+  'Meta','Netflix Ads','Outbrain','Pinterest','Programmatic','Reddit',
+  'Search','Snapchat','Spotify','Taboola','TikTok','Trade Desk',
+  'Twitter/X','WhatsApp Ads','Xandr','Yahoo','YouTube'
+];
+
+var PLAT_SX  = ['Google Ads','DV360','YouTube','Meta','TikTok','Search','Facebook','Instagram','Trade Desk','Xandr','Bing Ads'];
+var PLAT_AMZ = ['Amazon DSP'];
 
 var COR_PLAT = {
-  'Amazon DSP':    '#FF9900', 'Compra Direta': '#6B7280', 'DV360':       '#1967D2',
-  'Google Ads':    '#34A853', 'Meta':          '#0866FF', 'TikTok':      '#FF0050',
-  'YouTube':       '#FF0000', 'Search':        '#4285F4', 'Pinterest':   '#E60023',
-  'Snapchat':      '#FFFC00', 'Twitter/X':     '#000000', 'Flashtalking':'#E8461E',
+  'Amazon DSP':'#FF9900','Compra Direta':'#6B7280','DV360':'#1967D2',
+  'Google Ads':'#34A853','Meta':'#0866FF','TikTok':'#FF0050',
+  'YouTube':'#FF0000','Search':'#4285F4','Pinterest':'#E60023',
+  'Snapchat':'#FFFC00','Twitter/X':'#000000','Flashtalking':'#E8461E',
+  'LinkedIn':'#0A66C2','Spotify':'#1DB954','Reddit':'#FF4500',
+  'Facebook':'#0866FF','Instagram':'#E4405F','WhatsApp Ads':'#25D366',
+  'Kwai':'#F60050','Netflix Ads':'#E50914',
 };
-var FONT_PLAT = { 'Snapchat': '#000' };
+var FONTE_CLARA = ['Snapchat'];
 
-var PLAT_SX  = ['Meta','TikTok','YouTube','Search','Google Ads','DV360'];
-var PLAT_AMZ = ['Amazon DSP'];
+function tipoID(plat) {
+  if (PLAT_AMZ.includes(plat)) return 'AMZ';
+  if (PLAT_SX.includes(plat))  return 'SX';
+  return 'Manual';
+}
+
+// Popula filtro de plataformas
+(function() {
+  var sel = document.getElementById('filter-plat');
+  TODAS_PLATAFORMAS.forEach(function(p) {
+    var opt = document.createElement('option');
+    opt.value = p; opt.textContent = p;
+    sel.appendChild(opt);
+  });
+})();
+
+// Autocomplete de plataformas
+function filtrarPlataformas() {
+  var q   = document.getElementById('criar-plat-input').value.toLowerCase().trim();
+  var lst = document.getElementById('plat-list');
+  platSelecionada = '';
+  document.getElementById('criar-tipo-info').textContent = '';
+  document.getElementById('btn-gerar').disabled = true;
+
+  if (!q) { lst.classList.add('hidden'); return; }
+
+  var matches = TODAS_PLATAFORMAS.filter(function(p) { return p.toLowerCase().includes(q); });
+  if (!matches.length) { lst.classList.add('hidden'); return; }
+
+  lst.innerHTML = matches.map(function(p) {
+    return '<div class="autocomplete-item" onclick="selecionarPlat(\'' + p.replace(/'/g,"\\'") + '\')">' + p + '</div>';
+  }).join('');
+  lst.classList.remove('hidden');
+}
+
+function selecionarPlat(p) {
+  platSelecionada = p;
+  document.getElementById('criar-plat-input').value = p;
+  document.getElementById('plat-list').classList.add('hidden');
+  var tipo = tipoID(p);
+  var info = tipo === 'SX' ? 'Gera ID SX (ex: SX00001234)' : tipo === 'AMZ' ? 'Gera ID AMZ (ex: AMZ000123H)' : 'ID manual — não gera automaticamente';
+  document.getElementById('criar-tipo-info').textContent = info;
+  document.getElementById('criar-adnames').focus();
+}
+
+document.addEventListener('click', function(e) {
+  if (!e.target.closest('.autocomplete-wrap')) document.getElementById('plat-list').classList.add('hidden');
+});
+
+function previsualizar() {
+  var txt = document.getElementById('criar-adnames').value.trim();
+  if (!platSelecionada) { alert('Selecione uma plataforma.'); return; }
+  if (!txt) { alert('Cole ao menos um ad name.'); return; }
+
+  var linhas = txt.split('\n').map(function(l) { return l.trim(); }).filter(Boolean);
+  var tipo   = tipoID(platSelecionada);
+
+  previewData = linhas.map(function(adName, i) {
+    return { adName: adName, tipo: tipo, idPreview: tipo === 'SX' ? 'SX########' : tipo === 'AMZ' ? 'AMZ######H' : 'Manual' };
+  });
+
+  var tbody = document.getElementById('preview-tbody');
+  tbody.innerHTML = previewData.map(function(row) {
+    var cls = row.tipo === 'SX' ? 'tipo-sx' : row.tipo === 'AMZ' ? 'tipo-amz' : 'tipo-manual';
+    return '<tr><td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + row.adName + '</td>' +
+      '<td><span class="' + cls + '">' + row.tipo + '</span></td>' +
+      '<td style="color:var(--muted);font-style:italic">' + row.idPreview + '</td></tr>';
+  }).join('');
+
+  document.getElementById('preview-section').classList.remove('hidden');
+  document.getElementById('btn-gerar').disabled = false;
+}
+
+function gerarLote() {
+  var btn = document.getElementById('btn-gerar');
+  btn.disabled = true;
+  btn.textContent = 'Gerando...';
+
+  var usuario = usuarioAtual || 'sistema';
+  var adnames = previewData.map(function(r) { return r.adName; });
+
+  gasPost('criarIDLote', { adNames: adnames, plataforma: platSelecionada, usuario: usuario })
+    .then(function(d) {
+      btn.textContent = '✓ Gerado';
+      if (d.error) {
+        mostrarResultado([{ adName: 'Erro', id: d.error, ok: false }]);
+        return;
+      }
+      var resultados = d.ids || adnames.map(function(a, i) { return { adName: a, id: '(aguardando endpoint)', ok: true }; });
+      mostrarResultado(resultados);
+      carregarIDs();
+      carregarStats();
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.textContent = '&#128273; Gerar IDs';
+      mostrarResultado([{ adName: 'Erro de conexão', id: 'Verifique o endpoint do F1', ok: false }]);
+    });
+}
+
+function mostrarResultado(items) {
+  var div = document.getElementById('resultado-lote');
+  div.innerHTML = items.map(function(r) {
+    return '<div class="resultado-item ' + (r.ok ? '' : 'erro') + '">' +
+      '<span style="font-weight:700">' + (r.id || '—') + '</span>' +
+      '<span style="color:#555;flex:1">' + r.adName + '</span>' +
+      '</div>';
+  }).join('');
+  div.classList.remove('hidden');
+}
+
+// ── API ──────────────────────────────────────────────────────
+var usuarioAtual = '';
 
 function setEnv(e) {
   env = e;
@@ -323,6 +414,7 @@ function showView(v) {
     document.getElementById('nav-' + n).classList.toggle('active', n === v);
   });
   if (v === 'painel') carregarPainel();
+  if (v === 'criar') { document.getElementById('preview-section').classList.add('hidden'); document.getElementById('resultado-lote').classList.add('hidden'); document.getElementById('btn-gerar').disabled = true; }
 }
 
 function gas(action, params) {
@@ -333,11 +425,7 @@ function gas(action, params) {
 
 function gasPost(action, body) {
   var url = PROXY + '?fase=f1&env=' + (env === 'pessoal' ? 'pes' : env) + '&action=' + action;
-  return fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  }).then(function(r) { return r.json(); });
+  return fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) }).then(function(r) { return r.json(); });
 }
 
 function carregarTudo() {
@@ -351,9 +439,11 @@ function verificarStatus() {
     var dot = document.getElementById('status-header');
     dot.classList.toggle('ok', !d.error);
     dot.title = d.error ? 'Offline' : 'Online — ' + (d.ts || '');
-  }).catch(function() {
-    document.getElementById('status-header').classList.remove('ok');
-  });
+    if (d.usuario && !usuarioAtual) {
+      usuarioAtual = d.usuario;
+      document.getElementById('header-user').textContent = d.usuario;
+    }
+  }).catch(function() { document.getElementById('status-header').classList.remove('ok'); });
 }
 
 function carregarStats() {
@@ -363,42 +453,33 @@ function carregarStats() {
     document.getElementById('s-mes').textContent   = d.totalMes   || '—';
     document.getElementById('s-sx').textContent    = d.totalSX    || '—';
     document.getElementById('s-amz').textContent   = d.totalAMZ   || '—';
-  }).catch(function() {});
+  }).catch(function(){});
 }
 
 function carregarIDs() {
   var tbody = document.getElementById('tabela-ids');
   tbody.innerHTML = '<tr><td colspan="7" class="loading"><div class="spinner"></div></td></tr>';
   gas('listarIDs').then(function(d) {
-    if (d.error || !d.ids) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Sem dados — verifique o endpoint do F1.</td></tr>';
-      todosIDs = [];
-      return;
-    }
+    if (d.error || !d.ids) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Sem dados — endpoint F1 pendente de implementação.</td></tr>'; todosIDs = []; return; }
     todosIDs = d.ids;
     renderTabela(todosIDs);
-  }).catch(function() {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Erro ao carregar IDs.</td></tr>';
-  });
+  }).catch(function() { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Erro ao carregar IDs.</td></tr>'; });
 }
 
 function renderTabela(ids) {
   var tbody = document.getElementById('tabela-ids');
-  if (!ids.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Nenhum ID encontrado.</td></tr>';
-    return;
-  }
+  if (!ids.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Nenhum ID encontrado.</td></tr>'; return; }
   tbody.innerHTML = ids.map(function(item) {
     var cor  = COR_PLAT[item.plataforma] || '#9e9e9e';
-    var font = FONT_PLAT[item.plataforma] || '#fff';
+    var font = FONTE_CLARA.includes(item.plataforma) ? '#000' : '#fff';
     var st   = item.status === 'inativo' ? 'inativo' : 'ativo';
     return '<tr>' +
-      '<td><span class="id-badge">' + (item.id || '—') + '</span></td>' +
-      '<td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (item.adName||'') + '">' + (item.adName || '—') + '</td>' +
+      '<td><span class="id-badge">' + (item.id||'—') + '</span></td>' +
+      '<td style="max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + (item.adName||'') + '">' + (item.adName||'—') + '</td>' +
       '<td><span class="plat-badge" style="background:' + cor + ';color:' + font + '">' + (item.plataforma||'—') + '</span></td>' +
-      '<td>' + (item.usuario || '—') + '</td>' +
-      '<td>' + (item.data || '—') + '</td>' +
-      '<td><span class="status-badge-sm status-' + st + '">' + st + '</span></td>' +
+      '<td>' + (item.usuario||'—') + '</td>' +
+      '<td>' + (item.data||'—') + '</td>' +
+      '<td><span class="status-badge-sm status-' + st + '">' + (st === 'ativo' ? 'Ativo' : 'Inativo') + '</span></td>' +
       '<td>' + (st === 'ativo' ? '<button class="btn btn-sm" style="background:#fff;border:1px solid #e0e0e0;color:#666" onclick="abrirInativar(\'' + item.id + '\')">Inativar</button>' : '') + '</td>' +
       '</tr>';
   }).join('');
@@ -408,54 +489,11 @@ function filtrar() {
   var q    = document.getElementById('search').value.toLowerCase();
   var plat = document.getElementById('filter-plat').value;
   var st   = document.getElementById('filter-status').value;
-  var res  = todosIDs.filter(function(item) {
-    var matchQ  = !q || (item.id||'').toLowerCase().includes(q) || (item.adName||'').toLowerCase().includes(q) || (item.usuario||'').toLowerCase().includes(q);
-    var matchP  = !plat || item.plataforma === plat;
-    var matchSt = !st || item.status === st;
-    return matchQ && matchP && matchSt;
-  });
-  renderTabela(res);
-}
-
-function atualizarTipoID() {
-  var p = document.getElementById('criar-plat').value;
-  var t = PLAT_SX.includes(p) ? 'SX (SX00000000)' : PLAT_AMZ.includes(p) ? 'AMZ (AMZ000000H)' : p ? 'Manual' : '';
-  document.getElementById('criar-tipo').value = t;
-}
-
-function criarID() {
-  var plat    = document.getElementById('criar-plat').value;
-  var adname  = document.getElementById('criar-adname').value.trim();
-  var usuario = document.getElementById('criar-usuario').value.trim();
-  var alerta  = document.getElementById('alert-criar');
-  var result  = document.getElementById('resultado-criar');
-
-  alerta.classList.add('hidden');
-  result.classList.add('hidden');
-
-  if (!plat || !adname || !usuario) {
-    alerta.textContent = 'Preencha todos os campos.';
-    alerta.classList.remove('hidden');
-    return;
-  }
-
-  gasPost('criarID', { adName: adname, plataforma: plat, usuario: usuario })
-    .then(function(d) {
-      if (d.error) {
-        alerta.textContent = d.error;
-        alerta.classList.remove('hidden');
-        return;
-      }
-      result.textContent = '✓ ID gerado: ' + d.id + ' (' + d.tipo + ')';
-      result.classList.remove('hidden');
-      document.getElementById('criar-adname').value = '';
-      carregarIDs();
-      carregarStats();
-    })
-    .catch(function() {
-      alerta.textContent = 'Erro ao gerar ID — verifique o endpoint do F1.';
-      alerta.classList.remove('hidden');
-    });
+  renderTabela(todosIDs.filter(function(item) {
+    return (!q || (item.id||'').toLowerCase().includes(q) || (item.adName||'').toLowerCase().includes(q) || (item.usuario||'').toLowerCase().includes(q)) &&
+           (!plat || item.plataforma === plat) &&
+           (!st   || item.status === st);
+  }));
 }
 
 var idParaInativar = '';
@@ -463,65 +501,40 @@ function abrirInativar(id) {
   idParaInativar = id;
   document.getElementById('inativar-id').value = id;
   document.getElementById('inativar-motivo').value = '';
-  document.getElementById('inativar-usuario').value = '';
   document.getElementById('alert-inativar').classList.add('hidden');
   document.getElementById('modal-inativar').classList.remove('hidden');
 }
-function fecharModal() {
-  document.getElementById('modal-inativar').classList.add('hidden');
-}
+function fecharModal() { document.getElementById('modal-inativar').classList.add('hidden'); }
 function confirmarInativar() {
   var motivo  = document.getElementById('inativar-motivo').value;
-  var usuario = document.getElementById('inativar-usuario').value.trim();
   var alerta  = document.getElementById('alert-inativar');
-
-  if (!motivo || !usuario) {
-    alerta.textContent = 'Preencha motivo e usuario.';
-    alerta.classList.remove('hidden');
-    return;
-  }
-
-  gasPost('inativarID', { id: idParaInativar, motivo: motivo, usuario: usuario })
+  if (!motivo) { alerta.textContent = 'Selecione um motivo.'; alerta.classList.remove('hidden'); return; }
+  gasPost('inativarID', { id: idParaInativar, motivo: motivo, usuario: usuarioAtual || 'sistema' })
     .then(function(d) {
-      if (d.error) {
-        alerta.textContent = d.error;
-        alerta.classList.remove('hidden');
-        return;
-      }
-      fecharModal();
-      carregarIDs();
+      if (d.error) { alerta.textContent = d.error; alerta.classList.remove('hidden'); return; }
+      fecharModal(); carregarIDs();
     })
-    .catch(function() {
-      alerta.textContent = 'Erro ao inativar.';
-      alerta.classList.remove('hidden');
-    });
+    .catch(function() { alerta.textContent = 'Erro ao inativar.'; alerta.classList.remove('hidden'); });
 }
 
 function carregarPainel() {
   var grid = document.getElementById('painel-grid');
   grid.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   gas('stats').then(function(d) {
-    if (d.error || !d.porPlataforma) {
-      grid.innerHTML = '<div class="empty-state">Sem dados de painel — verifique o endpoint.</div>';
-      return;
-    }
+    if (d.error || !d.porPlataforma) { grid.innerHTML = '<div class="empty-state">Sem dados de painel.</div>'; return; }
     var plats = Object.entries(d.porPlataforma).sort(function(a,b) { return b[1]-a[1]; });
     var max   = plats.length ? plats[0][1] : 1;
     grid.innerHTML = plats.map(function(p) {
-      var cor  = COR_PLAT[p[0]] || '#9e9e9e';
-      var pct  = max ? Math.round((p[1]/max)*100) : 0;
+      var cor = COR_PLAT[p[0]] || '#9e9e9e';
+      var pct = max ? Math.round((p[1]/max)*100) : 0;
       return '<div class="painel-card">' +
         '<div class="painel-plat" style="color:' + cor + '">' + p[0] + '</div>' +
         '<div class="painel-bar-wrap"><div class="painel-bar" style="width:' + pct + '%;background:' + cor + '"></div></div>' +
-        '<div class="painel-count">' + p[1] + '</div>' +
-        '</div>';
+        '<div class="painel-count">' + p[1] + '</div></div>';
     }).join('');
-  }).catch(function() {
-    grid.innerHTML = '<div class="empty-state">Erro ao carregar painel.</div>';
-  });
+  }).catch(function() { grid.innerHTML = '<div class="empty-state">Erro ao carregar painel.</div>'; });
 }
 
-// Inicia
 carregarTudo();
 </script>
 </body>
