@@ -2,7 +2,7 @@
 
 Dashboard operacional de taxonomias Unilever BR — Grasp x StormX.
 
-**🔗 Acesso:** https://falssp.github.io/ul-dashboard-taxonomias/
+**🔗 Acesso:** https://falssp.github.io/nc-tool/dashboard-jira/
 
 Sincroniza tickets do Jira (projeto UL) automaticamente e os organiza em um painel visual hospedado no GitHub Pages.
 
@@ -86,7 +86,7 @@ A diferença entre os dois números é sempre `Pais + Incorretos` — e muda con
 
 1. Suba o `index.html` na raiz do repositório
 2. Settings → Pages → Source: main / root
-3. URL ativa em ~1 min: `https://falssp.github.io/ul-dashboard-taxonomias/`
+3. URL ativa em ~1 min: `https://falssp.github.io/nc-tool/dashboard-jira/`
 
 ---
 
