@@ -1,6 +1,6 @@
 // ============================================================
 // [UL] Dashboard_Taxonomias — 02_Sync.gs
-// Deploy automático via clasp
+// Repositório: falssp/nc-tool/dashboard-jira
 // Busca Jira paginada em execuções encadeadas (escala ilimitada)
 // ============================================================
 
