@@ -344,7 +344,7 @@ function abrirInstalador() {
 }
 
 function abrirPainel() {
-  const url = 'https://falssp.github.io/ul-dashboard-taxonomias/';
+  const url = 'https://falssp.github.io/nc-tool/dashboard-jira/';
   const html = HtmlService.createHtmlOutput(
     '<style>*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,sans-serif;}' +
     'body{background:#0f1117;display:flex;align-items:center;justify-content:center;min-height:100vh;}' +
